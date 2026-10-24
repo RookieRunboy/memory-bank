@@ -1,0 +1,2526 @@
+{
+  "version": "2.0",
+  "updated": "2026-10-24",
+  "variables": {
+    "称呼": "profile.callName",
+    "姓名": "profile.name",
+    "出生年份": "profile.birthYear",
+    "家乡": "profile.hometown",
+    "重要人物": "profile.people 去掉前缀后的人名"
+  },
+  "dimensions": {
+    "time": {
+      "label": "时间",
+      "values": {
+        "child": "儿童",
+        "teen": "少年",
+        "youth": "青年",
+        "midlife": "中年",
+        "elder": "老年"
+      }
+    },
+    "relation": {
+      "label": "人际关系",
+      "values": {
+        "parents": "父母",
+        "siblings": "兄弟姐妹",
+        "spouse": "爱人",
+        "children": "子女孙辈",
+        "friends": "朋友同学",
+        "teachers": "老师师傅",
+        "colleagues": "同事"
+      }
+    },
+    "domain": {
+      "label": "人生领域",
+      "values": {
+        "school": "上学",
+        "work": "工作",
+        "family": "家庭生活",
+        "craft": "兴趣手艺",
+        "places": "住过的地方",
+        "times": "时代大事"
+      }
+    },
+    "trigger": {
+      "label": "触发物",
+      "values": {
+        "photo": "老照片",
+        "song": "老歌",
+        "food": "家乡菜",
+        "object": "老物件",
+        "festival": "节日"
+      }
+    }
+  },
+  "layers": [
+    {
+      "depth": 1,
+      "id": "fact",
+      "label": "事实"
+    },
+    {
+      "depth": 2,
+      "id": "scene",
+      "label": "场景细节"
+    },
+    {
+      "depth": 3,
+      "id": "feeling",
+      "label": "感受"
+    },
+    {
+      "depth": 4,
+      "id": "legacy",
+      "label": "想对后辈说的话"
+    }
+  ],
+  "layer_rules": [
+    "每个节点由浅入深四层：1 事实，2 场景细节，3 感受，4 想对后辈说的话。每层一个入场问题，一次只问一个",
+    "老人对某层问题给出实质回答，或自己主动讲到了那层的内容，就算到达该层，depth 取已到达的最大层",
+    "可以跳层：老人一开口就讲感受，直接记 depth 3，回头再补场景也行",
+    "家人提供了触发物（照片、老歌、菜、物件、节日），用 trigger_openers 里对应的问题代替第 1 层开场，老人回答后照常从第 1 层或第 2 层接着走",
+    "第 4 层只在老人情绪愉快、平稳时问；老人难过时停在第 3 层，不追问"
+  ],
+  "enough_default": {
+    "rule": "满足任一条件即可离开当前节点",
+    "conditions": [
+      {
+        "id": "deep",
+        "desc": "depth 到达 4，即四层都聊到",
+        "check": "depth>=4"
+      },
+      {
+        "id": "short_replies",
+        "desc": "老人在本节点连续两次简短回答，每次少于八个字，或说不知道、忘了",
+        "check": "consecutive_short>=2"
+      },
+      {
+        "id": "tired",
+        "desc": "老人表现出疲倦、烦躁，或说累了、不想说了",
+        "check": "emotion in [累了, 烦躁]"
+      },
+      {
+        "id": "upset",
+        "desc": "出现悲伤或困惑，安抚后仍未恢复，立刻离开节点，状态记为 partial 并标记 sensitive",
+        "check": "emotion in [难过, 困惑] after soothe"
+      },
+      {
+        "id": "max_turns",
+        "desc": "本节点已问满八轮",
+        "check": "node_turns>=8"
+      }
+    ]
+  },
+  "coverage_summary": {
+    "time": {
+      "child": 8,
+      "teen": 7,
+      "youth": 10,
+      "midlife": 9,
+      "elder": 8
+    },
+    "relation": {
+      "parents": 6,
+      "siblings": 2,
+      "spouse": 4,
+      "children": 5,
+      "friends": 5,
+      "teachers": 2,
+      "colleagues": 3
+    },
+    "domain": {
+      "school": 4,
+      "work": 5,
+      "family": 17,
+      "craft": 5,
+      "places": 8,
+      "times": 3
+    },
+    "trigger": {
+      "photo": 12,
+      "song": 4,
+      "food": 8,
+      "object": 10,
+      "festival": 3
+    }
+  },
+  "nodes": [
+    {
+      "id": "child-home",
+      "title": "老家的房子",
+      "tags": {
+        "time": "child",
+        "relation": null,
+        "domain": "places",
+        "trigger": [
+          "photo",
+          "object"
+        ]
+      },
+      "entity_hints": [
+        "老家",
+        "房子",
+        "院子"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "{称呼}，您小时候在{家乡}住的房子，是什么样子的呀？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "下雨天，屋里屋外是什么样的？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "一想起那个家，您心里是什么滋味？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "关于老家，您想让孙辈知道点什么？"
+        }
+      ],
+      "trigger_openers": {
+        "photo": "这张老照片上的房子，是您小时候的家吗？"
+      },
+      "sensitive": [
+        {
+          "type": "H",
+          "note": "可能涉及贫困或饥荒年代。不追问挨饿受苦的细节，说那时候大家都不容易，您真了不起，再问一件开心的小事。"
+        }
+      ],
+      "needs_calm": false
+    },
+    {
+      "id": "child-mother",
+      "title": "妈妈",
+      "tags": {
+        "time": "child",
+        "relation": "parents",
+        "domain": "family",
+        "trigger": [
+          "food"
+        ]
+      },
+      "entity_hints": [
+        "妈妈",
+        "母亲",
+        "娘"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "您的妈妈，是个什么样的人呀？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "妈妈平时在家，常在哪儿忙活？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "想起妈妈，您心里是什么感觉？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "妈妈教您的道理，您想传给孩子们哪一句？"
+        }
+      ],
+      "trigger_openers": {
+        "food": "这道菜，是不是有点像妈妈做的味道？"
+      },
+      "sensitive": [
+        {
+          "type": "D",
+          "note": "可能涉及已故亲人或朋友。不问去世经过和年份，只问美好的小事。老人主动讲，就温柔地听，难过时说您一直记着他呢，再转到安全话题。"
+        }
+      ],
+      "needs_calm": false
+    },
+    {
+      "id": "child-father-bike",
+      "title": "和父亲学骑车",
+      "tags": {
+        "time": "child",
+        "relation": "parents",
+        "domain": "family",
+        "trigger": [
+          "object"
+        ]
+      },
+      "entity_hints": [
+        "爸爸",
+        "父亲",
+        "自行车"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "小时候，是谁教您骑车，或者教您第一样本事的？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "那天是在哪儿学的，旁边有什么？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "学会的那一刻，您心里怎么样？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "这件事，您想跟孙辈说点什么？"
+        }
+      ],
+      "trigger_openers": {
+        "object": "看到这辆旧自行车，您想起谁了？"
+      },
+      "sensitive": [
+        {
+          "type": "D",
+          "note": "可能涉及已故亲人或朋友。不问去世经过和年份，只问美好的小事。老人主动讲，就温柔地听，难过时说您一直记着他呢，再转到安全话题。"
+        }
+      ],
+      "needs_calm": false
+    },
+    {
+      "id": "child-siblings",
+      "title": "兄弟姐妹",
+      "tags": {
+        "time": "child",
+        "relation": "siblings",
+        "domain": "family",
+        "trigger": [
+          "photo"
+        ]
+      },
+      "entity_hints": [
+        "哥哥",
+        "姐姐",
+        "弟弟",
+        "妹妹"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "小时候，家里有几个兄弟姐妹呀？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "你们一起做过最好玩的一件事是什么？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "跟他们在一起，您觉得怎么样？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "您想让孩子们怎么对待自家兄弟姐妹？"
+        }
+      ],
+      "trigger_openers": {
+        "photo": "照片上这几个孩子，哪个是您呀？"
+      },
+      "sensitive": [
+        {
+          "type": "D",
+          "note": "可能涉及已故亲人或朋友。不问去世经过和年份，只问美好的小事。老人主动讲，就温柔地听，难过时说您一直记着他呢，再转到安全话题。"
+        }
+      ],
+      "needs_calm": false
+    },
+    {
+      "id": "child-play",
+      "title": "玩伴与游戏",
+      "tags": {
+        "time": "child",
+        "relation": "friends",
+        "domain": "craft",
+        "trigger": [
+          "object"
+        ]
+      },
+      "entity_hints": [
+        "玩伴",
+        "游戏",
+        "小伙伴"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "小时候，您最常跟谁一起玩呀？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "你们常在哪儿玩，玩什么游戏？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "玩得最开心的时候，是什么感觉？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "您想跟现在的孩子说说，那时候怎么玩吗？"
+        }
+      ],
+      "trigger_openers": {
+        "object": "这个老玩意儿，您小时候玩过吗？"
+      },
+      "sensitive": [
+        {
+          "type": "N",
+          "note": "较少敏感，也可作为其他节点出现情绪时的退路。"
+        }
+      ],
+      "needs_calm": false
+    },
+    {
+      "id": "child-newyear",
+      "title": "小时候过年",
+      "tags": {
+        "time": "child",
+        "relation": "parents",
+        "domain": "family",
+        "trigger": [
+          "festival",
+          "food"
+        ]
+      },
+      "entity_hints": [
+        "过年",
+        "春节",
+        "年夜饭",
+        "鞭炮"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "小时候在{家乡}过年，家里都怎么过呀？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "年三十那天，屋里屋外是什么样子？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "穿上新衣服那会儿，您心里怎么样？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "过年的老规矩，您想让孩子们记住哪一条？"
+        }
+      ],
+      "trigger_openers": {
+        "festival": "快过年了，您小时候过年最盼着什么呀？"
+      },
+      "sensitive": [
+        {
+          "type": "H",
+          "note": "可能涉及贫困或饥荒年代。不追问挨饿受苦的细节，说那时候大家都不容易，您真了不起，再问一件开心的小事。"
+        }
+      ],
+      "needs_calm": false
+    },
+    {
+      "id": "child-food",
+      "title": "小时候的吃食",
+      "tags": {
+        "time": "child",
+        "relation": "parents",
+        "domain": "family",
+        "trigger": [
+          "food"
+        ]
+      },
+      "entity_hints": [
+        "吃",
+        "零嘴",
+        "糖"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "小时候，您最爱吃的东西是什么呀？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "那是谁做给您吃的？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "吃到嘴里，是什么滋味？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "这个味道，您想留给孩子们吗？"
+        }
+      ],
+      "trigger_openers": {
+        "food": "尝尝这个，您小时候吃过这样的吗？"
+      },
+      "sensitive": [
+        {
+          "type": "H",
+          "note": "可能涉及贫困或饥荒年代。不追问挨饿受苦的细节，说那时候大家都不容易，您真了不起，再问一件开心的小事。"
+        }
+      ],
+      "needs_calm": false
+    },
+    {
+      "id": "child-river",
+      "title": "家乡的河与树",
+      "tags": {
+        "time": "child",
+        "relation": null,
+        "domain": "places",
+        "trigger": [
+          "song"
+        ]
+      },
+      "entity_hints": [
+        "河",
+        "树",
+        "村",
+        "湖"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "您老家附近，有没有一条河，或者一棵大树呀？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "站在那儿，能听到什么声音？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "想起那个地方，您心里怎么样？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "您想带孙辈去看看那儿吗？"
+        }
+      ],
+      "trigger_openers": {
+        "song": "听着这首歌，您想起家乡哪个地方了？"
+      },
+      "sensitive": [
+        {
+          "type": "N",
+          "note": "较少敏感，也可作为其他节点出现情绪时的退路。"
+        }
+      ],
+      "needs_calm": false
+    },
+    {
+      "id": "teen-school",
+      "title": "上学",
+      "tags": {
+        "time": "teen",
+        "relation": "friends",
+        "domain": "school",
+        "trigger": [
+          "photo"
+        ]
+      },
+      "entity_hints": [
+        "学校",
+        "同学",
+        "同桌",
+        "读书"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "{称呼}，您上学的学校，是什么样子的呀？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "每天上学的路上，能看到什么？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "那时候上学，您心里高兴吗？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "关于读书，您想对孙辈说点什么？"
+        }
+      ],
+      "trigger_openers": {
+        "photo": "这是您上学时候的照片吗？"
+      },
+      "sensitive": [
+        {
+          "type": "S",
+          "note": "部分老人没机会上学或中途辍学。老人说没上过学，绝不追问原因或惋惜，转到帮家里干活。"
+        }
+      ],
+      "needs_calm": false
+    },
+    {
+      "id": "teen-teacher",
+      "title": "难忘的老师",
+      "tags": {
+        "time": "teen",
+        "relation": "teachers",
+        "domain": "school",
+        "trigger": []
+      },
+      "entity_hints": [
+        "老师",
+        "先生",
+        "校长"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "上学的时候，有没有哪位老师，您一直记得？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "他上课的时候，是什么样子？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "被他夸的时候，您心里怎么样？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "这位老师的话，您想传给孩子们吗？"
+        }
+      ],
+      "trigger_openers": {},
+      "sensitive": [
+        {
+          "type": "T",
+          "note": "可能触及动乱、运动、家庭成分等时代创伤。主持人绝不主动点名任何政治运动或灾荒；老人主动讲就听，不评价、不追问；出现害怕或难过，立刻安抚并转到安全话题。"
+        }
+      ],
+      "needs_calm": false
+    },
+    {
+      "id": "teen-chores",
+      "title": "帮家里干活",
+      "tags": {
+        "time": "teen",
+        "relation": "parents",
+        "domain": "family",
+        "trigger": [
+          "object"
+        ]
+      },
+      "entity_hints": [
+        "干活",
+        "地里",
+        "农活",
+        "挑水"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "十几岁的时候，您在家帮着干些什么活呀？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "干活的地方，是什么样子的？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "干完活，您觉得累不累？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "从干活里学到的，您想告诉后辈什么？"
+        }
+      ],
+      "trigger_openers": {
+        "object": "这个老农具，您用过吗？"
+      },
+      "sensitive": [
+        {
+          "type": "H",
+          "note": "可能涉及贫困或饥荒年代。不追问挨饿受苦的细节，说那时候大家都不容易，您真了不起，再问一件开心的小事。"
+        }
+      ],
+      "needs_calm": false
+    },
+    {
+      "id": "teen-friend",
+      "title": "少年时的好朋友",
+      "tags": {
+        "time": "teen",
+        "relation": "friends",
+        "domain": "school",
+        "trigger": []
+      },
+      "entity_hints": [
+        "好朋友",
+        "同学",
+        "伙伴"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "十几岁的时候，您最要好的朋友是谁呀？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "你们最常去哪儿？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "跟他在一起，您心里怎么样？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "交朋友这件事，您想跟孩子们说点什么？"
+        }
+      ],
+      "trigger_openers": {},
+      "sensitive": [
+        {
+          "type": "D",
+          "note": "可能涉及已故亲人或朋友。不问去世经过和年份，只问美好的小事。老人主动讲，就温柔地听，难过时说您一直记着他呢，再转到安全话题。"
+        }
+      ],
+      "needs_calm": false
+    },
+    {
+      "id": "teen-song",
+      "title": "少年时唱的歌",
+      "tags": {
+        "time": "teen",
+        "relation": "friends",
+        "domain": "craft",
+        "trigger": [
+          "song"
+        ]
+      },
+      "entity_hints": [
+        "歌",
+        "唱歌",
+        "广播"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "十几岁的时候，大家都爱唱什么歌呀？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "那时候都在什么地方唱？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "一唱起来，您心里是什么感觉？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "这首歌，您想唱给孙辈听吗？"
+        }
+      ],
+      "trigger_openers": {
+        "song": "这首歌，您年轻时候听过吗？"
+      },
+      "sensitive": [
+        {
+          "type": "N",
+          "note": "较少敏感，也可作为其他节点出现情绪时的退路。"
+        }
+      ],
+      "needs_calm": false
+    },
+    {
+      "id": "teen-times",
+      "title": "少年时的大事",
+      "tags": {
+        "time": "teen",
+        "relation": null,
+        "domain": "times",
+        "trigger": []
+      },
+      "entity_hints": [
+        "大事",
+        "村里",
+        "运动"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "您十几岁那几年，村里或者家里，有没有什么热闹的大事？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "那时候，您看到了什么？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "那会儿您心里是怎么想的？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "那段日子，您想让孩子们知道些什么？"
+        }
+      ],
+      "trigger_openers": {},
+      "sensitive": [
+        {
+          "type": "T",
+          "note": "可能触及动乱、运动、家庭成分等时代创伤。主持人绝不主动点名任何政治运动或灾荒；老人主动讲就听，不评价、不追问；出现害怕或难过，立刻安抚并转到安全话题。"
+        }
+      ],
+      "needs_calm": true
+    },
+    {
+      "id": "teen-dream",
+      "title": "少年时的心愿",
+      "tags": {
+        "time": "teen",
+        "relation": null,
+        "domain": "school",
+        "trigger": []
+      },
+      "entity_hints": [
+        "心愿",
+        "理想",
+        "梦想"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "十几岁的时候，您心里最想做的一件事是什么呀？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "这个想法，是从哪儿生出来的？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "现在想起来，是什么心情？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "您想对有心愿的孙辈说什么？"
+        }
+      ],
+      "trigger_openers": {},
+      "sensitive": [
+        {
+          "type": "N",
+          "note": "较少敏感，也可作为其他节点出现情绪时的退路。"
+        }
+      ],
+      "needs_calm": false
+    },
+    {
+      "id": "youth-firstjob",
+      "title": "第一份工作",
+      "tags": {
+        "time": "youth",
+        "relation": "colleagues",
+        "domain": "work",
+        "trigger": [
+          "object",
+          "photo"
+        ]
+      },
+      "entity_hints": [
+        "工作",
+        "单位",
+        "厂",
+        "上班"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "您的第一份工作，是做什么的呀？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "第一天上班，那地方是什么样子？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "第一次领工资，您心里什么滋味？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "关于工作，您想跟孩子们说点什么？"
+        }
+      ],
+      "trigger_openers": {
+        "object": "这个老物件，是您上班时用过的吗？"
+      },
+      "sensitive": [
+        {
+          "type": "W",
+          "note": "可能涉及下岗、失业、工伤。只肯定老人的辛苦和本事，不追问经过。"
+        }
+      ],
+      "needs_calm": false
+    },
+    {
+      "id": "youth-master",
+      "title": "带我入门的师傅",
+      "tags": {
+        "time": "youth",
+        "relation": "teachers",
+        "domain": "work",
+        "trigger": []
+      },
+      "entity_hints": [
+        "师傅",
+        "徒弟",
+        "手艺"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "刚工作的时候，是谁带您入门的呀？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "他手把手教您的时候，是什么样子？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "学成那天，您心里怎么样？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "师傅教您的，您想传下去哪一句？"
+        }
+      ],
+      "trigger_openers": {},
+      "sensitive": [
+        {
+          "type": "D",
+          "note": "可能涉及已故亲人或朋友。不问去世经过和年份，只问美好的小事。老人主动讲，就温柔地听，难过时说您一直记着他呢，再转到安全话题。"
+        }
+      ],
+      "needs_calm": false
+    },
+    {
+      "id": "youth-meet",
+      "title": "和{重要人物}相识",
+      "tags": {
+        "time": "youth",
+        "relation": "spouse",
+        "domain": "family",
+        "trigger": [
+          "photo"
+        ]
+      },
+      "entity_hints": [
+        "老伴",
+        "对象",
+        "爱人"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "您和{重要人物}，是怎么认识的呀？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "第一次见面，他穿的什么？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "那时候，您心里是怎么想的？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "关于找对象，您想对孙辈说什么？"
+        }
+      ],
+      "trigger_openers": {
+        "photo": "照片上站在您旁边的，是{重要人物}吗？"
+      },
+      "sensitive": [
+        {
+          "type": "M",
+          "note": "爱人可能已故，或婚姻不幸、离异、再婚。档案未填爱人时不进入此节点；爱人已故只聊相识和美好细节；老人不愿谈，立刻换节点，不问原因。"
+        }
+      ],
+      "needs_calm": false
+    },
+    {
+      "id": "youth-date",
+      "title": "谈对象的日子",
+      "tags": {
+        "time": "youth",
+        "relation": "spouse",
+        "domain": "places",
+        "trigger": [
+          "song"
+        ]
+      },
+      "entity_hints": [
+        "约会",
+        "公园",
+        "看电影",
+        "自行车"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "那时候谈对象，你们都去哪儿呀？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "那地方，能听到什么声音？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "跟他在一块儿，您心里什么滋味？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "您想跟孩子们说说，那时候怎么谈对象吗？"
+        }
+      ],
+      "trigger_openers": {
+        "song": "这首歌，你们那时候一起听过吗？"
+      },
+      "sensitive": [
+        {
+          "type": "M",
+          "note": "爱人可能已故，或婚姻不幸、离异、再婚。档案未填爱人时不进入此节点；爱人已故只聊相识和美好细节；老人不愿谈，立刻换节点，不问原因。"
+        }
+      ],
+      "needs_calm": false
+    },
+    {
+      "id": "youth-wedding",
+      "title": "结婚那天",
+      "tags": {
+        "time": "youth",
+        "relation": "spouse",
+        "domain": "family",
+        "trigger": [
+          "photo",
+          "food"
+        ]
+      },
+      "entity_hints": [
+        "结婚",
+        "婚礼",
+        "喜酒",
+        "喜糖"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "结婚那天，是什么样子的呀？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "那天桌上都摆了些什么菜？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "那天您心里是什么滋味？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "关于成家过日子，您想对孙辈说点什么？"
+        }
+      ],
+      "trigger_openers": {
+        "photo": "这是您结婚时候的照片吗？"
+      },
+      "sensitive": [
+        {
+          "type": "M",
+          "note": "爱人可能已故，或婚姻不幸、离异、再婚。档案未填爱人时不进入此节点；爱人已故只聊相识和美好细节；老人不愿谈，立刻换节点，不问原因。"
+        }
+      ],
+      "needs_calm": false
+    },
+    {
+      "id": "youth-newhome",
+      "title": "刚成家住的地方",
+      "tags": {
+        "time": "youth",
+        "relation": "spouse",
+        "domain": "places",
+        "trigger": [
+          "object"
+        ]
+      },
+      "entity_hints": [
+        "新家",
+        "房子",
+        "宿舍",
+        "筒子楼"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "刚成家的时候，你们住在哪儿呀？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "家里添的第一件大东西是什么？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "那时候，您觉得日子过得怎么样？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "您想让孩子们知道，那时候的家是什么样吗？"
+        }
+      ],
+      "trigger_openers": {
+        "object": "这个老物件，是您成家时置办的吗？"
+      },
+      "sensitive": [
+        {
+          "type": "H",
+          "note": "可能涉及贫困或饥荒年代。不追问挨饿受苦的细节，说那时候大家都不容易，您真了不起，再问一件开心的小事。"
+        }
+      ],
+      "needs_calm": false
+    },
+    {
+      "id": "youth-firstchild",
+      "title": "第一个孩子出生",
+      "tags": {
+        "time": "youth",
+        "relation": "children",
+        "domain": "family",
+        "trigger": []
+      },
+      "entity_hints": [
+        "孩子",
+        "出生",
+        "儿子",
+        "女儿"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "您的第一个孩子出生那天，是什么情形呀？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "那天，是谁陪着您？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "第一次抱孩子，您心里怎么样？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "您想对这个孩子说一句什么话？"
+        }
+      ],
+      "trigger_openers": {},
+      "sensitive": [
+        {
+          "type": "C",
+          "note": "可能涉及难产、孩子夭折或与子女关系紧张。只聊老人主动提到的孩子，不比较孩子，不问矛盾；没有子女的老人不进入此节点。"
+        }
+      ],
+      "needs_calm": false
+    },
+    {
+      "id": "youth-coworkers",
+      "title": "年轻时的工友",
+      "tags": {
+        "time": "youth",
+        "relation": "colleagues",
+        "domain": "work",
+        "trigger": [
+          "photo"
+        ]
+      },
+      "entity_hints": [
+        "同事",
+        "工友",
+        "车间"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "年轻时上班，您跟谁最合得来呀？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "你们一起干活的时候，是什么样子？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "跟他们在一起，您觉得怎么样？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "跟人共事，您想教孩子们什么？"
+        }
+      ],
+      "trigger_openers": {
+        "photo": "照片上这些人，是您的工友吗？"
+      },
+      "sensitive": [
+        {
+          "type": "D",
+          "note": "可能涉及已故亲人或朋友。不问去世经过和年份，只问美好的小事。老人主动讲，就温柔地听，难过时说您一直记着他呢，再转到安全话题。"
+        }
+      ],
+      "needs_calm": false
+    },
+    {
+      "id": "youth-pride",
+      "title": "年轻时得意的事",
+      "tags": {
+        "time": "youth",
+        "relation": null,
+        "domain": "work",
+        "trigger": []
+      },
+      "entity_hints": [
+        "奖状",
+        "先进",
+        "得意"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "年轻的时候，您最得意的一件事是什么呀？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "那件事，是怎么办成的？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "那时候，您心里美不美？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "这件事，您想讲给孙辈听吗？"
+        }
+      ],
+      "trigger_openers": {},
+      "sensitive": [
+        {
+          "type": "N",
+          "note": "较少敏感，也可作为其他节点出现情绪时的退路。"
+        }
+      ],
+      "needs_calm": false
+    },
+    {
+      "id": "youth-times",
+      "title": "青年时的大事",
+      "tags": {
+        "time": "youth",
+        "relation": null,
+        "domain": "times",
+        "trigger": []
+      },
+      "entity_hints": [
+        "大事",
+        "下乡",
+        "知青"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "您二三十岁那些年，身边发生过什么大事吗？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "那时候，您看到了什么？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "那会儿，您心里是怎么想的？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "那段日子，您想让孩子们记住什么？"
+        }
+      ],
+      "trigger_openers": {},
+      "sensitive": [
+        {
+          "type": "T",
+          "note": "可能触及动乱、运动、家庭成分等时代创伤。主持人绝不主动点名任何政治运动或灾荒；老人主动讲就听，不评价、不追问；出现害怕或难过，立刻安抚并转到安全话题。"
+        }
+      ],
+      "needs_calm": true
+    },
+    {
+      "id": "midlife-kids",
+      "title": "把孩子拉扯大",
+      "tags": {
+        "time": "midlife",
+        "relation": "children",
+        "domain": "family",
+        "trigger": [
+          "food"
+        ]
+      },
+      "entity_hints": [
+        "孩子",
+        "儿子",
+        "女儿",
+        "做饭"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "孩子们小时候，您常给他们做什么吃的呀？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "一家人围着桌子吃饭，是什么样子？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "看着孩子长大，您心里怎么样？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "您最想对孩子们说的一句话是什么？"
+        }
+      ],
+      "trigger_openers": {
+        "food": "这道菜，您以前常给孩子们做吗？"
+      },
+      "sensitive": [
+        {
+          "type": "C",
+          "note": "可能涉及难产、孩子夭折或与子女关系紧张。只聊老人主动提到的孩子，不比较孩子，不问矛盾；没有子女的老人不进入此节点。"
+        }
+      ],
+      "needs_calm": false
+    },
+    {
+      "id": "midlife-naughty",
+      "title": "孩子的调皮事",
+      "tags": {
+        "time": "midlife",
+        "relation": "children",
+        "domain": "family",
+        "trigger": []
+      },
+      "entity_hints": [
+        "调皮",
+        "闯祸"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "孩子小时候，最调皮的一件事是什么呀？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "那天后来怎么样了？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "现在想起来，您是什么心情？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "您想把这件事讲给孙辈听吗？"
+        }
+      ],
+      "trigger_openers": {},
+      "sensitive": [
+        {
+          "type": "C",
+          "note": "可能涉及难产、孩子夭折或与子女关系紧张。只聊老人主动提到的孩子，不比较孩子，不问矛盾；没有子女的老人不进入此节点。"
+        }
+      ],
+      "needs_calm": false
+    },
+    {
+      "id": "midlife-work",
+      "title": "工作上的那些年",
+      "tags": {
+        "time": "midlife",
+        "relation": "colleagues",
+        "domain": "work",
+        "trigger": [
+          "object"
+        ]
+      },
+      "entity_hints": [
+        "上班",
+        "单位",
+        "加班"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "那些年上班，您每天都忙些什么呀？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "您干活的地方，是什么样子的？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "最忙的时候，您是怎么撑过来的？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "关于吃苦和坚持，您想对后辈说什么？"
+        }
+      ],
+      "trigger_openers": {
+        "object": "这个工具，您以前天天用吧？"
+      },
+      "sensitive": [
+        {
+          "type": "W",
+          "note": "可能涉及下岗、失业、工伤。只肯定老人的辛苦和本事，不追问经过。"
+        }
+      ],
+      "needs_calm": false
+    },
+    {
+      "id": "midlife-craft",
+      "title": "拿手的手艺",
+      "tags": {
+        "time": "midlife",
+        "relation": null,
+        "domain": "craft",
+        "trigger": [
+          "object",
+          "food"
+        ]
+      },
+      "entity_hints": [
+        "手艺",
+        "针线",
+        "木工",
+        "做菜"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "您有什么拿手的手艺吗？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "做这个的时候，您是怎么一步一步做的？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "做好了别人夸您，您心里怎么样？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "这门手艺，您想教给哪个孩子？"
+        }
+      ],
+      "trigger_openers": {
+        "object": "这个，是您亲手做的吗？"
+      },
+      "sensitive": [
+        {
+          "type": "N",
+          "note": "较少敏感，也可作为其他节点出现情绪时的退路。"
+        }
+      ],
+      "needs_calm": false
+    },
+    {
+      "id": "midlife-siblings",
+      "title": "成家后的兄弟姐妹",
+      "tags": {
+        "time": "midlife",
+        "relation": "siblings",
+        "domain": "family",
+        "trigger": [
+          "festival"
+        ]
+      },
+      "entity_hints": [
+        "兄弟",
+        "姐妹",
+        "亲戚"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "成家以后，您跟兄弟姐妹还常走动吗？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "你们聚在一块儿，都做些什么？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "有兄弟姐妹在，您觉得怎么样？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "您想让孩子们怎么跟亲戚相处？"
+        }
+      ],
+      "trigger_openers": {
+        "festival": "过节的时候，兄弟姐妹会聚到一块儿吗？"
+      },
+      "sensitive": [
+        {
+          "type": "D",
+          "note": "可能涉及已故亲人或朋友。不问去世经过和年份，只问美好的小事。老人主动讲，就温柔地听，难过时说您一直记着他呢，再转到安全话题。"
+        }
+      ],
+      "needs_calm": false
+    },
+    {
+      "id": "midlife-move",
+      "title": "搬过的家",
+      "tags": {
+        "time": "midlife",
+        "relation": null,
+        "domain": "places",
+        "trigger": [
+          "photo"
+        ]
+      },
+      "entity_hints": [
+        "搬家",
+        "城市",
+        "住过"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "这辈子，您搬过几次家呀？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "住得最久的那个地方，是什么样子？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "离开那儿的时候，您心里怎么样？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "您想让孩子们记住哪个家？"
+        }
+      ],
+      "trigger_openers": {
+        "photo": "这张照片，是在哪儿拍的呀？"
+      },
+      "sensitive": [
+        {
+          "type": "H",
+          "note": "可能涉及贫困或饥荒年代。不追问挨饿受苦的细节，说那时候大家都不容易，您真了不起，再问一件开心的小事。"
+        }
+      ],
+      "needs_calm": false
+    },
+    {
+      "id": "midlife-hard",
+      "title": "难走的日子",
+      "tags": {
+        "time": "midlife",
+        "relation": null,
+        "domain": "times",
+        "trigger": []
+      },
+      "entity_hints": [
+        "难",
+        "苦",
+        "挺过来"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "这辈子，有没有哪段日子特别不容易，后来挺过来了？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "那时候，是谁帮了您？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "现在回头看，您是什么心情？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "关于挺过难关，您想对后辈说什么？"
+        }
+      ],
+      "trigger_openers": {},
+      "sensitive": [
+        {
+          "type": "T",
+          "note": "可能触及动乱、运动、家庭成分等时代创伤。主持人绝不主动点名任何政治运动或灾荒；老人主动讲就听，不评价、不追问；出现害怕或难过，立刻安抚并转到安全话题。"
+        },
+        {
+          "type": "I",
+          "note": "可能涉及病痛与照护。不谈病情细节，不给医疗建议，重点放在陪伴和温暖。"
+        }
+      ],
+      "needs_calm": true
+    },
+    {
+      "id": "midlife-travel",
+      "title": "出过的远门",
+      "tags": {
+        "time": "midlife",
+        "relation": null,
+        "domain": "places",
+        "trigger": [
+          "photo"
+        ]
+      },
+      "entity_hints": [
+        "远门",
+        "火车",
+        "旅游",
+        "北京"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "这辈子，您去过最远的地方是哪儿呀？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "到了那儿，看到了什么？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "第一次到那儿，您觉得怎么样？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "您想让孙辈也去那儿看看吗？"
+        }
+      ],
+      "trigger_openers": {
+        "photo": "这是您出远门时拍的吗？"
+      },
+      "sensitive": [
+        {
+          "type": "N",
+          "note": "较少敏感，也可作为其他节点出现情绪时的退路。"
+        }
+      ],
+      "needs_calm": false
+    },
+    {
+      "id": "midlife-parents-old",
+      "title": "陪父母变老",
+      "tags": {
+        "time": "midlife",
+        "relation": "parents",
+        "domain": "family",
+        "trigger": []
+      },
+      "entity_hints": [
+        "父母",
+        "老人",
+        "孝顺"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "父母上了年纪以后，您常陪他们做些什么呀？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "陪他们的时候，常在哪儿？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "想起那段日子，您心里怎么样？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "关于孝顺老人，您想对孩子们说什么？"
+        }
+      ],
+      "trigger_openers": {},
+      "sensitive": [
+        {
+          "type": "D",
+          "note": "可能涉及已故亲人或朋友。不问去世经过和年份，只问美好的小事。老人主动讲，就温柔地听，难过时说您一直记着他呢，再转到安全话题。"
+        },
+        {
+          "type": "I",
+          "note": "可能涉及病痛与照护。不谈病情细节，不给医疗建议，重点放在陪伴和温暖。"
+        }
+      ],
+      "needs_calm": true
+    },
+    {
+      "id": "elder-grandkids",
+      "title": "孙辈",
+      "tags": {
+        "time": "elder",
+        "relation": "children",
+        "domain": "family",
+        "trigger": [
+          "photo"
+        ]
+      },
+      "entity_hints": [
+        "孙子",
+        "孙女",
+        "外孙"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "您第一次抱孙子孙女，是什么情形呀？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "您常带他们去哪儿玩？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "跟孩子们在一起，您心里怎么样？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "您最想对孙辈说的一句话是什么？"
+        }
+      ],
+      "trigger_openers": {
+        "photo": "照片上这个小娃娃，是您的孙辈吗？"
+      },
+      "sensitive": [
+        {
+          "type": "N",
+          "note": "较少敏感，也可作为其他节点出现情绪时的退路。"
+        }
+      ],
+      "needs_calm": false
+    },
+    {
+      "id": "elder-hometown-food",
+      "title": "家乡的味道",
+      "tags": {
+        "time": "elder",
+        "relation": null,
+        "domain": "places",
+        "trigger": [
+          "food"
+        ]
+      },
+      "entity_hints": [
+        "家乡菜",
+        "小吃",
+        "点心"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "要说{家乡}最好吃的东西，您第一个想到什么？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "它闻起来，是什么香味？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "一想到这个味道，您心里什么滋味？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "这个味道，您想教孩子们怎么做吗？"
+        }
+      ],
+      "trigger_openers": {
+        "food": "这是{家乡}的味道，您尝尝，像不像以前的？"
+      },
+      "sensitive": [
+        {
+          "type": "N",
+          "note": "较少敏感，也可作为其他节点出现情绪时的退路。"
+        }
+      ],
+      "needs_calm": false
+    },
+    {
+      "id": "elder-festivals",
+      "title": "节日和习俗",
+      "tags": {
+        "time": "elder",
+        "relation": null,
+        "domain": "family",
+        "trigger": [
+          "festival",
+          "food"
+        ]
+      },
+      "entity_hints": [
+        "端午",
+        "中秋",
+        "粽子",
+        "月饼"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "{家乡}过端午、中秋，家里都怎么过呀？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "过节那天，桌上都有什么？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "过节的时候，您最喜欢哪一刻？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "哪个老规矩，您想让孩子们传下去？"
+        }
+      ],
+      "trigger_openers": {
+        "festival": "快到中秋了，您以前中秋怎么过呀？"
+      },
+      "sensitive": [
+        {
+          "type": "F",
+          "note": "清明、中元等祭祀节日会引出已故亲人，不主动选这类节日。"
+        }
+      ],
+      "needs_calm": false
+    },
+    {
+      "id": "elder-songs",
+      "title": "喜欢的歌和戏",
+      "tags": {
+        "time": "elder",
+        "relation": null,
+        "domain": "craft",
+        "trigger": [
+          "song"
+        ]
+      },
+      "entity_hints": [
+        "歌",
+        "戏",
+        "曲",
+        "越剧",
+        "扬剧"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "您最爱听的一首歌，或者一出戏，是什么呀？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "第一次听到它，是在什么地方？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "一听到它，您心里是什么感觉？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "您想把这首歌唱给孙辈听吗？"
+        }
+      ],
+      "trigger_openers": {
+        "song": "这段曲子，您听着耳熟吗？"
+      },
+      "sensitive": [
+        {
+          "type": "N",
+          "note": "较少敏感，也可作为其他节点出现情绪时的退路。"
+        }
+      ],
+      "needs_calm": false
+    },
+    {
+      "id": "elder-friends",
+      "title": "老朋友老邻居",
+      "tags": {
+        "time": "elder",
+        "relation": "friends",
+        "domain": "places",
+        "trigger": [
+          "photo"
+        ]
+      },
+      "entity_hints": [
+        "老朋友",
+        "老邻居",
+        "老同学"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "这些年，您跟哪位老朋友走得最近呀？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "你们见面的时候，常在哪儿？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "有这样的老朋友，您心里怎么样？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "关于朋友，您想对孩子们说点什么？"
+        }
+      ],
+      "trigger_openers": {
+        "photo": "照片上这位，是您的老朋友吗？"
+      },
+      "sensitive": [
+        {
+          "type": "D",
+          "note": "可能涉及已故亲人或朋友。不问去世经过和年份，只问美好的小事。老人主动讲，就温柔地听，难过时说您一直记着他呢，再转到安全话题。"
+        }
+      ],
+      "needs_calm": false
+    },
+    {
+      "id": "elder-hobby",
+      "title": "现在的爱好",
+      "tags": {
+        "time": "elder",
+        "relation": null,
+        "domain": "craft",
+        "trigger": [
+          "object"
+        ]
+      },
+      "entity_hints": [
+        "爱好",
+        "养花",
+        "下棋",
+        "打牌"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "这些年，您最喜欢做点什么呀？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "做这件事的时候，您常在哪儿？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "做这件事，您心里觉得怎么样？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "您想让孩子们也试试吗？"
+        }
+      ],
+      "trigger_openers": {},
+      "sensitive": [
+        {
+          "type": "R",
+          "note": "近期记忆最容易卡住。不问最近的具体日期和刚发生的事，答不上来马上给台阶。"
+        }
+      ],
+      "needs_calm": false
+    },
+    {
+      "id": "elder-oldthing",
+      "title": "珍藏的老物件",
+      "tags": {
+        "time": "elder",
+        "relation": null,
+        "domain": "family",
+        "trigger": [
+          "object",
+          "photo"
+        ]
+      },
+      "entity_hints": [
+        "老物件",
+        "手表",
+        "箱子",
+        "收音机"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "家里有没有一件老东西，您一直留着呀？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "这东西是怎么到您手里的？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "看到它，您心里是什么滋味？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "这件东西，您想留给谁？"
+        }
+      ],
+      "trigger_openers": {
+        "object": "这件老东西，是怎么来的呀？"
+      },
+      "sensitive": [
+        {
+          "type": "D",
+          "note": "可能涉及已故亲人或朋友。不问去世经过和年份，只问美好的小事。老人主动讲，就温柔地听，难过时说您一直记着他呢，再转到安全话题。"
+        }
+      ],
+      "needs_calm": false
+    },
+    {
+      "id": "elder-wishes",
+      "title": "想对家人说的话",
+      "tags": {
+        "time": "elder",
+        "relation": "children",
+        "domain": "family",
+        "trigger": []
+      },
+      "entity_hints": [
+        "家人",
+        "嘱咐"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "您这辈子，最想对家人说的一句话是什么呀？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "这句话，是从哪件事里明白的？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "说起这些，您心里是什么滋味？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "想对后辈说的话",
+          "question": "您想把这句话，说给哪个孩子听？"
+        }
+      ],
+      "trigger_openers": {},
+      "sensitive": [
+        {
+          "type": "E",
+          "note": "可能引出对身后事的谈论。平静接住，说孩子们都会记着您的话，不深谈。"
+        }
+      ],
+      "needs_calm": false
+    }
+  ],
+  "state": {
+    "status_values": {
+      "not_started": "未聊",
+      "partial": "聊过一些",
+      "done": "聊完"
+    },
+    "node_state_example": {
+      "nodeId": "youth-date",
+      "status": "partial",
+      "depth": 2,
+      "turns": 3,
+      "notes": [
+        "骑自行车带我去瘦西湖",
+        "春天，柳树都绿了"
+      ],
+      "sensitive": false,
+      "lastSessionId": "s1",
+      "updatedAt": 1761300000000
+    },
+    "update_rules": [
+      "depth 为 0 时 status 为 not_started；老人第一次有实质回答，depth 至少为 1，status 变为 partial",
+      "每轮老人回答后，判断这轮到达了第几层，depth 取最大值，turns 加一，并把一句要点追加到 notes",
+      "depth 到达 4 或问满八轮，status 置为 done",
+      "因 short_replies 或 tired 离开时，depth 已到 3 则置为 done，否则保持 partial",
+      "因 upset 离开时保持 partial，并把 sensitive 置为 true；之后自动选题跳过，只有老人主动提起或家人指定才再聊",
+      "老人跑题讲到别的节点，把这段内容记到那个节点下，更新它的 depth 和 notes，不打断老人；没有合适节点时记到最接近的节点，并在 notes 里注明",
+      "每轮从老人话里抽取人、地、物，写入记忆档案 entities，记下来源节点",
+      "状态和 depth 只前进不后退，家人可以手动重置"
+    ]
+  },
+  "archive": {
+    "entities_desc": "记忆档案里的人、地、物，用来顺藤摸瓜选下一个节点",
+    "entity_example": [
+      {
+        "id": "p-lijianguo",
+        "type": "person",
+        "name": "李建国",
+        "aliases": [
+          "老李",
+          "李爷爷",
+          "老伴"
+        ],
+        "relation": "spouse",
+        "deceased": true,
+        "sourceNodes": [
+          "youth-meet",
+          "youth-date"
+        ],
+        "firstSessionId": "s1",
+        "lastSessionId": "s1",
+        "notes": [
+          "纺织厂修机器的，一身机油味"
+        ]
+      },
+      {
+        "id": "pl-shouxihu",
+        "type": "place",
+        "name": "瘦西湖",
+        "aliases": [],
+        "relation": null,
+        "sourceNodes": [
+          "youth-date"
+        ],
+        "firstSessionId": "s1",
+        "lastSessionId": "s1",
+        "notes": [
+          "他骑自行车带我去"
+        ]
+      },
+      {
+        "id": "t-guihuagao",
+        "type": "thing",
+        "name": "桂花糕",
+        "aliases": [],
+        "relation": null,
+        "trigger": "food",
+        "sourceNodes": [
+          "youth-date"
+        ],
+        "firstSessionId": "s1",
+        "lastSessionId": "s1",
+        "notes": [
+          "他说扬州最甜的就是这个，跟我一样甜"
+        ]
+      }
+    ],
+    "entity_fields": {
+      "type": "person、place、thing 三选一",
+      "relation": "人物与老人的关系，取 dimensions.relation 的值",
+      "trigger": "物品可对应的触发物类型，可选",
+      "deceased": "是否已故，已故人物只走美好回忆",
+      "sourceNodes": "在哪些节点里提到过",
+      "lastSessionId": "最近一次提到的访谈"
+    },
+    "match_rules": [
+      "人物实体：用 relation 匹配节点 tags.relation，用 name 和 aliases 匹配节点 entity_hints",
+      "地点实体：匹配 tags.domain 为 places 的节点，以及 entity_hints",
+      "物品实体：用 trigger 匹配节点 tags.trigger，用 name 匹配 entity_hints",
+      "也可以把实体和候选节点标题交给模型判断相关性"
+    ]
+  },
+  "planning": {
+    "nodes_per_session": "1到2个节点，路演默认1个节点走深，再视情况进第2个",
+    "selection_algorithm": [
+      "第一步，家人指定：家人指定了节点或触发物，就用指定的，跳过后面步骤（敏感节点也允许家人指定）。只给了触发物时，选 tags.trigger 包含它、且 status 不是 done 的节点，用对应的 trigger_openers 开场",
+      "第二步，顺藤摸瓜：取记忆档案里 lastSessionId 为上次访谈的实体，按 archive.match_rules 找相关且 status 为 not_started 的节点。例如上次讲到李建国和自行车，就选 youth-wedding 或 youth-newhome",
+      "第三步，加深：找 status 为 partial 且 depth 小于 4 的节点，选 lastSessionId 最近的，从 depth 加一层接着问",
+      "第四步，兜底补覆盖：统计已聊节点（partial 或 done）在 relation、domain、time 三个维度上每个取值的数量，找出数量最少的那个取值，同样少时按 relation、domain、time 的维度顺序，再按 dimensions 里取值的顺序；在带这个取值的 not_started 节点里，按 nodes 列表顺序取第一个",
+      "每一步都先排除：sensitive 为 true 的节点；needs_calm 节点，除非老人情绪平稳且主动聊到；档案缺少前提的节点，例如没填爱人跳过 relation 为 spouse 的节点，没有子女跳过 relation 为 children 的节点",
+      "避免连续两次同一维度：每一步有多个候选时，优先选 relation 和 domain 都与上一个节点不同的；没有，就选至少一个维度不同的；仍然没有，才用同维度的。同一次访谈里的两个节点也照此错开",
+      "所有节点都 done，就回到老人讲得最开心的节点，挑 notes 里一个细节再聊一层",
+      "下次节点 next_node 用同样算法，在假设今天节点都已 done 的前提下预先算出，用于结束语预告"
+    ],
+    "needs_calm": [
+      "teen-times",
+      "youth-times",
+      "midlife-hard",
+      "midlife-parents-old"
+    ],
+    "fallback_safe_nodes": [
+      "elder-hometown-food",
+      "child-food",
+      "elder-songs",
+      "child-newyear"
+    ],
+    "off_topic": "老人讲到别的节点时，主持人顺着聊，不拉回。后台把这几轮归到最匹配的节点下，并抽取实体。老人讲完后，主持人用一句过渡回到当前节点，或者顺势把那个节点当作今天第二个节点",
+    "session_plan_example": {
+      "sessionId": "s2",
+      "elderId": "e1",
+      "requestedBy": "auto",
+      "previousNode": {
+        "nodeId": "youth-date",
+        "tags": {
+          "relation": "spouse",
+          "domain": "places"
+        }
+      },
+      "nodes": [
+        {
+          "nodeId": "youth-date",
+          "reason": "deepen",
+          "startDepth": 3,
+          "note": "上次到第2层，这次从感受问起"
+        },
+        {
+          "nodeId": "youth-wedding",
+          "reason": "follow_entity",
+          "entity": "p-lijianguo",
+          "note": "顺着李建国。relation 与上个相同，但 domain 不同（family 对 places），且是第二步唯一高相关候选"
+        }
+      ],
+      "currentNodeIndex": 0,
+      "nextNodePreview": {
+        "nodeId": "youth-firstchild",
+        "reason": "follow_entity",
+        "entity": "小梅"
+      },
+      "prompt_vars": {
+        "今天话题": "您和李爷爷去瘦西湖的事，还有结婚那天",
+        "当前话题": "谈对象的日子",
+        "当前层次": "第3层，感受",
+        "当前话题入场问题": "跟他在一块儿，您心里什么滋味？",
+        "顺藤线索": "李爷爷骑自行车带您去瘦西湖，还给您买了桂花糕",
+        "已聊要点": "在纺织厂认识，他是修机器的；骑车去瘦西湖；桂花糕跟我一样甜",
+        "下次话题": "小梅出生那天",
+        "上一个话题": "骑自行车去瘦西湖"
+      }
+    }
+  }
+}

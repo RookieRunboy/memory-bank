@@ -1,5 +1,7 @@
 // v2：后端账户 + Gemini 访谈 Agent；后端不可达时回退到 v1 本地离线流程（固定问题 + 演示故事）
-import { STAGES, SCRIPT, DEMO_PROFILE, DEMO_ANSWERS, DEMO_ANSWERS_2, questionsFor, fill } from './questions.js';
+import { SCRIPT, DEMO_PROFILE, DEMO_ANSWERS, DEMO_ANSWERS_2, fill } from './questions.js';
+import FW from './framework.json';
+import * as P from './planner.js';
 import { generateStory } from './story.js';
 import { saveStory, listStories, getStory } from './db.js';
 const $app = document.getElementById('app');
@@ -14,11 +16,11 @@ async function setProfile(p) { localStorage.setItem('mb_profile', JSON.stringify
   try { const e = await post('/elders', { id: elderId, profile: p }); elderId = e.id; localStorage.setItem('mb_elder', e.id); cache = e; } catch {} }
 api('/health').then(h => aiMode = h.gemini.ok === false ? '演示模式' : h.gemini.hasKey ? 'AI 在线' : '演示模式').catch(() => aiMode = '离线');
 
-function speak(text) { return new Promise(res => { if (!('speechSynthesis' in window)) return res();
+function speak(text) { text = P.speakable(text || ""); return new Promise(res => { if (!('speechSynthesis' in window)) return res();
   speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'zh-CN'; u.rate = 0.85;
   const v = speechSynthesis.getVoices().find(v => v.lang.startsWith('zh')); if (v) u.voice = v;
   u.onend = u.onerror = res; speechSynthesis.speak(u); setTimeout(res, 25000); }); }
-const routes = { '': home, profile, stage: stagePick, interview, story, library, archive };
+const routes = { '': home, profile, stage: stagePick, interview, story, library, archive, map: lifeMap };
 const route = async () => { const [p, id] = location.hash.slice(2).split('/'); await load(); (routes[p || ''] || home)(id); };
 window.addEventListener('hashchange', route);
 const go = h => location.hash = h;
@@ -30,6 +32,7 @@ function home() {
   <div class="illus">📻 📖 🧸</div>
   ${p ? `<p class="hello">${esc(p.callName || p.name)}，今天想聊聊吗？${n ? `<br><small>已经聊过 ${n} 次啦</small>` : ''}</p><button class="big" id="start">🎙 开始聊天</button>` : `<button class="big" id="start">开始建档</button>`}
   <div class="row"><button class="ghost" onclick="location.hash='#/library'">📚 记忆库</button>${p ? `<button class="ghost" onclick="location.hash='#/archive'">🗂 记忆档案</button>` : ''}</div>
+  ${p ? `<button class="ghost wide" onclick="location.hash='#/map'">🗺 人生地图</button>` : ''}
   ${p ? back('#/profile', '修改档案') : ''}<p class="slogan">爱比遗忘更强大</p><p class="badge">${aiMode}</p></main>`;
   document.getElementById('start').onclick = () => go(p ? '#/stage' : '#/profile');
 }
@@ -46,25 +49,56 @@ function profile() {
   document.getElementById('f').onsubmit = async e => { e.preventDefault(); await setProfile({ ...p, ...Object.fromEntries(new FormData(e.target)) }); go('#/stage'); };
   document.getElementById('demo').onclick = async () => { await setProfile(DEMO_PROFILE); go('#/stage'); };
 }
-function stagePick() {
+// 会话规划页：自动选题 + 家人指定（节点或触发物）
+const getReq = () => JSON.parse(sessionStorage.getItem('mb_req') || 'null');
+const setReq = r => r ? sessionStorage.setItem('mb_req', JSON.stringify(r)) : sessionStorage.removeItem('mb_req');
+const TRIG_ICON = { photo: '🖼', song: '🎵', food: '🥮', object: '⌚', festival: '🏮' };
+async function stagePick() {
   const p = getProfile(); if (!p) return go('#/profile');
-  $app.innerHTML = `<main class="page"><h2>今天聊哪段日子？</h2><p class="tip">${esc(p.callName || p.name)}，选一个想聊的</p>
-  ${cache?.archive?.lastTopic ? `<p class="hint">💭 上次聊到：${esc(cache.archive.lastTopic)}</p>` : ''}
-  ${STAGES.map((s, k) => `<button class="${p.stage === s ? 'big' : 'ghost'} stagebtn" data-s="${s}">${['🌾', '📚', '💞', '👶'][k]} ${s}</button>`).join('')}${back()}</main>`;
-  $app.querySelectorAll('.stagebtn').forEach(b => b.onclick = async () => { await setProfile({ ...p, stage: b.dataset.s }); go('#/interview'); });
+  const req = getReq(); let d = null;
+  try { d = await api(`/elders/${elderId}/plan${req ? '?' + new URLSearchParams(Object.entries(req).filter(([, v]) => v)) : ''}`); } catch {}
+  const plan = d?.plan || P.offlineQuestions(FW, p, req).plan, v = d?.vars || P.planVars(FW, plan, { profile: p });
+  const T = id => P.nodeTitle(FW, id, p);
+  $app.innerHTML = `<main class="page plan"><h2>今天聊什么？</h2><p class="tip">小忆按话题网替${esc(p.callName || p.name)}挑好了，家人也可以指定</p>
+  <div class="plancard"><p class="lbl">今天话题</p><p class="topic">${esc(v.今天话题)}</p>
+  ${plan.nodes.map((x, k) => `<p class="why">${k ? '然后' : '先聊'}「${esc(T(x.nodeId))}」<small>${esc(x.note || '')}</small></p>`).join('')}
+  <p class="lbl">小忆会先问</p><p class="q">“${esc(v.当前话题入场问题)}”</p>
+  ${v.顺藤线索 ? `<p class="lbl">顺藤线索</p><p class="why">${esc(v.顺藤线索)}</p>` : ''}
+  ${v.下次话题 ? `<p class="lbl">下次预告</p><p class="why">${esc(v.下次话题)}</p>` : ''}</div>
+  <button class="big" id="go">🎙 就聊这个</button>
+  <h3>家人指定</h3><p class="tip">带了老照片、老歌、家乡菜？点一下，小忆用它开场</p>
+  <div class="trigs">${Object.entries(FW.dimensions.trigger.values).map(([k, l]) => `<button class="${req?.trigger === k ? 'big' : 'ghost'} trig" data-t="${k}">${TRIG_ICON[k]} ${l}</button>`).join('')}</div>
+  <button class="ghost wide" onclick="location.hash='#/map'">🗺 从人生地图里挑一个话题</button>
+  ${req ? `<p class="hint">已指定：${esc(req.nodeId ? T(req.nodeId) : FW.dimensions.trigger.values[req.trigger])} <button class="link" id="clr">清除，改回自动</button></p>` : ''}
+  ${cache?.archive?.lastTopic ? `<p class="hint">💭 上次聊到：${esc(cache.archive.lastTopic)}</p>` : ''}${back()}</main>`;
+  document.getElementById('go').onclick = () => go('#/interview');
+  $app.querySelectorAll('.trig').forEach(b => b.onclick = () => { setReq(req?.trigger === b.dataset.t ? null : { trigger: b.dataset.t }); stagePick(); });
+  const c = document.getElementById('clr'); if (c) c.onclick = () => { setReq(null); stagePick(); };
 }
-
+// 人生地图：各维度哪些聊过、哪些空着；点节点即指定为下次话题
+function lifeMap() {
+  const p = getProfile() || {}, states = cache?.states || {}, cov = P.coverage(FW, states);
+  const dot = s => [1, 2, 3, 4].map(k => `<i class="${s.depth >= k ? 'on' : ''}"></i>`).join('');
+  const chip = n => { const s = P.st(states, n.id); return `<button class="node ${s.status}${s.sensitive ? ' sens' : ''}" data-n="${n.id}"><b>${esc(P.nodeTitle(FW, n.id, p))}</b><span class="d">${dot(s)}</span>${s.sensitive ? '<small>先放一放</small>' : ''}</button>`; };
+  $app.innerHTML = `<main class="page map"><h2>🗺 ${esc(p.callName || p.name || '')}的人生地图</h2>
+  <p class="tip">深色是聊完的，浅色是聊过一些，空白的还没聊。点一个话题，下次就聊它</p>
+  <div class="legend"><span class="node done">聊完</span><span class="node partial">聊过一些</span><span class="node not_started">还没聊</span></div>
+  ${Object.entries(FW.dimensions.time.values).map(([t, l]) => `<section class="era"><h3>${l}</h3><div class="nodes">${FW.nodes.filter(n => n.tags.time === t).map(chip).join('')}</div></section>`).join('')}
+  ${['relation', 'domain', 'trigger'].map(dim => `<section class="cov"><h3>${FW.dimensions[dim].label}</h3>${cov[dim].map(x => `<div class="bar"><span>${x.label}</span><div class="track"><div class="fill" style="width:${x.total ? 100 * x.chatted / x.total : 0}%"></div></div><small>${x.chatted}/${x.total}</small></div>`).join('')}</section>`).join('')}
+  ${back()}</main>`;
+  $app.querySelectorAll('.node[data-n]').forEach(b => b.onclick = () => { setReq({ nodeId: b.dataset.n }); go('#/stage'); });
+}
 async function interview() {
   const p = getProfile(); if (!p) return go('#/profile');
   $app.innerHTML = `<main class="page center"><div class="thinking"><div class="dots"><i></i><i></i><i></i></div><p>小忆来啦，正在翻看上次的记录……</p></div></main>`;
-  try { if (!elderId) throw 0; const o = await post('/interviews', { elderId, stage: p.stage });
-    session = { online: true, id: o.id, p, say: o.say, n: 0, isReturn: o.isReturn, log: [] };
-  } catch { const qs = questionsFor(p); session = { online: false, p, qs, n: 0, say: qs[0].text, answers: [], log: [] }; }
+  try { if (!elderId) throw 0; const o = await post('/interviews', { elderId, request: getReq() }); setReq(null);
+    session = { online: true, id: o.id, p, say: o.say, n: 0, isReturn: o.isReturn, log: [], topic: o.topic, ask: o.ask, closing: o.closing };
+  } catch { const { qs, plan } = P.offlineQuestions(FW, p, getReq()); session = { online: false, p, qs, plan, n: 0, say: qs[0].text, answers: [], log: [], closing: P.closingText(FW, plan, { profile: p }) }; }
   renderTurn();
 }
 function renderTurn() {
   const s = session, text = s.say, n = s.n;
-  $app.innerHTML = `<main class="page interview"><p class="stage">${s.online ? `第 ${n + 1} 轮 · ${esc(s.p.stage)}` : `离线演示 · 第 ${n + 1} 题`}${s.isReturn && n === 0 ? ' · <b>接着上次聊</b>' : ''}</p>
+  $app.innerHTML = `<main class="page interview"><p class="stage">${s.online ? `第 ${n + 1} 轮 · ${esc(P.nodeTitle(FW, s.ask?.nodeId, s.p))} · ${P.LAYER_LABEL[s.ask?.depth] || ''}` : `离线演示 · 第 ${n + 1} 题`}${s.isReturn && n === 0 ? ' · <b>接着上次聊</b>' : ''}</p>
   ${s.log.slice(-1).map(l => `<p class="said">您刚才说：“${esc(l)}”</p>`).join('')}
   <div class="bubble"><span class="who">小忆</span>${esc(text)}</div>
   <button class="link" id="replay">🔊 再听一遍</button>
@@ -103,19 +137,19 @@ async function answer(blob, manualText, btext) {
   const s = session;
   if (s.online) {
     const fd = new FormData(); if (blob) fd.append('audio', blob, 'a.webm'); fd.append('question', s.say); if (manualText) fd.append('manual', manualText); if (btext) fd.append('browserText', btext);
-    try { const r = await post(`/interviews/${s.id}/turn`, fd); s.log.push(r.transcript.clean || '……'); s.n++;
-      if (r.next.done) { await speak(r.next.say); return finish(); } s.say = r.next.say; return renderTurn();
-    } catch { s.online = false; s.qs = questionsFor(s.p); s.answers = []; }
+    try { const r = await post(`/interviews/${s.id}/turn`, fd); s.log.push(r.transcript.clean || '……'); s.n++; s.ask = r.next.ask; s.closing = r.closing || s.closing;
+      if (r.next.done) { session.closedSpoken = !!r.next.say; if (r.next.say) await speak(r.next.say); return finish(); } s.say = r.next.say; return renderTurn();
+    } catch { s.online = false; const o = P.offlineQuestions(FW, s.p, null); s.qs = o.qs; s.plan = o.plan; s.answers = []; }
   }
-  const q = s.qs[s.answers.length] || s.qs.at(-1); s.answers.push({ question: q.text, stage: q.stage, text: manualText || btext, audio: blob });
+  const q = s.qs[s.answers.length] || s.qs.at(-1); s.answers.push({ question: q.text, stage: P.nodeTitle(FW, q.nodeId, s.p), text: manualText || btext, audio: blob });
   s.log.push(manualText || btext || '……'); s.n++;
   if (s.answers.length >= s.qs.length) return finish();
   await speak(fill(SCRIPT.acks[s.n % 3], s.p)); s.say = s.qs[s.answers.length].text; renderTurn();
 }
 async function finish() {
-  speechSynthesis?.cancel(); speak(fill(SCRIPT.closing, session.p));
+  speechSynthesis?.cancel(); if (!session.closedSpoken) speak(P.speakable(session.closing || fill(SCRIPT.closing, session.p)));
   $app.innerHTML = `<main class="page center"><div class="thinking" id="storyThinking"><div class="dots"><i></i><i></i><i></i></div><p>小忆在把您的故事写下来……</p><small>就几秒钟，您歇一歇</small></div></main>`;
-  if (session.online) { try { const r = await post(`/interviews/${session.id}/finish`, {}); return go('#/story/' + r.storyId); } catch {} }
+  if (session.online) { try { const r = await post(`/interviews/${session.id}/finish`, {}); return go(r.storyId ? '#/story/' + r.storyId : '#/'); } catch {} }
   const st = await generateStory(session.answers || [], session.p), id = 'local' + Date.now();
   await saveStory({ id, createdAt: Date.now(), ...st, profile: session.p, answers: session.answers || [] }); go('#/story/' + id);
 }
@@ -142,6 +176,7 @@ function archive() {
   $app.innerHTML = `<main class="page archive"><h2>🗂 ${esc(p.callName || p.name || '')}的记忆档案</h2><p class="tip">每次聊完自动整理，小忆下次会接着聊</p>
   ${cache?.archivePending ? `<div class="thinking small" id="archPending"><div class="dots"><i></i><i></i><i></i></div><p>小忆正在整理这次的记忆……</p><small>整理好会自动刷新</small></div>` : ''}
   ${a.lastTopic ? `<p class="hint">💭 上次聊到：${esc(a.lastTopic)}</p>` : ''}
+  ${sec('🧾 实体表（人 · 地 · 物）', cache?.entities, x => `<div class="ent"><span class="ty">${{ person: '👤 人', place: '📍 地', thing: '🎁 物' }[x.type] || x.type}</span><b>${esc(x.name)}</b>${x.relation ? ` · ${esc(FW.dimensions.relation.values[x.relation] || x.relation)}` : ''}${x.deceased ? ' · 已故' : ''}<br><small>来自：${x.sourceNodes.map(id => esc(P.nodeTitle(FW, id, p))).join('、')}</small>${x.notes?.length ? `<br><small>${esc(x.notes.slice(-2).join('；'))}</small>` : ''}</div>`)}
   ${sec('👥 人物', a.people, x => `<div class="chip"><b>${esc(x.name)}</b> · ${esc(x.relation)}<br><small>${esc(x.note)}</small></div>`)}
   ${sec('📍 地点', a.places, x => `<div class="chip"><b>${esc(x.name)}</b><br><small>${esc(x.note)}</small></div>`)}
   ${sec('✨ 事件', a.events, x => `<div class="chip"><b>${esc(x.title)}</b> <small>${esc(x.when)}</small><br><small>${esc(x.detail)}</small></div>`)}

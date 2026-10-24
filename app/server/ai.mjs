@@ -2,34 +2,37 @@ import { parseStory as parse } from '../src/parseStory.js';
 // 访谈 Agent / 转写整理 / 故事 / 记忆档案。每个函数先走 Gemini，失败回退规则+演示数据。
 import fs from 'fs'; import path from 'path'; import { fileURLToPath } from 'url';
 import { gemini } from './gemini.mjs';
-import { QUESTION_BANK, SCRIPT, DEMO_ANSWERS, fill, splitQ } from '../src/questions.js';
+import { SCRIPT, DEMO_ANSWERS, fill } from '../src/questions.js';
+import * as P from '../src/planner.js';
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
+export const FW = JSON.parse(fs.readFileSync(path.join(root, 'src/framework.json'), 'utf8')); // 人生访谈框架 v2
 const md = fs.readFileSync(path.join(root, '../docs/interview.md'), 'utf8');
 const blocks = [...md.matchAll(/```\n([\s\S]*?)```/g)].map(m => m[1]);
 export const HOST_PROMPT = blocks[0], STORY_PROMPT = blocks[1]; // interview.md 主持人提示词全文 / 故事提示词全文
-const vars = (t, p) => fill(t.replace(/\{重要人物\}/g, p.people || '无'), p); // 系统提示词里给完整人物列表
+// 系统提示词：{重要人物} 给完整人物列表，其余档案变量 + 会话规划变量全部替换，并校验没有残留花括号变量
+const vars = (t, p, v = {}) => P.assertNoVars(P.fillAll(t.replace(/\{重要人物\}/g, p.people || ''), p, v), '提示词');
+const say = t => P.assertNoVars(P.speakable(t), '朗读');
 const archText = a => JSON.stringify({ 人物: a.people, 地点: a.places, 事件: a.events, 时间线: a.timeline, 上次聊到: a.lastTopic, 已问过: (a.asked || []).slice(-30) }, null, 0);
 const histText = turns => turns.map(t => `小忆：${t.q}\n老人：${t.clean || t.raw || '（没说话）'}`).join('\n');
 const isDemo = turns => turns.some(t => DEMO_ANSWERS.includes(t.clean || t.raw));
 
-function nextFixed(p, a, turns) { // 兜底：固定问题库里下一道没问过的题
-  const asked = new Set([...(a.asked || []), ...turns.map(t => t.qid)]);
-  const bank = QUESTION_BANK[p.stage] || QUESTION_BANK['童年'];
-  const seq = bank.flatMap((t, k) => splitQ(t).map((x, j) => ({ qid: `${p.stage}-${k}${j ? 'f' : ''}`, text: x }))); // 主问题、追问各算一轮
-  const q = seq.find(x => !asked.has(x.qid));
-  return q ? { qid: q.qid, text: fill(q.text, p) } : null;
-}
+const NODE_LIST = FW.nodes.map(n => `${n.id}:${n.title}`).join('，');
+const ctxText = (c, p) => { const s = c.plan && P.st(c.states, c.plan.ask.nodeId);
+  return `【记忆档案（以往访谈积累）】${archText(c.archive || {})}\n【实体表】${JSON.stringify((c.entities || []).map(e => ({ 名称: e.name, 类型: e.type, 关系: e.relation, 已故: e.deceased || undefined, 要点: e.notes?.slice(-2) })))}\n` +
+    (s ? `【当前节点状态】${c.plan.ask.nodeId} 已到第${s.depth}层，本节点已聊${s.turns}轮，连续简短回答${s.shortRun || 0}次\n` : ''); };
 
-export async function opening(p, a, isReturn, recent = []) { // recent：档案还没整理进去的上次访谈记录（兜底）
+export async function opening(p, c, isReturn, recent = []) { // c: { archive, states, entities, plan }；recent：档案还没整理进去的上次访谈记录（兜底）
+  const v = P.planVars(FW, c.plan, c);
   try {
-    const r = await gemini([{ text: `【记忆档案（以往访谈积累）】${archText(a)}\n${recent.length ? `【上次访谈原话（档案还在整理中，以此为准）】\n${histText(recent)}\n` : ''}${isReturn ? '这是第二次及以后的访谈：开场先亲切提起上次聊到的具体细节（人、地、物），让老人感到被记得，再顺着那个话题问一个新的小细节。' : '这是第一次访谈，按【开场】说。'}\n结尾只问一个问题，用开放问题（怎么、什么样、说说），不要是非题（不要问“是不是/对吗/……吗”）。\n只输出 JSON：{"say":"要朗读的话（最多三句）"}` }], { system: vars(HOST_PROMPT, p), json: true });
-    if (r.say) return { say: r.say, source: 'gemini' };
-  } catch {}
-  const q = nextFixed(p, a, []);
-  if (isReturn && recent.length) { const said = recent.map(t => t.clean).filter(Boolean).sort((x, y) => y.length - x.length)[0]; if (said && (!a.lastTopic || a.pendingFallback)) a = { ...a, lastTopic: `“${said.slice(0, 24).replace(/[。.，,！!]+$/, '')}”这些事` }; }
-  if (isReturn && a.lastTopic) return { say: fill(`{称呼}，您好呀，我是小忆。上次您跟我讲了${a.lastTopic.replace(/^(上次)?(您)?(跟我)?(讲了|提到|说到|说)?/, '').replace(/[。.，,！!]+$/, '')}，我一直记着呢。今天咱们接着聊，${q ? q.text : '您再跟我说说那时候的事吧。'}`, p), qid: q?.qid, source: 'fallback' };
-  return { say: fill(SCRIPT.opening, p) + (q ? q.text : ''), qid: q?.qid, source: 'fallback' };
+    const r = await gemini([{ text: `${ctxText(c, p)}${recent.length ? `【上次访谈原话（档案还在整理中，以此为准）】\n${histText(recent)}\n` : ''}${isReturn ? '这是第二次及以后的访谈：按【开场】“以后的访谈”说，先提一个已聊要点或顺藤线索里的具体细节，再说今天聊什么。' : '这是第一次访谈，按【开场】“第一次访谈”说。'}然后接当前话题入场问题。\n结尾只问一个问题，用开放问题（怎么、什么样、说说），不要是非题（不要问“是不是/对吗/……吗”）。\n只输出 JSON：{"say":"要朗读的话（最多四句）"}` }], { system: vars(HOST_PROMPT, p, v), json: true });
+    if (r.say) return { say: say(r.say), ask: c.plan.ask, source: 'gemini' };
+  } catch (e) { if (/未替换的变量/.test(e.message)) console.warn('[vars]', e.message); }
+  let cc = c;
+  if (isReturn && recent.length && !v.顺藤线索 && !v.已聊要点) { const said = recent.map(t => t.clean).filter(Boolean).sort((x, y) => y.length - x.length)[0];
+    if (said) cc = { ...c, recentNote: `“${said.slice(0, 24).replace(/[。.，,！!…]+$/, '')}”这些事` }; }
+  return { say: P.openingText(FW, c.plan, { ...cc, profile: p }, isReturn), ask: c.plan.ask, source: 'fallback' };
 }
+export const closing = (p, c) => P.closingText(FW, c.plan, { ...c, profile: p });
 
 export async function transcribe(audio, mime, hint) { // Gemini 直接听音频
   if (audio?.length > 1000) try {
@@ -42,23 +45,51 @@ export async function transcribe(audio, mime, hint) { // Gemini 直接听音频
   return { raw: t, clean: t.replace(/(嗯+|啊+|那个|就是说)[，,、]?/g, '').trim() || t, source: 'fallback' };
 }
 
-export async function nextTurn(p, a, turns) {
-  const MAX = 10;
+const validNode = id => !!P.nodeById(FW, id);
+// 每轮：模型同时输出 回答归属节点/层次/要点/实体/情绪 + 下一问的节点/层次 + 要朗读的话；据此更新节点状态、实体表、会话规划
+export async function nextTurn(p, c, turns, sessionId) {
+  const MAX = 10, last = turns.at(-1), ask = c.plan.ask;
+  const short = (last?.clean || '').replace(/[\s，。,.！!？?…、]/g, '').length < 8 || /不知道|忘了|想不起/.test(last?.clean || '');
+  const second = c.plan.nodes[c.plan.currentNodeIndex + 1];
+  let r = null, source = 'gemini';
   try {
-    const r = await gemini([{ text: `【记忆档案】${archText(a)}\n【本次对话】\n${histText(turns)}\n\n请按【说话方式】【必须遵守】决定下一句：先判断老人情绪(开心/卡壳/难过/累了/平静)，再决定动作(追问细节/给台阶/安抚/换话题/收尾)。已经聊了${turns.length}轮，满${MAX}轮或老人累了就用【结束】话术收尾。不要重复问记忆档案里已问过的。只输出 JSON：{"emotion":"","action":"","say":"要朗读的话","done":false}` }], { system: vars(HOST_PROMPT, p), json: true });
-    if (r.say) return { ...r, done: !!r.done || turns.length >= MAX, source: 'gemini' };
-  } catch {}
-  const last = turns.at(-1)?.clean || '';
-  const sad = /走了|去世|想他|想她|难过/.test(last), forgot = /想不起|不记得|忘了/.test(last);
-  const q = turns.length >= 5 ? null : nextFixed(p, a, turns);
-  if (!q) return { emotion: '平静', action: '收尾', say: fill(SCRIPT.closing, p), done: true, source: 'fallback' };
-  const pre = sad ? '听得出来，您很想他。' : forgot ? SCRIPT.forgot.replace('咱们聊点别的。', '') : fill(SCRIPT.acks[turns.length % 3], p);
-  return { emotion: sad ? '难过' : forgot ? '卡壳' : '平静', action: sad ? '安抚' : forgot ? '给台阶' : '追问细节', say: pre + q.text, qid: q.qid, done: false, source: 'fallback' };
+    const v = P.planVars(FW, c.plan, { ...c, profile: p });
+    r = await gemini([{ text: `${ctxText(c, p)}【本次对话】\n${histText(turns)}\n\n【话题网节点】${NODE_LIST}\n` +
+      `${second ? `今天的下一个话题：${second.nodeId}（${P.nodeTitle(FW, second.nodeId, p)}），入场问题：${P.questionFor(FW, second.nodeId, Math.max(1, second.startDepth || 1), p)}\n` : '今天没有下一个话题了，当前话题聊够了就按【结束】收尾。\n'}` +
+      `请按【说话方式】【必须遵守】【话题内引导】【过渡到下一个话题】决定下一句。已经聊了${turns.length}轮，满${MAX}轮或老人累了就按【结束】收尾。\n` +
+      `同时分析老人刚才这一句：属于哪个节点（跑题就填它真正讲到的节点 id，找不到就填最接近的）、到达第几层（0 没有实质内容，1 事实，2 场景细节，3 感受，4 想对后辈说的话）、一句要点、提到的人地物。\n` +
+      `只输出 JSON：{"answer":{"nodeId":"","depth":0,"note":"","entities":[{"type":"person|place|thing","name":"","aliases":[],"relation":"parents|siblings|spouse|children|friends|teachers|colleagues|null","deceased":false,"trigger":"photo|song|food|object|festival|null","note":""}]},"emotion":"开心|平静|卡壳|难过|困惑|累了|烦躁","leave":null,"ask":{"nodeId":"下一句问的是哪个节点","depth":1},"action":"追问细节|给台阶|安抚|换话题|过渡|收尾","say":"要朗读的话","done":false}。leave 只在老人难过且安抚后仍未恢复时填 "upset"，累了填 "tired"。` }],
+      { system: vars(HOST_PROMPT, p, v), json: true });
+    if (!r?.say) throw new Error('empty');
+  } catch (e) { if (/未替换的变量/.test(e.message)) console.warn('[vars]', e.message); r = null; source = 'fallback'; }
+  // 1) 回答归属与状态
+  const rule = P.ruleAnalyze(FW, last?.clean || '', ask, p);
+  const an = r?.answer && validNode(r.answer.nodeId) ? { ...r.answer, depth: Math.max(0, Math.min(4, +r.answer.depth || 0)) } : rule;
+  const emotion = r?.emotion || rule.emotion;
+  const upd = P.applyAnswer(FW, c.states, { nodeId: an.nodeId, depth: an.depth, note: an.note, short, emotion, leave: r?.leave || null }, sessionId);
+  let states = upd.states; const entities = P.mergeEntities(c.entities, an.entities || [], an.nodeId, sessionId);
+  // 当前节点是否聊够（跑题时当前节点也可能因连续简短等聊够）
+  const curS = P.st(states, ask.nodeId), leave = an.nodeId === ask.nodeId ? upd.leave : (curS.depth >= 4 ? 'deep' : null);
+  // 2) 规划推进
+  let plan = { ...c.plan }, text, done;
+  if (r) {
+    const nA = r.ask && validNode(r.ask.nodeId) ? { nodeId: r.ask.nodeId, depth: Math.max(1, Math.min(4, +r.ask.depth || 1)) } : ask;
+    const k = plan.nodes.findIndex(x => x.nodeId === nA.nodeId);
+    if (k > plan.currentNodeIndex) plan.currentNodeIndex = k;
+    plan.ask = nA; text = say(r.say); done = !!r.done || turns.length >= MAX;
+  } else {
+    plan = P.nextAsk(FW, plan, states, leave); done = plan.done || turns.length >= 5;
+    const sad = emotion === '难过', forgot = /卡壳/.test(emotion);
+    const pre = sad ? '听得出来，您很想他。' : forgot ? '没关系，想不起来就不想了。' : fill(SCRIPT.acks[turns.length % 3], p);
+    text = done ? null : say(pre + P.questionFor(FW, plan.ask.nodeId, plan.ask.depth, p));
+  }
+  if (done) { plan.done = true; if (!r) text = closing(p, { ...c, states, entities, plan }); }
+  return { emotion, action: r?.action || (done ? '收尾' : leave ? '过渡' : '追问细节'), say: text, done, source, analysis: { ...an, short, leave }, plan, states, entities };
 }
 
 const DEMO_STORY = { title: '他说我跟桂花糕一样甜', body: '我是在纺织厂认识老李的。他是修机器的，一身机油味。\n\n头一回见他，傻乎乎的，脸一红就不会说话了。哈哈。\n\n那时候谈对象，我们去瘦西湖，他骑自行车带我。那是哪一年来着，我想不起来了。只记得是春天，柳树都绿了。\n\n他给我买过一包桂花糕，说扬州最甜的就是这个，跟我一样甜。\n\n他走了好多年了。这些事，我讲给小梅听，也讲给孙子听。', people: '李建国（老伴）；小梅（女儿）', timePlace: '江苏扬州，纺织厂、瘦西湖', quotes: '“他说扬州最甜的就是这个，跟我一样甜。”' };
 export async function story(p, turns) {
-  try { const t = await gemini([{ text: vars(STORY_PROMPT, p).replace('{转录文本}', histText(turns)) }], { tier: 'story' }); return { ...parse(t), source: 'gemini' }; } catch {}
+  try { const t = await gemini([{ text: vars(STORY_PROMPT.replace('{转录文本}', () => histText(turns)), p) }], { tier: 'story' }); return { ...parse(t), source: 'gemini' }; } catch {}
   if (isDemo(turns) && turns.length >= 4 && turns[0].clean === DEMO_ANSWERS[0]) return { ...DEMO_STORY, source: 'fallback' };
   const said = turns.map(t => t.clean).filter(Boolean);
   return { title: `${p.hometown || '老家'}的那些年`, body: said.join('\n\n') || '这一次，我们只是慢慢地坐了一会儿。', quotes: said[0] ? `“${said[0]}”` : '', source: 'fallback' };
