@@ -53,3 +53,23 @@ export async function ttsCall(MODEL, text, voice, timeout = 8000) {
     return { pcm: Buffer.from(d.data, 'base64'), mime: d.mimeType };
   } finally { clearTimeout(t); }
 }
+
+// 流式 TTS（同一 Vertex express 端点 streamGenerateContent?alt=sse）：实测首块约 0.7 秒，边合成边下发 PCM
+export async function* ttsStream(MODEL, text, voice, { firstTimeout = 8000, signal } = {}) {
+  if (!KEY) throw new Error('未配置 GEMINI_API_KEY');
+  const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), firstTimeout); signal?.addEventListener('abort', () => ctl.abort());
+  try {
+    const r = await fetch(`https://aiplatform.googleapis.com/v1/publishers/google/models/${MODEL}:streamGenerateContent?alt=sse&key=${encodeURIComponent(KEY)}`, {
+      method: 'POST', signal: ctl.signal, headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text }] }],
+        generationConfig: { responseModalities: ['AUDIO'], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: voice } } } } }) });
+    if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error(`HTTP ${r.status} ${j.error?.status || ''} ${redact(j.error?.message || '')}`); }
+    const rd = r.body.getReader(), dec = new TextDecoder(); let buf = '', got = false;
+    for (;;) { const { done, value } = await rd.read(); if (done) break; buf += dec.decode(value, { stream: true }).replace(/\r/g, ''); let i;
+      while ((i = buf.indexOf('\n\n')) >= 0) { const ev = buf.slice(0, i).replace(/^data: ?/, ''); buf = buf.slice(i + 2);
+        let j; try { j = JSON.parse(ev); } catch { continue; }
+        const d = j.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData; if (!d?.data) continue;
+        if (!got) { got = true; clearTimeout(t); } yield Buffer.from(d.data, 'base64'); } }
+    if (!got) throw new Error('TTS 无音频');
+  } finally { clearTimeout(t); }
+}

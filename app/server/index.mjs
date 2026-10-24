@@ -74,7 +74,12 @@ app.get('/api/tts', async (req, res) => { const t = String(req.query.t || '').sl
   try { const { wav, cached } = await tts.get(t); res.set({ 'Content-Type': 'audio/wav', 'Cache-Control': 'public, max-age=31536000, immutable', 'X-TTS-Ms': Date.now() - t0, 'X-TTS-Cached': cached ? 1 : 0 }); res.end(wav);
     if (!cached) console.log(`[tts] ${Date.now() - t0}ms ${TTS.model} 「${t.slice(0, 12)}…」`); }
   catch (e) { console.warn(`[tts] 回退浏览器朗读 ${Date.now() - t0}ms ${e.message.slice(0, 60)}`); res.status(504).json({ error: 'tts' }); } });
-app.get('/api/tts/config', (req, res) => res.json({ model: TTS.model, voice: TTS.voice, timeout: TTS.timeout, enabled: status.hasKey }));
+app.get('/api/tts/stream', async (req, res) => { const t = String(req.query.t || '').slice(0, 300).trim(); if (!t) return res.status(400).end();
+  const ctl = new AbortController(); req.on('close', () => { if (!res.writableEnded) ctl.abort(); }); const t0 = Date.now(); let first = 0, cached = tts.has(t);
+  try { for await (const c of tts.streamPCM(t, { signal: ctl.signal })) { if (!first) { first = Date.now() - t0; res.set({ 'Content-Type': 'audio/L16;rate=24000', 'X-TTS-Cached': cached ? 1 : 0, 'X-TTS-First-Ms': first }); } res.write(c); }
+    res.end(); if (!cached) console.log(`[tts] 流式 首块 ${first}ms 完成 ${Date.now() - t0}ms 「${t.slice(0, 12)}…」`); }
+  catch (e) { console.warn(`[tts] 流式失败 ${Date.now() - t0}ms ${String(e.message).slice(0, 60)}`); if (!res.headersSent) res.status(504).json({ error: 'tts' }); else res.end(); } });
+app.get('/api/tts/config', (req, res) => res.json({ model: TTS.model, voice: TTS.voice, timeout: TTS.timeout, enabled: status.hasKey, stream: process.env.GEMINI_TTS_STREAM !== '0' }));
 // 选话题：点卡片（index / action）或说出来（audio / manual 文本），Gemini 判断 + 本地规则兜底
 const chatted = o => o.plan.nodes.slice(0, o.plan.currentNodeIndex + 1).map(x => x.nodeId);
 app.post('/api/interviews/:id/choose', up.single('audio'), async (req, res) => { const v = iv(req.params.id); if (!v) return res.status(404).json({});

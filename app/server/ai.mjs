@@ -79,13 +79,26 @@ export const FUSED_FAIL = 'fused-failed';
 // 合并调用偶尔会把上下文“补”进转写：按录音时长估一个字数上限（老人语速一般 ≤ 6 字/秒），超了就不信，回退两步
 export const plausible = (text, durMs) => !durMs || String(text || '').replace(/[\s，。,.！!？?…、；;：:"“”]/g, '').length <= durMs / 1000 * 6 + 6;
 const FIRST_RULE = '老人刚说完时前端已经播了一句“嗯，我听着呢 / 哦，是这样啊”之类的短回应，say 不要再重复这类意思（不要以“嗯”“哦”“我听着呢”“明白了”开头）。say 的第一句要很短（8–10 个字以内，用“。”或“，”断开），接得上那句短回应，比如“原来是筒子楼啊。”，然后再说其余的话。';
-const SHORT_RULE = '如果老人这一句很短（几个字，如“挺好的”“嗯”）或说记不清/忘了/不知道：只接住这一句本身（比如“挺好的，听着就踏实。”或“没关系，想不起来就不想了。”），不要重复上一轮已经说过的内容，不要跳到别的大问题，接着问一个同一场景里具体、好答的小问题（比如“冬天屋里冷不冷呀？”）。say 里一次只问一个问题，也不要把老人刚刚回答过的意思再问一遍；【本次对话】里你上一轮已经问过的问题不要原样再问，要顺着老人这一句换一个新的小问题。';
+const SHORT_RULE = '如果老人这一句很短（几个字，如“挺好的”“嗯”）或说记不清/忘了/不知道：只接住这一句本身（比如“挺好的，听着就踏实。”或“没关系，想不起来就不想了。”），不要重复上一轮已经说过的内容，不要跳到别的大问题，接着问一个同一场景里具体到一个画面或一样东西的小问题（比如“那时候家里用的是煤炉还是灶台？”“屋里最显眼的是什么家具呀？”）。绝对不要问“日子过得怎么样”“您觉得怎么样”“心里什么感受”这类泛泛的问题。say 里一次只问一个问题，也不要把老人刚刚回答过的意思再问一遍。【本次对话】里你上一轮问过的问题，以及系统给的“当前话题入场问题”，都不要原样照念，要顺着老人这一句用自己的话换个说法、换个具体角度问。';
 export const FORGOT_RE = /记不(太)?清|想不起|忘了|不记得|不知道/;
 // 服务端兜底：一次只问一个问题（第二个问号之后全截掉）
 export const oneQuestion = t => { const m = String(t || '').match(/^[^？?]*[？?]/); return m ? m[0] : String(t || ''); };
 // 记不清：模型没安抚就补固定安抚话术
-export const soothe = (t, said) => FORGOT_RE.test(said || '') && !/没关系|不要紧|不着急/.test(t || '') ? '没关系，想不起来就不想了。' + String(t || '').replace(/^[^，。]*(记不清|想不起)[^。]*。/, '') : t;
+export const soothe = (t, said, q = CONCRETE[0]) => { if (!FORGOT_RE.test(said || '')) return t;
+  let x = /没关系|不要紧|不着急/.test(t || '') ? String(t || '') : '没关系，想不起来就不想了。' + String(t || '').replace(/^[^，。]*(记不清|想不起)[^。]*。/, '');
+  if (!/[？?]/.test(x) || VAGUE_RE.test(questionOf(x))) x = swapQuestion(x, q); return x; }; // 安抚后必须跟一个具体小问题
 // 换话题这一轮：只留模型“接住”的部分，候选由服务端念（与卡片一致）
+// 泛问检测与具体小问题兜底（画面/物件，好答）
+export const VAGUE_RE = /(日子|生活|那时候|那会儿|当时)?(过得)?(怎么样|如何)[？?]|感觉怎么样|觉得怎么样|什么感受|心里(怎么样|什么滋味)|还有什么想(说|聊)/;
+export const CONCRETE = ['那时候家里做饭用的是煤炉还是灶台？', '屋里最显眼的是什么家具呀？', '那会儿您常穿什么颜色的衣服？', '从家里窗户往外看，能看见什么？', '那时候家里有收音机吗？', '过年的时候，家里桌上常摆什么菜？'];
+export const concreteQ = (n, avoid = []) => CONCRETE.filter(q => !avoid.some(a => sim(a, q) > 0.5))[n % CONCRETE.length] || CONCRETE[n % CONCRETE.length];
+// 相似度：二字组 Dice 系数（去标点）；≥0.6 视为原样复述
+const bg = t => { const x = String(t || '').replace(/[\s，。,.！!？?…、；;：:“”"呀啊呢吗吧]/g, ''); const a = []; for (let i = 0; i < x.length - 1; i++) a.push(x.slice(i, i + 2)); return a; };
+export function sim(a, b) { const A = bg(a), B = bg(b); if (!A.length || !B.length) return 0; const m = new Map(); A.forEach(x => m.set(x, (m.get(x) || 0) + 1)); let k = 0; for (const x of B) if (m.get(x) > 0) { k++; m.set(x, m.get(x) - 1); } return 2 * k / (A.length + B.length); }
+export const questionOf = t => (String(t || '').match(/[^。！!？?]*[？?]/) || [''])[0];
+export const echoes = (say, refs) => { const q = questionOf(say); return !!q && refs.some(r => r && sim(q, r) >= 0.6); };
+// 把 say 里的问题句换成 q（保留前面接住的部分）
+export const swapQuestion = (say, q) => { const k = String(say).search(/[^。！!？?]*[？?]/); return (k >= 0 ? String(say).slice(0, k) : String(say)) + q; };
 export const keepAck = t => String(t || '').replace(/(接下来|咱们聊聊哪|您想聊哪|想聊哪|下面|第一个[，,])[\s\S]*$/, '').replace(/[^。！!]*[？?]\s*$/, '').trim();
 export async function nextTurn(p, c, turns, sessionId, { audio } = {}) {
   const MAX = 10, last = turns.at(-1), ask = c.plan.ask;
@@ -136,7 +149,11 @@ export async function nextTurn(p, c, turns, sessionId, { audio } = {}) {
     const pre = sad ? '说起他，您心里肯定还惦记着。' : forgot ? '没关系，想不起来就不想了。' : short ? '嗯，是这样。' : clip ? `原来是${clip.replace(/^(我|那时候|那会儿)/, '')}。` : fill(SCRIPT.acks[turns.length % 3], p);
     text = done ? null : sw ? say(sad ? '说起他，您心里肯定还惦记着。' : clip ? `${clip}，这些我都记下了。` : '这段我都好好记下了。') : say(pre + P.questionFor(FW, plan.ask.nodeId, plan.ask.depth, p));
   }
-  if (r && text && !done) text = sw ? keepAck(text) : oneQuestion(soothe(text, last?.clean));
+  if (r && text && !done && !sw) { // 服务端把关：不原样复述计划问题/上一轮问题；短答、记不清后不泛问
+    const prevQ = questionOf(turns.at(-1)?.q), planQ = P.questionFor(FW, plan.ask.nodeId, plan.ask.depth, p), refs = [planQ, prevQ, P.questionFor(FW, ask.nodeId, ask.depth, p)];
+    const bad = t => echoes(t, refs) || ((short || FORGOT_RE.test(last?.clean || '')) && VAGUE_RE.test(questionOf(t)));
+    if (bad(text)) { const was = text; text = swapQuestion(text, concreteQ(turns.length, refs)); console.log('[turn] 问题复述/泛问 → 本地换成具体小问题（不再多调一次模型，免得拖慢第一声）:', questionOf(was), '→', questionOf(text)); } }
+  if (r && text && !done) text = sw ? keepAck(text) : oneQuestion(soothe(text, last?.clean, concreteQ(turns.length)));
   if (done) { plan.done = true; if (!r) text = closing(p, { ...c, states, entities, plan }); }
   return { emotion, action: r?.action || (done ? '收尾' : leave ? '过渡' : '追问细节'), say: text, done, source, analysis: { ...an, short, leave }, plan, states, entities, callName: newCall, switch: sw && !done };
 }
