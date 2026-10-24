@@ -1,0 +1,37 @@
+:root{--bg:#f6ecd6;--card:#fffaf0;--ink:#4a3424;--brown:#8a5a34;--sage:#8fa57a;--rose:#c9785a}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% 0,#fff6de,var(--bg) 60%,#ead9b8);min-height:100vh;color:var(--ink);font-family:"Noto Serif SC","Songti SC",serif;font-size:22px;line-height:1.6}
+.page{max-width:480px;margin:0 auto;padding:28px 22px 40px;display:flex;flex-direction:column;gap:16px}
+.center{align-items:center;justify-content:center;min-height:90vh;text-align:center}
+h1,h2{color:var(--brown);margin:.2em 0}h2{font-size:32px}
+.home{text-align:center}.poem{font-size:24px;text-align:left;color:#6b4a30;margin:10px 0}
+.logo{font-size:64px;letter-spacing:6px;font-family:"Ma Shan Zheng","STKaiti","KaiTi",serif;text-shadow:2px 3px 0 #e8d3ab}
+.sub{margin:0;color:#7a6048}.illus{font-size:54px;margin:10px 0}.hello{font-size:26px}
+.slogan{font-size:30px;color:var(--brown);font-family:"STKaiti","KaiTi",serif;margin-top:20px}
+button{font-family:inherit;cursor:pointer;border:none}
+.big{background:linear-gradient(#a8693d,#8a5a34);color:#fff;font-size:28px;padding:22px;border-radius:22px;box-shadow:0 6px 0 #6b4425;width:100%}
+.big:active{transform:translateY(3px);box-shadow:0 3px 0 #6b4425}
+.ghost{background:var(--card);color:var(--brown);font-size:22px;padding:16px;border-radius:18px;border:2px solid #d8bf95;width:100%}
+.link{background:none;color:#7a6048;font-size:20px;text-decoration:underline}
+.tip{color:#7a6048;font-size:19px;margin:0}
+label{display:flex;flex-direction:column;font-size:22px;margin-bottom:14px;color:#5a3f2b}
+input,textarea{font:inherit;font-size:24px;padding:14px;border-radius:14px;border:2px solid #d8bf95;background:var(--card);margin-top:6px;color:var(--ink)}
+textarea{min-height:90px}.hidden{display:none}
+.progress{display:flex;gap:8px}.progress span{flex:1;height:10px;border-radius:5px;background:#e3cfa8}.progress .on{background:var(--sage)}
+.stage{color:var(--sage);font-weight:bold;margin:0;font-size:20px}
+.bubble{background:var(--card);border-radius:24px;padding:22px;font-size:27px;line-height:1.55;box-shadow:0 4px 14px #c9a97440;border-left:6px solid var(--sage)}
+.mic{align-self:center;width:220px;height:220px;border-radius:50%;background:radial-gradient(#d88d6a,var(--rose));color:#fff;font-size:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 0 0 12px #c9785a30,0 8px 20px #8a5a3460;margin:10px 0}
+.mic .ico{font-size:72px}.mic.rec{background:radial-gradient(#9fb68a,#6f8a5c);animation:pulse 1.4s infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 28px #8fa57a30}}
+.live{text-align:center;min-height:2em;color:#6b4a30}.row{display:flex;gap:10px}
+.spinner{font-size:80px;animation:pulse 1.4s infinite;border-radius:50%}
+.story .title{font-size:36px;font-family:"STKaiti","KaiTi",serif}article p{text-indent:2em;margin:.6em 0}
+.clip{background:var(--card);border-radius:16px;padding:12px 14px}.cq{font-size:18px;color:#7a6048;margin:0 0 6px}.ca{margin:6px 0 0}audio{width:100%}
+.card{display:block;background:var(--card);border-radius:18px;padding:18px;text-decoration:none;color:var(--ink);box-shadow:0 3px 10px #c9a97440;border-left:6px solid var(--rose)}
+.card b{font-size:25px;display:block}.card span{font-size:18px;color:#7a6048}.empty{text-align:center;font-size:24px;color:#7a6048;padding:30px 0}
+blockquote{margin:0;padding:12px 16px;border-left:5px solid var(--sage);background:#fffaf0;border-radius:12px;font-size:24px;color:var(--brown)}
+.stagebtn{text-align:left;font-size:28px}
+.badge{font-size:15px;color:#9a8468;margin:0}.hint{background:#eef2e6;border-radius:14px;padding:12px 14px;margin:0;color:#556b45;font-size:20px}
+.said{margin:0;color:#7a6048;font-size:19px}.who{display:block;font-size:17px;color:var(--sage);font-weight:bold}
+.mic.busy{opacity:.7}.chip{background:var(--card);border-radius:14px;padding:12px 14px;margin-bottom:8px;font-size:20px}.chip small{color:#7a6048;font-size:17px}
+.tl{display:flex;gap:12px;border-left:4px solid var(--rose);padding:4px 12px;font-size:20px}.tl b{min-width:72px;color:var(--brown)}
+.archive h3{margin:12px 0 4px;color:var(--brown)}summary{font-size:20px;cursor:pointer}

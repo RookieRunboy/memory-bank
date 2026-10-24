@@ -1,0 +1,36 @@
+// Gemini 封装：key 只在后端从 .env.local 读取，绝不下发前端/打印
+import fs from 'fs'; import path from 'path'; import { fileURLToPath } from 'url';
+const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
+let KEY = process.env.GEMINI_API_KEY;
+try { KEY ||= fs.readFileSync(path.join(root, '.env.local'), 'utf8').match(/^GEMINI_API_KEY=(.*)$/m)?.[1]?.trim(); } catch {}
+// 模型链（环境变量可配，逗号分隔回退顺序）：任一调用失败依次回退
+const list = (v, d) => (v || d).split(',').map(x => x.trim()).filter(Boolean);
+export const CHAINS = {
+  fast: [process.env.GEMINI_MODEL_FAST || 'gemini-3.8-flash', ...list(process.env.GEMINI_MODEL_FAST_FALLBACKS, 'gemini-3.5-flash,gemini-3-flash-preview')], // 转写整理 + 实时访谈
+  pro: [process.env.GEMINI_MODEL_PRO || 'gemini-3.1-pro-preview', ...list(process.env.GEMINI_MODEL_PRO_FALLBACKS, 'gemini-3-flash-preview')], // 故事 + 记忆档案
+};
+export const MODELS = CHAINS;
+export const status = { ok: null, lastError: null, models: CHAINS, hasKey: !!KEY };
+export async function gemini(parts, opts = {}) { // opts.tier: 'fast' | 'pro'
+  const chain = CHAINS[opts.tier || 'fast']; let err;
+  const o = { ...opts, timeout: opts.timeout || (opts.tier === 'pro' ? 60000 : +(process.env.GEMINI_FAST_TIMEOUT_MS || 12000)) }; // 实时对话超时即回退更快的模型
+  for (const m of chain) { try { return await call(m, parts, o); }
+    catch (e) { err = e; console.warn('[gemini]', m, '失败', redact(e.message).slice(0, 120), '→ 回退'); } }
+  throw err;
+}
+async function call(MODEL, parts, { system, json = false, timeout = 30000, temperature = 0.7 } = {}) {
+  if (!KEY) throw new Error('未配置 GEMINI_API_KEY');
+  const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), timeout);
+  try {
+    const r = await fetch(`https://aiplatform.googleapis.com/v1/publishers/google/models/${MODEL}:generateContent?key=${encodeURIComponent(KEY)}`, {
+      method: 'POST', signal: ctl.signal, headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...(system && { systemInstruction: { parts: [{ text: system }] } }), contents: [{ role: 'user', parts }],
+        generationConfig: { temperature, thinkingConfig: { thinkingLevel: 'low' }, ...(json && { responseMimeType: 'application/json' }) } }) });
+    const j = await r.json();
+    if (!r.ok) throw new Error(`HTTP ${r.status} ${j.error?.status || ''} ${j.error?.message || ''}`);
+    const text = j.candidates?.[0]?.content?.parts?.filter(p => !p.thought).map(p => p.text || '').join('') || '';
+    status.ok = true; status.lastError = null; status.lastModel = MODEL;
+    return json ? JSON.parse(text.replace(/^\s*```(json)?|```\s*$/g, '')) : text.trim();
+  } catch (e) { status.ok = false; status.lastError = redact(e.message).slice(0, 200); throw e; }
+  finally { clearTimeout(t); }
+}
