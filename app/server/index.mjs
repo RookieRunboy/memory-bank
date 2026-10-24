@@ -1,7 +1,7 @@
 import express from 'express'; import multer from 'multer'; import initSqlJs from 'sql.js';
 import fs from 'fs'; import path from 'path'; import { fileURLToPath } from 'url';
 import { status } from './gemini.mjs'; import * as ai from './ai.mjs'; import { withAutoCallName } from '../src/callname.js';
-import * as P from '../src/planner.js'; import { makeTTS, TTS } from './tts.mjs'; import JSZip from 'jszip';
+import * as P from '../src/planner.js'; import { makeTTS, TTS } from './tts.mjs'; import { ACKS } from '../src/split.js'; import JSZip from 'jszip';
 const dir = path.dirname(fileURLToPath(import.meta.url)), DATA = path.resolve(process.env.DATA_DIR || path.join(dir, 'data')), AUDIO = path.join(DATA, 'audio'), DBF = path.join(DATA, 'mb.sqlite');
 fs.mkdirSync(AUDIO, { recursive: true });
 const SQL = await initSqlJs(); const db = fs.existsSync(DBF) ? new SQL.Database(fs.readFileSync(DBF)) : new SQL.Database();
@@ -116,14 +116,21 @@ app.post('/api/interviews/:id/turn', up.single('audio'), async (req, res) => { c
   const e = elder(v.elder_id), p = withAutoCallName(e.profile), o = v.opening;
   let audio = null; if (req.file?.size > 0) { audio = `${v.id}-${v.turns.length}.${(req.file.mimetype || '').includes('mp4') ? 'm4a' : 'webm'}`; fs.writeFileSync(path.join(AUDIO, audio), req.file.buffer); }
   const t0 = Date.now();
-  const tr = req.body.manual ? { raw: req.body.manual, clean: req.body.manual, source: 'manual' } : await ai.transcribe(req.file?.buffer, req.file?.mimetype, req.body.browserText);
+  const wavMs = b => b.toString('ascii', 0, 4) === 'RIFF' && b.readUInt32LE(28) ? (b.length - 44) / b.readUInt32LE(28) * 1000 : 0;
+  // 有录音：先试合并调用（听音频 + 出回复一次完成），失败再走 转写 → 生成 两步
+  const fused = !req.body.manual && req.file?.size > 1000 && process.env.GEMINI_FUSED !== '0';
+  let tr = req.body.manual ? { raw: req.body.manual, clean: req.body.manual, source: 'manual' } : fused ? { raw: '', clean: '', source: 'gemini-fused' } : await ai.transcribe(req.file?.buffer, req.file?.mimetype, req.body.browserText);
   const ask = o.plan.ask;
   const tid = `${v.id}-t${v.turns.length + 1}`;
   v.turns.push({ id: tid, q: req.body.question, qid: `${ask.nodeId}:${ask.depth}`, ask, raw: tr.raw, clean: tr.clean, audio, at: Date.now(), asrSource: tr.source });
   const st = getState(e.id);
-  const t1 = Date.now(); const n = await ai.nextTurn(p, { archive: e.archive, ...st, plan: o.plan }, v.turns, v.id); const t2 = Date.now();
-  console.log(`[turn] ${v.id}#${v.turns.length} asr=${t1 - t0}ms(${tr.source}) agent=${t2 - t1}ms(${n.source}) total=${t2 - t0}ms node=${n.analysis.nodeId} depth=${n.analysis.depth}${n.analysis.nodeId !== ask.nodeId ? '（跑题归档）' : ''} ents=${(n.analysis.entities || []).map(x => x.name).join('/')} → ask=${n.plan.ask.nodeId}:${n.plan.ask.depth}${n.done ? ' done' : ''}`);
-  v.turns.at(-1).analysis = n.analysis; v.turns.at(-1).agent = { emotion: n.emotion, action: n.action, source: n.source };
+  let t1 = Date.now(), n = null; const ctx = { archive: e.archive, ...st, plan: o.plan };
+  if (fused) try { n = await ai.nextTurn(p, ctx, v.turns, v.id, { audio: { buf: req.file.buffer, mime: req.file.mimetype, durMs: +req.body.durMs || wavMs(req.file.buffer) } }); tr = { raw: v.turns.at(-1).raw, clean: v.turns.at(-1).clean, source: 'gemini-fused' }; }
+    catch (err) { console.warn(`[turn] 合并调用失败 ${Date.now() - t1}ms → 回退两步`); tr = await ai.transcribe(req.file?.buffer, req.file?.mimetype, req.body.browserText); Object.assign(v.turns.at(-1), { raw: tr.raw, clean: tr.clean, asrSource: tr.source }); }
+  if (fused && n) { t1 = t0; } else t1 = Date.now();
+  if (!n) n = await ai.nextTurn(p, ctx, v.turns, v.id); const t2 = Date.now();
+  console.log(`[turn] ${v.id}#${v.turns.length} ${n.source === 'gemini-fused' ? 'fused' : `asr=${t1 - t0}ms(${tr.source})`} agent=${t2 - t1}ms(${n.source}) total=${t2 - t0}ms node=${n.analysis.nodeId} depth=${n.analysis.depth}${n.analysis.nodeId !== ask.nodeId ? '（跑题归档）' : ''} ents=${(n.analysis.entities || []).map(x => x.name).join('/')} → ask=${n.plan.ask.nodeId}:${n.plan.ask.depth}${n.done ? ' done' : ''}`);
+  v.turns.at(-1).asrSource = tr.source; v.turns.at(-1).analysis = n.analysis; v.turns.at(-1).agent = { emotion: n.emotion, action: n.action, source: n.source };
   const T = v.turns.at(-1); // 第 2 层：逐轮访谈稿，写入后不再修改
   db.run('insert into transcript_turns values(?,?,?,?,?)', [tid, v.id, e.id, v.turns.length, JSON.stringify({ id: tid, idx: v.turns.length, at: T.at, question: T.q, raw: T.raw, clean: T.clean, audio: T.audio, asrSource: T.asrSource, nodeId: n.analysis.nodeId, depth: n.analysis.depth, emotion: n.emotion, note: n.analysis.note, askedNode: ask.nodeId, askedDepth: ask.depth })]);
   const names = new Set((n.analysis.entities || []).map(x => x.name)); // 实体表每条注明出处句子
@@ -141,10 +148,10 @@ app.post('/api/interviews/:id/turn', up.single('audio'), async (req, res) => { c
     const tmp = { ...o, plan: n.plan };
     cards = P.candidates(ai.FW, { profile: p, states: n.states, entities: n.entities, lastSessionId: n.plan.lastSessionId, prevNodeId: n.plan.ask.nodeId, exclude: chatted(tmp) });
     Object.assign(o, { phase: 'choose', after: true, cards, shown: [...(o.shown || []), ...cards.map(c => c.nodeId)] });
-    n.say = n.say.replace(/[^。！!]*[？?]\s*$/, '') + P.choiceText(cards, { after: true }); }
+    n.say = ai.keepAck(n.say) + P.choiceText(cards, { after: true }); }
   setState(e.id, { states: n.states, entities: n.entities }); o.plan = n.plan; o.closing = ai.closing(n.callName ? { ...p, callName: n.callName } : p, { states: n.states, entities: n.entities, plan: n.plan });
   db.run('update interviews set turns=?, opening=? where id=?', [JSON.stringify(v.turns), JSON.stringify(o), v.id]); save();
-  res.json({ transcript: tr, next: { emotion: n.emotion, action: n.action, say: n.say, done: n.done, source: n.source, analysis: n.analysis, ask: n.plan.ask, phase: cards ? 'choose' : 'chat', cards }, closing: o.closing, ...(n.callName ? { profile: elder(e.id).profile } : {}) }); });
+  res.json({ timing: { total: t2 - t0, asr: n.source === 'gemini-fused' ? null : t1 - t0, agent: t2 - t1, fused: n.source === 'gemini-fused' }, transcript: tr, next: { emotion: n.emotion, action: n.action, say: n.say, done: n.done, source: n.source, analysis: n.analysis, ask: n.plan.ask, phase: cards ? 'choose' : 'chat', cards }, closing: o.closing, ...(n.callName ? { profile: elder(e.id).profile } : {}) }); });
 // 记忆档案后台更新：同一位老人串行，不阻塞故事页
 const archiveJobs = new Map(); // elderId -> { promise, since, pending: [interviewId] }
 function queueArchive(eid, v, p) {
@@ -213,7 +220,7 @@ app.use('/api', (_, res) => res.status(404).json({ error: 'not found' }));
 const PORT = +(process.env.PORT || 8787), HOST = process.env.HOST || '0.0.0.0';
 // 启动后后台预热固定话术（不阻塞启动）：演示老人的候选念白、选题回应、收尾、通用回应
 function warmTTS() { if (!status.hasKey || process.env.GEMINI_TTS_WARM === '0') return;
-  setTimeout(async () => { const t0 = Date.now(), texts = [];
+  setTimeout(async () => { const t0 = Date.now(), texts = [...ACKS]; // 短回应最先预热
     try { for (const e of all('select id from elders').map(r => elder(r.id))) { const p = withAutoCallName(e.profile), { plan, states, entities } = makePlan(e, null);
         let ex = []; for (let k = 0; k < 2; k++) { const c = P.candidates(ai.FW, { profile: p, states, entities, lastSessionId: plan.lastSessionId, prevNodeId: plan.prevNodeId, exclude: ex }); ex.push(...c.map(x => x.nodeId));
           texts.push(P.choiceText(c), P.choiceText(c, { after: true }), '好，那再换几个。', ...c.map(x => `好，那咱们就聊${P.nodeTitle(ai.FW, x.nodeId, p)}。` + P.questionFor(ai.FW, x.nodeId, x.startDepth || 1, p))); }

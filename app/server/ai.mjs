@@ -60,22 +60,45 @@ export async function transcribe(audio, mime, hint) { // Gemini 直接听音频
   return { raw: t, clean: t.replace(/(嗯+|啊+|那个|就是说)[，,、]?/g, '').trim() || t, source: 'fallback' };
 }
 
-const validNode = id => !!P.nodeById(FW, id);
-// 每轮：模型同时输出 回答归属节点/层次/要点/实体/情绪 + 下一问的节点/层次 + 要朗读的话；据此更新节点状态、实体表、会话规划
-export async function nextTurn(p, c, turns, sessionId) {
-  const MAX = 10, last = turns.at(-1), ask = c.plan.ask;
-  const short = (last?.clean || '').replace(/[\s，。,.！!？?…、]/g, '').length < 8 || /不知道|忘了|想不起/.test(last?.clean || '');
-  const second = c.plan.nodes[c.plan.currentNodeIndex + 1];
-  let r = null, source = 'gemini';
-  try {
+async function nextGemini(p, c, turns, audio) {
+  const MAX = 10;
     const v = P.planVars(FW, c.plan, { ...c, profile: p });
-    r = await gemini([{ text: `${ctxText(c, p)}【本次对话】\n${histText(turns)}\n\n【话题网节点】${NODE_LIST}\n` +
+    return await gemini([{ text:  `${ctxText(c, p)}【本次对话】\n${histText(turns)}\n\n【话题网节点】${NODE_LIST}\n` +
       (c.plan.free ? '老人选了“想聊什么都行”：顺着老人自己说的内容聊，不要拉回任何指定话题，ask.nodeId 填老人正在讲的节点。\n'
         : '当前话题聊够了（到了第4层，或老人连着几句没什么可说），不要自己开新话题：ask.nodeId 填 "switch"，say 只用一句话谢谢老人讲的这个故事、复述一个细节，不要提问，系统会接着念几个候选话题让老人自己选。\n') +
       `请按【说话方式】【必须遵守】【话题内引导】【过渡到下一个话题】决定下一句。已经聊了${turns.length}轮，满${MAX}轮或老人累了就按【结束】收尾。\n` +
       `同时分析老人刚才这一句：属于哪个节点（跑题就填它真正讲到的节点 id，找不到就填最接近的）、到达第几层（0 没有实质内容，1 事实，2 场景细节，3 感受，4 想对后辈说的话）、一句要点、提到的人地物。\n` +
-      `只输出 JSON：{"answer":{"nodeId":"","depth":0,"note":"","entities":[{"type":"person|place|thing","name":"","aliases":[],"relation":"parents|siblings|spouse|children|friends|teachers|colleagues|null","deceased":false,"trigger":"photo|song|food|object|festival|null","note":""}]},"emotion":"开心|平静|卡壳|难过|困惑|累了|烦躁","leave":null,"ask":{"nodeId":"下一句问的是哪个节点","depth":1},"action":"追问细节|给台阶|安抚|换话题|过渡|收尾","callName":null,"say":"要朗读的话","done":false}。leave 只在老人难过且安抚后仍未恢复时填 "upset"，累了填 "tired"。callName 只在老人刚才明确要求换个叫法时填新称呼（如老人说“叫我老王就行”就填 "老王"），并且 say 里当场用新称呼；否则填 null。` }],
-      { system: vars(HOST_PROMPT, p, v), json: true });
+      `只输出 JSON：{${audio ? `"speech":true,"raw":"","clean":"",` : ""}"answer":{"nodeId":"","depth":0,"note":"","entities":[{"type":"person|place|thing","name":"","aliases":[],"relation":"parents|siblings|spouse|children|friends|teachers|colleagues|null","deceased":false,"trigger":"photo|song|food|object|festival|null","note":""}]},"emotion":"开心|平静|卡壳|难过|困惑|累了|烦躁","leave":null,"ask":{"nodeId":"下一句问的是哪个节点","depth":1},"action":"追问细节|给台阶|安抚|换话题|过渡|收尾","callName":null,"say":"要朗读的话","done":false}。leave 只在老人难过且安抚后仍未恢复时填 "upset"，累了填 "tired"。callName 只在老人刚才明确要求换个叫法时填新称呼（如老人说“叫我老王就行”就填 "老王"），并且 say 里当场用新称呼；否则填 null。${FIRST_RULE}${SHORT_RULE}` }, ...(audio ? [{ text: '【老人刚才这一句的录音】见下面的音频。' + '附带的录音是老人刚才这一句的回答（中国老人，可能带方言）。先听清它：没有清晰人声（静音、噪音、提示音）就输出 {"speech":false}，绝不猜测编写。有人声就在 JSON 里同时给出 "speech":true、"raw"（逐字原始转写，保留嗯啊重复）、"clean"（去掉口头禅重复停顿、按意思分段用\\n、保留原话味道和方言词、绝不编造），raw 和 clean 只能是录音里真的说出来的话，一个字也不能从上下文、档案或前面的对话里补；录音只有几个字，clean 就只有那几个字。然后把它当作老人这一句来分析和回复。\n' + '输出 JSON 时把 "speech"、"raw"、"clean" 放在最前面：先只凭音频写完转写，再写回复。' }, { inlineData: { mimeType: (audio.mime || 'audio/webm').split(';')[0], data: audio.buf.toString('base64') } }] : [])],
+      { system: vars(HOST_PROMPT, p, v), json: true, ...(audio && { timeout: +(process.env.GEMINI_FUSED_TIMEOUT_MS || 10000) }) });
+}
+
+const validNode = id => !!P.nodeById(FW, id);
+// 每轮：模型同时输出 回答归属节点/层次/要点/实体/情绪 + 下一问的节点/层次 + 要朗读的话；据此更新节点状态、实体表、会话规划
+// 合并调用：音频 + 上下文一次给模型，同时输出 raw/clean 转写和下一句（省掉一次往返）；失败抛 FUSED，调用方回退两步流程
+export const FUSED_FAIL = 'fused-failed';
+// 合并调用偶尔会把上下文“补”进转写：按录音时长估一个字数上限（老人语速一般 ≤ 6 字/秒），超了就不信，回退两步
+export const plausible = (text, durMs) => !durMs || String(text || '').replace(/[\s，。,.！!？?…、；;：:"“”]/g, '').length <= durMs / 1000 * 6 + 6;
+const FIRST_RULE = '老人刚说完时前端已经播了一句“嗯，我听着呢 / 哦，是这样啊”之类的短回应，say 不要再重复这类意思（不要以“嗯”“哦”“我听着呢”“明白了”开头）。say 的第一句要很短（8–10 个字以内，用“。”或“，”断开），接得上那句短回应，比如“原来是筒子楼啊。”，然后再说其余的话。';
+const SHORT_RULE = '如果老人这一句很短（几个字，如“挺好的”“嗯”）或说记不清/忘了/不知道：只接住这一句本身（比如“挺好的，听着就踏实。”或“没关系，想不起来就不想了。”），不要重复上一轮已经说过的内容，不要跳到别的大问题，接着问一个同一场景里具体、好答的小问题（比如“冬天屋里冷不冷呀？”）。say 里一次只问一个问题，也不要把老人刚刚回答过的意思再问一遍；【本次对话】里你上一轮已经问过的问题不要原样再问，要顺着老人这一句换一个新的小问题。';
+export const FORGOT_RE = /记不(太)?清|想不起|忘了|不记得|不知道/;
+// 服务端兜底：一次只问一个问题（第二个问号之后全截掉）
+export const oneQuestion = t => { const m = String(t || '').match(/^[^？?]*[？?]/); return m ? m[0] : String(t || ''); };
+// 记不清：模型没安抚就补固定安抚话术
+export const soothe = (t, said) => FORGOT_RE.test(said || '') && !/没关系|不要紧|不着急/.test(t || '') ? '没关系，想不起来就不想了。' + String(t || '').replace(/^[^，。]*(记不清|想不起)[^。]*。/, '') : t;
+// 换话题这一轮：只留模型“接住”的部分，候选由服务端念（与卡片一致）
+export const keepAck = t => String(t || '').replace(/(接下来|咱们聊聊哪|您想聊哪|想聊哪|下面|第一个[，,])[\s\S]*$/, '').replace(/[^。！!]*[？?]\s*$/, '').trim();
+export async function nextTurn(p, c, turns, sessionId, { audio } = {}) {
+  const MAX = 10, last = turns.at(-1), ask = c.plan.ask;
+  let r0 = null;
+  if (audio) { const real = last.clean; last.clean = '（见附带的录音）';
+    try { r0 = await nextGemini(p, c, turns, audio); } catch (e) { r0 = null; } last.clean = real;
+    if (!r0 || r0.speech === false || !(r0.clean || r0.raw) || !r0.say || !plausible(r0.raw || r0.clean, audio.durMs)) throw new Error(FUSED_FAIL);
+    last.raw = r0.raw || r0.clean; last.clean = r0.clean || r0.raw; }
+  const short = (last?.clean || '').replace(/[\s，。,.！!？?…、]/g, '').length < 8 || /不知道|忘了|想不起/.test(last?.clean || '');
+  const second = c.plan.nodes[c.plan.currentNodeIndex + 1];
+  let r = r0, source = r0 ? 'gemini-fused' : 'gemini';
+  if (!r) try {
+    r = await nextGemini(p, c, turns);
     if (!r?.say) throw new Error('empty');
   } catch (e) { if (/未替换的变量/.test(e.message)) console.warn('[vars]', e.message); r = null; source = 'fallback'; }
   // 0) 改口：老人主动要求别的叫法（模型给 callName，或规则从原话识别），当场生效
@@ -113,6 +136,7 @@ export async function nextTurn(p, c, turns, sessionId) {
     const pre = sad ? '说起他，您心里肯定还惦记着。' : forgot ? '没关系，想不起来就不想了。' : short ? '嗯，是这样。' : clip ? `原来是${clip.replace(/^(我|那时候|那会儿)/, '')}。` : fill(SCRIPT.acks[turns.length % 3], p);
     text = done ? null : sw ? say(sad ? '说起他，您心里肯定还惦记着。' : clip ? `${clip}，这些我都记下了。` : '这段我都好好记下了。') : say(pre + P.questionFor(FW, plan.ask.nodeId, plan.ask.depth, p));
   }
+  if (r && text && !done) text = sw ? keepAck(text) : oneQuestion(soothe(text, last?.clean));
   if (done) { plan.done = true; if (!r) text = closing(p, { ...c, states, entities, plan }); }
   return { emotion, action: r?.action || (done ? '收尾' : leave ? '过渡' : '追问细节'), say: text, done, source, analysis: { ...an, short, leave }, plan, states, entities, callName: newCall, switch: sw && !done };
 }

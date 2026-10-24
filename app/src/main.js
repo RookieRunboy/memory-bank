@@ -3,7 +3,7 @@ import { SCRIPT, DEMO_PROFILE, DEMO_ANSWERS, DEMO_ANSWERS_2, fill } from './ques
 import { autoCallName, callNameOf } from './callname.js';
 import FW from './framework.json';
 import * as P from './planner.js';
-import { generateStory } from './story.js'; import { splitSentences } from './split.js';
+import { generateStory } from './story.js'; import { splitSentences, firstShort, ACKS, pickAck } from './split.js';
 import { saveStory, listStories, getStory } from './db.js';
 const $app = document.getElementById('app');
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -22,7 +22,7 @@ const player = new Audio(); let speakGen = 0, ttsOn = null;
 const ttsReady = () => ttsOn ??= fetch('/api/tts/config').then(r => r.json()).then(c => !!c.enabled).catch(() => false);
 function unlockAudio() { // 手机浏览器：首次用户点击时解锁自动播放
   try { player.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA='; player.play().catch(() => {});
-    if ('speechSynthesis' in window) { const u = new SpeechSynthesisUtterance(''); u.volume = 0; speechSynthesis.speak(u); } } catch {} ttsReady(); }
+    if ('speechSynthesis' in window) { const u = new SpeechSynthesisUtterance(''); u.volume = 0; speechSynthesis.speak(u); } } catch {} ttsReady(); prefetchAcks(); }
 function browserSay(text) { return new Promise(res => { if (!('speechSynthesis' in window)) return res();
   const u = new SpeechSynthesisUtterance(text); u.lang = 'zh-CN'; u.rate = 1.0;
   const zh = speechSynthesis.getVoices().find(v => /zh|Chinese/i.test(v.lang)); if (zh) u.voice = zh;
@@ -30,11 +30,20 @@ function browserSay(text) { return new Promise(res => { if (!('speechSynthesis' 
 const fetchTTS = t => { const c = new AbortController(), tm = setTimeout(() => c.abort(), 9000); // 服务端单句 8 秒超时，这里多留 1 秒网络
   return fetch('/api/tts?t=' + encodeURIComponent(t), { signal: c.signal }).then(r => r.ok ? r.blob() : null).catch(() => null).finally(() => clearTimeout(tm)); };
 const playBlob = b => new Promise(res => { const u = URL.createObjectURL(b); player.onended = player.onerror = () => { URL.revokeObjectURL(u); res(true); }; player.src = u; player.play().catch(() => { URL.revokeObjectURL(u); res(false); }); });
+// 老人一说完立刻播一句缓存好的短回应（不等后端），正式回复接在它后面
+const ackPlayer = new Audio(), ackBlobs = {}; let ackDone = Promise.resolve(), lastAck = null;
+function prefetchAcks() { ttsReady().then(on => on && ACKS.forEach(a => ackBlobs[a] ??= fetchTTS(a))); }
+function playAck() { const a = lastAck = pickAck(lastAck); const t0 = performance.now();
+  ackDone = (async () => { const b = await Promise.race([ackBlobs[a] || fetchTTS(a), new Promise(r => setTimeout(() => r(null), 600))]);
+    window.__ackMs = performance.now() - t0;
+    if (b) await new Promise(res => { const u = URL.createObjectURL(b); ackPlayer.onended = ackPlayer.onerror = res; ackPlayer.src = u; ackPlayer.play().catch(res); }); else await browserSay(a); })();
+  return ackDone; }
 function setSpeaking(on) { document.body.classList.toggle('speaking', on); const el = document.getElementById('speakInd'); if (el) el.classList.toggle('hidden', !on);
   const live = document.getElementById('live'); if (live && !on && live.dataset.after) live.textContent = live.dataset.after; }
 function stopSpeak() { speakGen++; player.pause(); try { speechSynthesis.cancel(); } catch {} setSpeaking(false); }
-async function speak(text) { text = P.speakable(text || ''); stopSpeak(); const g = speakGen; const parts = splitSentences(text); if (!parts.length) return;
+async function speak(text) { text = P.speakable(text || ''); stopSpeak(); const g = speakGen; const parts = firstShort(splitSentences(text)); if (!parts.length) return;
   setSpeaking(true); const jobs = (await ttsReady()) ? parts.map(fetchTTS) : parts.map(() => Promise.resolve(null));
+  await ackDone; // 短回应还在播就等它说完再接上
   for (let i = 0; i < parts.length && g === speakGen; i++) { const b = await jobs[i]; if (g !== speakGen) break;
     if (!(b && await playBlob(b))) await browserSay(parts[i]); }
   if (g === speakGen) setSpeaking(false); }
@@ -168,14 +177,14 @@ function renderTurn() {
   mic.onclick = async () => {
     if (busy) return;
     if (!recording) {
-      stopSpeak();
-      try { const st = await navigator.mediaDevices.getUserMedia({ audio: true }); rec = new MediaRecorder(st); chunks = []; rec.ondataavailable = e => chunks.push(e.data); rec.start(); }
+      stopSpeak(); ackPlayer.pause();
+      try { const st = await navigator.mediaDevices.getUserMedia({ audio: true }); rec = new MediaRecorder(st); chunks = []; rec.ondataavailable = e => chunks.push(e.data); rec.start(); recAt = Date.now(); }
       catch { live.textContent = '没能打开麦克风，可以手动补记'; manual.classList.remove('hidden'); }
       if (SR && !s.online) { sr = new SR(); sr.lang = 'zh-CN'; sr.continuous = true; sr.interimResults = true; // 仅离线兜底用浏览器识别
         sr.onresult = ev => { btext = [...ev.results].map(r => r[0].transcript).join(''); live.textContent = btext; }; try { sr.start(); } catch {} }
       recording = true; mic.classList.add('rec'); micl.textContent = '说完了，点一下'; live.textContent = '我在听…';
     } else {
-      recording = false; busy = true; mic.classList.remove('rec'); mic.classList.add('busy'); micl.textContent = '小忆在听…'; sr?.stop();
+      recording = false; busy = true; if (!choosing && s.online) playAck(); // 选题阶段不播短回应 mic.classList.remove('rec'); mic.classList.add('busy'); micl.textContent = '小忆在听…'; sr?.stop();
       const th = document.getElementById('thinking'), tt = document.getElementById('thinkt'); th.classList.remove('hidden'); mic.classList.add('hidden'); live.classList.add('hidden');
       const tmr = setTimeout(() => tt.textContent = '小忆在想下一个问题……', 2500);
       const blob = await new Promise(res => { if (!rec || rec.state === 'inactive') return res(null);
@@ -190,7 +199,7 @@ async function choose({ action, index, blob, manual, btext }) {
   const s = session; stopSpeak();
   if (s.online) {
     const fd = new FormData(); if (action) { fd.append('action', action); fd.append('index', index ?? 0); }
-    if (blob) fd.append('audio', blob, 'a.webm'); if (manual) fd.append('manual', manual); if (btext) fd.append('browserText', btext);
+    if (blob) { fd.append('audio', blob, 'a.webm'); if (recAt) fd.append('durMs', Date.now() - recAt); } if (manual) fd.append('manual', manual); if (btext) fd.append('browserText', btext);
     try { const r = await post(`/interviews/${s.id}/choose`, fd);
       if (r.end) return finish();
       Object.assign(s, { phase: r.phase, cards: r.cards || s.cards, ask: r.ask, closing: r.closing || s.closing, say: r.say, heard: r.heard });
@@ -206,6 +215,7 @@ async function choose({ action, index, blob, manual, btext }) {
   Object.assign(s, { phase: 'chat', qs, plan, answers: [], closing: P.closingText(FW, plan, { profile: s.p }), say: (ch.action === 'free' ? '好，想聊什么都行。' : `好，那咱们就聊${P.nodeTitle(FW, nodeId, s.p)}。`) + qs[0].text });
   renderTurn();
 }
+let recAt = 0;
 async function answer(blob, manualText, btext) {
   const s = session;
   if (s.online) {
