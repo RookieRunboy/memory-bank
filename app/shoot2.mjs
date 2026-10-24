@@ -1,13 +1,14 @@
 import { chromium } from 'playwright';
 const b = await chromium.launch({ args: ['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream'] });
 const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, permissions: ['microphone'] });
-const pg = await ctx.newPage(); const errs = []; pg.on('pageerror', e => errs.push(e.message)); pg.setDefaultTimeout(120000);
+const pg = await ctx.newPage(); const errs = []; pg.on('pageerror', e => errs.push(e.message)); pg.setDefaultTimeout(240000);
 await pg.addInitScript(() => { window.speechSynthesis && (speechSynthesis.speak = u => setTimeout(() => u.onend && u.onend(), 30)); });
 const U = 'http://localhost:5173/'; const shot = async (n, full = true) => { await pg.waitForTimeout(600); await pg.screenshot({ path: `screenshots/v2/${n}.png`, fullPage: full }); console.log('shot', n); };
 const MAX = +(process.env.TURNS || 5);
 async function talk(prefix) { for (let i = 0; i < MAX; i++) {
   if (i === 1) await shot(prefix + '-turn2', false);
   await pg.click('#mic'); await pg.waitForTimeout(1500); await pg.click('#demoA'); await pg.click('#mic');
+  if (prefix.startsWith('11') && i === 2) { await pg.waitForTimeout(2800); await shot('15-thinking', false); }
   await pg.waitForFunction(() => !document.querySelector('#mic') || !document.querySelector('#mic.busy'), null, { timeout: 120000 });
   if (!(await pg.$('#mic'))) return; }
   await pg.click('#end'); }

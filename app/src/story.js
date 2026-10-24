@@ -1,9 +1,8 @@
+import { parseStory as parse } from './parseStory.js';
 import { STORY_PROMPT, fill } from './questions.js';
 // 大模型调用预留：localStorage 'mb_api_key' 或 VITE_LLM_API_KEY 配置后调用 OpenAI 兼容接口（VITE_LLM_API_URL / VITE_LLM_MODEL 可改）
 const API_URL = import.meta.env.VITE_LLM_API_URL || 'https://api.openai.com/v1/chat/completions';
 const MODEL = import.meta.env.VITE_LLM_MODEL || 'gpt-4o-mini';
-const parse = (t) => { const g = k => (t.match(new RegExp(k + '[：:]\\s*([\\s\\S]*?)(?=\\n(标题|正文|关键人物|时间地点|原话摘录)[：:]|$)')) || [])[1]?.trim();
-  return { title: g('标题') || '我的记忆', body: g('正文') || t, people: g('关键人物'), timePlace: g('时间地点'), quotes: g('原话摘录') }; };
 export async function generateStory(answers, profile) {
   const key = localStorage.getItem('mb_api_key') || import.meta.env.VITE_LLM_API_KEY;
   if (key) {

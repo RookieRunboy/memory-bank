@@ -6,7 +6,7 @@ try { KEY ||= fs.readFileSync(path.join(root, '.env.local'), 'utf8').match(/^GEM
 // 模型链（环境变量可配，逗号分隔回退顺序）：任一调用失败依次回退
 const list = (v, d) => (v || d).split(',').map(x => x.trim()).filter(Boolean);
 export const CHAINS = {
-  fast: [process.env.GEMINI_MODEL_FAST || 'gemini-3.8-flash', ...list(process.env.GEMINI_MODEL_FAST_FALLBACKS, 'gemini-3.5-flash,gemini-3-flash-preview')], // 转写整理 + 实时访谈
+  fast: [process.env.GEMINI_MODEL_FAST || 'gemini-3-flash-preview', ...list(process.env.GEMINI_MODEL_FAST_FALLBACKS, 'gemini-3.5-flash')], // 转写整理 + 实时访谈
   pro: [process.env.GEMINI_MODEL_PRO || 'gemini-3.1-pro-preview', ...list(process.env.GEMINI_MODEL_PRO_FALLBACKS, 'gemini-3-flash-preview')], // 故事 + 记忆档案
 };
 export const MODELS = CHAINS;

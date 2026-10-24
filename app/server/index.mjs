@@ -34,15 +34,19 @@ app.post('/api/interviews', async (req, res) => { const e = elder(req.body.elder
 app.post('/api/interviews/:id/turn', up.single('audio'), async (req, res) => { const v = iv(req.params.id); if (!v) return res.status(404).json({});
   const e = elder(v.elder_id), p = { ...e.profile, stage: v.stage };
   let audio = null; if (req.file?.size > 0) { audio = `${v.id}-${v.turns.length}.${(req.file.mimetype || '').includes('mp4') ? 'm4a' : 'webm'}`; fs.writeFileSync(path.join(AUDIO, audio), req.file.buffer); }
+  const t0 = Date.now();
   const tr = req.body.manual ? { raw: req.body.manual, clean: req.body.manual, source: 'manual' } : await ai.transcribe(req.file?.buffer, req.file?.mimetype, req.body.browserText);
   const prevQid = v.turns.length ? v.turns.at(-1).nextQid : v.opening?.qid;
   v.turns.push({ q: req.body.question, qid: prevQid, raw: tr.raw, clean: tr.clean, audio, at: Date.now(), asrSource: tr.source });
-  const n = await ai.nextTurn(p, e.archive, v.turns); v.turns.at(-1).nextQid = n.qid; v.turns.at(-1).agent = { emotion: n.emotion, action: n.action, source: n.source };
+  const t1 = Date.now(); const n = await ai.nextTurn(p, e.archive, v.turns); const t2 = Date.now();
+  console.log(`[turn] ${v.id}#${v.turns.length} asr=${t1 - t0}ms(${tr.source}) agent=${t2 - t1}ms(${n.source}) total=${t2 - t0}ms`); v.turns.at(-1).nextQid = n.qid; v.turns.at(-1).agent = { emotion: n.emotion, action: n.action, source: n.source };
   db.run('update interviews set turns=? where id=?', [JSON.stringify(v.turns), v.id]); save();
   res.json({ transcript: tr, next: n }); });
 app.post('/api/interviews/:id/finish', async (req, res) => { const v = iv(req.params.id); if (!v) return res.status(404).json({});
   const e = elder(v.elder_id), p = { ...e.profile, stage: v.stage };
+  const tf = Date.now();
   const [s, a] = await Promise.all([ai.story(p, v.turns), ai.updateArchive(p, e.archive, v.turns, v.stage)]);
+  console.log(`[finish] ${v.id} story=${s.source} archive=${a.source} ${Date.now() - tf}ms`);
   const sid = uid('s'); db.run('insert into stories values(?,?,?,?,?)', [sid, e.id, v.id, Date.now(), JSON.stringify({ ...s, stage: v.stage, clips: v.turns.map(t => ({ q: t.q, text: t.clean, audio: t.audio })) })]);
   db.run('update elders set archive=? where id=?', [JSON.stringify(a), e.id]); db.run('update interviews set finished=1 where id=?', [v.id]); save();
   res.json({ storyId: sid }); });

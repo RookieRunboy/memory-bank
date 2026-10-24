@@ -56,7 +56,7 @@ function stagePick() {
 
 async function interview() {
   const p = getProfile(); if (!p) return go('#/profile');
-  $app.innerHTML = `<main class="page center"><div class="spinner">🎙</div><h2>小忆来啦…</h2></main>`;
+  $app.innerHTML = `<main class="page center"><div class="thinking"><div class="dots"><i></i><i></i><i></i></div><p>小忆来啦，正在翻看上次的记录……</p></div></main>`;
   try { if (!elderId) throw 0; const o = await post('/interviews', { elderId, stage: p.stage });
     session = { online: true, id: o.id, p, say: o.say, n: 0, isReturn: o.isReturn, log: [] };
   } catch { const qs = questionsFor(p); session = { online: false, p, qs, n: 0, say: qs[0].text, answers: [], log: [] }; }
@@ -70,6 +70,7 @@ function renderTurn() {
   <button class="link" id="replay">🔊 再听一遍</button>
   <button class="mic" id="mic"><span class="ico">🎙</span><span id="micl">点一下，开始说</span></button>
   <p class="live" id="live">慢慢说，不着急，说错了也没关系</p>
+  <div class="thinking hidden" id="thinking"><div class="dots"><i></i><i></i><i></i></div><p id="thinkt">小忆在认真听……</p><small>不着急，您喝口水歇一歇</small></div>
   <button class="link" id="demoA">（演示：填入示范回答）</button>
   <textarea id="manual" placeholder="（家人可在此补记文字）" class="hidden"></textarea>
   <div class="row"><button class="ghost" id="end">今天先聊到这</button></div></main>`;
@@ -88,10 +89,12 @@ function renderTurn() {
         sr.onresult = ev => { btext = [...ev.results].map(r => r[0].transcript).join(''); live.textContent = btext; }; try { sr.start(); } catch {} }
       recording = true; mic.classList.add('rec'); micl.textContent = '说完了，点一下'; live.textContent = '我在听…';
     } else {
-      recording = false; busy = true; mic.classList.remove('rec'); mic.classList.add('busy'); micl.textContent = '小忆在想…'; sr?.stop();
+      recording = false; busy = true; mic.classList.remove('rec'); mic.classList.add('busy'); micl.textContent = '小忆在听…'; sr?.stop();
+      const th = document.getElementById('thinking'), tt = document.getElementById('thinkt'); th.classList.remove('hidden'); mic.classList.add('hidden'); live.classList.add('hidden');
+      const tmr = setTimeout(() => tt.textContent = '小忆在想下一个问题……', 2500);
       const blob = await new Promise(res => { if (!rec || rec.state === 'inactive') return res(null);
         rec.onstop = () => res(new Blob(chunks, { type: rec.mimeType || 'audio/webm' })); rec.stop(); rec.stream.getTracks().forEach(t => t.stop()); });
-      await answer(blob, manual.value.trim(), btext);
+      await answer(blob, manual.value.trim(), btext); clearTimeout(tmr);
     }
   };
   document.getElementById('end').onclick = finish;
@@ -122,7 +125,7 @@ async function story(id) {
   if (!s) return go('#/library');
   $app.innerHTML = `<main class="page story"><p class="stage">${new Date(s.created).toLocaleDateString('zh-CN')} · ${esc(s.elder.name)} 讲述 ${s.stage ? '· ' + esc(s.stage) : ''}</p>
   <h1 class="title">${esc(s.title)}</h1><article>${esc(s.body).split(/\n+/).map(x => `<p>${x}</p>`).join('')}</article>
-  ${s.quotes ? `<blockquote>${esc(s.quotes)}</blockquote>` : ''}${s.people ? `<p class="tip">关键人物：${esc(s.people)}<br>时间地点：${esc(s.timePlace)}</p>` : ''}
+  ${s.quotes ? `<blockquote>${esc(s.quotes)}</blockquote>` : ''}${s.people ? `<p class="tip">关键人物：${esc(s.people)}</p>` : ''}${s.timePlace ? `<p class="tip">时间地点：${esc(s.timePlace)}</p>` : ''}
   <h3>🎧 原声</h3>${(s.clips || []).map(c => `<div class="clip"><p class="cq">小忆：${esc(c.q)}</p>${c.audio || c.src ? `<audio controls preload="none" src="${c.src || '/api/audio/' + c.audio}"></audio>` : '<p class="tip">（无录音）</p>'}${c.text ? `<p class="ca">“${esc(c.text)}”</p>` : ''}</div>`).join('')}
   <button class="big" id="share">💌 分享给家人</button><button class="ghost" onclick="location.hash='#/library'">📚 回到记忆库</button></main>`;
   document.getElementById('share').onclick = () => navigator.share ? navigator.share({ title: s.title, text: s.body, url: location.href }).catch(() => {}) : (navigator.clipboard?.writeText(s.title + '\n\n' + s.body), alert('故事文字已复制，可以发给家人'));

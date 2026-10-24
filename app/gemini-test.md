@@ -55,3 +55,19 @@ AI Studio 接口（generativelanguage.googleapis.com）对该 key 403，**不再
 - 为保证现场流畅，实时链每个模型 8 s 超时（`GEMINI_FAST_TIMEOUT_MS`），超时或报错就换下一个；pro 链 60 s。
 - 截图实跑时 3.5-flash 出现过 429 RESOURCE_EXHAUSTED，自动回退成功。
 - 已知风险：fake 麦克风的蜂鸣音偶尔被听写出“嗯，那会儿”一类短句（prompt 已要求无人声返回空、temperature=0，大部分情况返回空）。
+
+---
+## 实时链调整（2026-10-24 19:05 UTC+8，v2 验收后）
+
+- 实时链（转写整理 + 实时访谈）默认改为：**gemini-3-flash-preview → gemini-3.5-flash**；**gemini-3.8-flash 不进实时链**（延迟 6–26 s，常超时）。
+- 故事 / 记忆档案仍用 gemini-3.1-pro-preview → gemini-3-flash-preview。
+- 单轮延迟见下方「复测」。
+
+### 复测（2026-10-24，实时链 3-flash 优先 → 3.5-flash，每模型 8 s 超时）
+脚本 `shoot2.mjs` 全流程两次访谈，回答为手动填入（asr=0，只计访谈 Agent）：
+- 第 1 次访谈单轮：3714 / 3503 / 1241 / 1348 / 1778 ms
+- 第 2 次访谈单轮：1137 / 1489 / 1250 / 4188 / 9307 ms（最后一轮 3-flash 8 s 超时回退 3.5-flash）
+- 中位数约 1.6 s，10 轮中有 1 轮回退；另有开场 1 次 3-flash 超时回退。
+- 结束生成（故事 + 档案并行，3.1-pro-preview）：16.5 s / 20.9 s。
+- 同日早些时候 3.1-pro 出现 HTTP 429 和长时间无响应，pro 链最坏 60+60 s，截图脚本等待已放宽到 240 s。
+- 页面错误 0。

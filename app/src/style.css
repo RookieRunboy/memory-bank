@@ -35,3 +35,10 @@ blockquote{margin:0;padding:12px 16px;border-left:5px solid var(--sage);backgrou
 .mic.busy{opacity:.7}.chip{background:var(--card);border-radius:14px;padding:12px 14px;margin-bottom:8px;font-size:20px}.chip small{color:#7a6048;font-size:17px}
 .tl{display:flex;gap:12px;border-left:4px solid var(--rose);padding:4px 12px;font-size:20px}.tl b{min-width:72px;color:var(--brown)}
 .archive h3{margin:12px 0 4px;color:var(--brown)}summary{font-size:20px;cursor:pointer}
+
+.thinking{background:var(--card);border-radius:28px;padding:34px 20px;text-align:center;box-shadow:0 6px 20px #c9a97450;animation:breathe 3s ease-in-out infinite}
+.thinking p{font-size:30px;color:var(--brown);margin:14px 0 6px}.thinking small{font-size:19px;color:#7a6048}
+.dots{display:flex;gap:14px;justify-content:center}.dots i{width:22px;height:22px;border-radius:50%;background:var(--sage);animation:dot 1.6s ease-in-out infinite}
+.dots i:nth-child(2){animation-delay:.25s;background:#c9a974}.dots i:nth-child(3){animation-delay:.5s;background:var(--rose)}
+@keyframes dot{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(-12px);opacity:1}}
+@keyframes breathe{50%{box-shadow:0 6px 30px #c9a97490}}
