@@ -8,3 +8,5 @@
 - 2026-10-24：模型实测：Gemini 4 系列均不可用；可用 gemini-3.5-flash（实时对话/语音整理）、gemini-3.1-pro-preview（故事与记忆档案）、gemini-3-flash-preview（兜底），走 Vertex express 接口。
 - 2026-10-24：gemini-3.8-flash 实测可用，改为实时对话/语音整理主模型（回退 3.5-flash → 3-flash-preview）。
 - 2026-10-24：代码托管到 GitHub 私有仓库 RookieRunboy/memory-bank（.env* 已忽略）。
+- 2026-10-24：v2 验收通过。因延迟（3.8-flash 约 7s 常超时），实时链改为 gemini-3-flash-preview 优先（约 1s），回退 3.5-flash；故事/档案用 3.1-pro。
+- 2026-10-24：前提假设：用户（及路演现场）具备海外网络环境，可直连谷歌服务；暂不考虑国内模型替换与大陆网络适配。手机录音仍需 HTTPS。
