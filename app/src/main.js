@@ -134,7 +134,7 @@ async function stagePick() {
   const T = id => P.nodeTitle(FW, id, p);
   $app.innerHTML = `<main class="page plan"><h2>今天聊什么？</h2><p class="tip">小忆按话题网替${esc(callNameOf(p))}挑好了，家人也可以指定</p>
   <div class="plancard"><p class="lbl">今天话题</p><p class="topic">${esc(v.今天话题)}</p>
-  ${plan.nodes.map((x, k) => `<p class="why">${k ? '然后' : '先聊'}「${esc(T(x.nodeId))}」<small>${esc(x.note || '')}</small></p>`).join('')}
+  ${(() => { const x = plan.nodes[plan.currentNodeIndex || 0] || plan.nodes[0]; return x ? `<p class="why">先聊「${esc(T(x.nodeId))}」</p>` : ''; })()}
   <p class="lbl">小忆会先问</p><p class="q">“${esc(v.当前话题入场问题)}”</p>
   ${v.顺藤线索 ? `<p class="lbl">顺藤线索</p><p class="why">${esc(v.顺藤线索)}</p>` : ''}
   ${v.下次话题 ? `<p class="lbl">下次预告</p><p class="why">${esc(v.下次话题)}</p>` : ''}</div>

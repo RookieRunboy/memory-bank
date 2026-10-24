@@ -85,8 +85,9 @@ const DIMV = (FW, dim, v) => FW.dimensions[dim]?.values[v] || v;
 export function reasonText(FW, x, entities = [], p) {
   const e = entities.find(e => e.id === x.entity);
   return { family: '家人指定', family_trigger: `家人带来了${DIMV(FW, 'trigger', x.trigger)}`, follow_entity: `顺着上次提到的「${e?.name || ''}」`,
-    deepen: `上次聊到第${x.startDepth - 1}层，这次从第${x.startDepth}层（${LAYER_LABEL[x.startDepth]}）接着聊`, coverage: `「${DIMV(FW, x.dim, x.value)}」这方面聊得最少，补一补`,
-    revisit: '都聊过了，回到讲得最开心的话题再聊一层', safe: '轻松安全的话题' }[x.reason] || '';
+    deepen: `上次聊到第${x.startDepth - 1}层，这次从第${x.startDepth}层（${LAYER_LABEL[x.startDepth]}）接着聊`,
+    coverage: x.dim ? `「${DIMV(FW, x.dim, x.value)}」这方面还没聊过` : '还没聊过这边',
+    revisit: '都聊过了，回到讲得最开心的话题再聊一层', safe: '轻松安全的话题', light: '轻松话题' }[x.reason] || '';
 }
 // 当前问题：节点某一层的问题，或触发物开场
 export function questionFor(FW, nodeId, depth, p, trigger) {
@@ -104,7 +105,7 @@ export function planVars(FW, plan, { profile: p = {}, states = {}, entities = []
   if (!notes.length && recentNote) notes.push(recentNote);
   const prevS = plan.previousNode && st(states, plan.previousNode.nodeId);
   return {
-    今天话题: titles.length > 1 ? `${titles[0]}，还有${titles[1]}` : titles[0] || '',
+    今天话题: nodeTitle(FW, ask.nodeId, p) || titles[plan.currentNodeIndex || 0] || titles[0] || '',
     当前话题: nodeTitle(FW, ask.nodeId, p),
     当前层次: ask.depth ? `第${ask.depth}层，${LAYER_LABEL[ask.depth]}` : '',
     当前话题入场问题: questionFor(FW, ask.nodeId, ask.depth, p, ask.trigger),
@@ -230,7 +231,7 @@ export function offlineQuestions(FW, p, request) {
 // ===== 老人自己选话题（2026-10-24）：3 个候选卡片 + 换几个 + 想聊什么都行 =====
 export const cardText = (FW, id, p) => { const n = nodeById(FW, id); return n ? fill(n.card || n.title, p) : ''; };
 const LIGHT = ['food', 'song', 'festival'];
-// 候选：家人指定放第一；尽量 ① 顺藤/加深 ② 轻松触发物（吃食/老歌/节日）③ 没聊过的补覆盖；避开敏感/需平静/缺前提；维度错开；exclude 里的（已展示过/本次已聊）不再出
+// 候选：家人指定放第一；① 顺藤/加深 ② 轻松触发物优先（可多张）③ 覆盖补位权重降低；避开敏感/需平静/缺前提；维度错开；exclude 不再出
 export function candidates(FW, { profile, states = {}, entities = [], lastSessionId = null, prevNodeId = null, request = null, exclude = [], count = 3 } = {}) {
   const out = [], base = { profile, states, entities, lastSessionId, prev: prevNodeId && nodeById(FW, prevNodeId) ? { relation: nodeById(FW, prevNodeId).tags.relation, domain: nodeById(FW, prevNodeId).tags.domain } : undefined };
   const ex = () => [...exclude, ...out.map(x => x.nodeId)];
@@ -239,23 +240,43 @@ export function candidates(FW, { profile, states = {}, entities = [], lastSessio
   const div = list => [...list].sort((a, b) => sc(b) - sc(a))[0];
   const sc = n => tags().reduce((s, t) => s + (t.relation !== n.tags.relation) + (t.domain !== n.tags.domain) + (t.time !== n.tags.time), 0);
   const add = (x, kind) => { if (x && !ex().includes(x.nodeId) && nodeById(FW, x.nodeId)) out.push({ ...x, kind, text: cardText(FW, x.nodeId, profile), note: reasonText(FW, x, entities, profile) }); };
+  const addLight = () => {
+    const safe = FW.planning.fallback_safe_nodes.map(id => nodeById(FW, id));
+    const lightPool = [...safe, ...FW.nodes.filter(n => !safe.includes(n))].filter(n => n.tags.trigger.some(t => LIGHT.includes(t)) && ok(n));
+    const notStartedLight = lightPool.filter(n => st(states, n.id).status === 'not_started');
+    const l = div(notStartedLight.length ? notStartedLight : lightPool);
+    if (!l) return false;
+    const tr = l.tags.trigger.find(t => LIGHT.includes(t));
+    add({ nodeId: l.id, reason: 'light', trigger: null, light: tr, startDepth: Math.min(4, st(states, l.id).depth + 1) }, 'light');
+    return true;
+  };
   if (request?.nodeId || request?.trigger) { const f = selectNode(FW, { ...base, request, exclude: ex() }); if (['family', 'family_trigger'].includes(f.reason)) add(f, 'family'); }
   // ① 顺藤 / 加深
   const f1 = selectNode(FW, { ...base, exclude: ex() }); if (['follow_entity', 'deepen'].includes(f1.reason)) add(f1, 'follow');
-  // ② 轻松触发物：安全节点优先，再其他带吃食/老歌/节日的
-  const safe = FW.planning.fallback_safe_nodes.map(id => nodeById(FW, id));
-  const lightPool = [...safe, ...FW.nodes.filter(n => !safe.includes(n))].filter(n => n.tags.trigger.some(t => LIGHT.includes(t)) && ok(n));
-  const notStartedLight = lightPool.filter(n => st(states, n.id).status === 'not_started');
-  const l = div(notStartedLight.length ? notStartedLight : lightPool);
-  if (l && out.length < count) { const tr = l.tags.trigger.find(t => LIGHT.includes(t)); add({ nodeId: l.id, reason: 'light', trigger: null, light: tr, startDepth: Math.min(4, st(states, l.id).depth + 1) }, 'light'); }
-  // ③ 没聊过的：补覆盖（假设已聊的都聊完，只在 not_started 里挑），多样性优先
-  const fresh = FW.nodes.filter(n => ok(n) && st(states, n.id).status === 'not_started');
-  if (fresh.length && out.length < count) { const s = selectNode(FW, { ...base, lastSessionId: null, exclude: ex(), assumeDone: FW.nodes.filter(n => st(states, n.id).status === 'partial').map(n => n.id) });
-    const n = s.reason === 'coverage' && sc(nodeById(FW, s.nodeId)) >= Math.max(...fresh.map(sc)) - 1 ? nodeById(FW, s.nodeId) : div(fresh);
-    add({ nodeId: n.id, reason: 'coverage', dim: s.dim, value: s.value, startDepth: 1 }, 'fresh'); }
-  // 不够 3 个：按算法继续补；实在没了（换完一轮）就放开已展示的
-  for (let i = 0; out.length < count && i < 10; i++) { const pool = FW.nodes.filter(ok); if (!pool.length) break; const n = div(pool);
-    add({ nodeId: n.id, reason: st(states, n.id).status === 'partial' ? 'deepen' : 'coverage', startDepth: Math.min(4, st(states, n.id).depth + 1) }, 'more'); }
+  // ② 至少一张轻松触发物
+  if (out.length < count) addLight();
+  // ②b 无顺藤时再优先补一张轻松（降低 coverage 出现频率，避免总冒出「妈妈」）
+  if (out.length < count && !out.some(x => x.kind === 'follow')) addLight();
+  // ③ 覆盖补位至多一张：优先带轻松触发的未聊节点，避免总落到同一覆盖维（如父母→妈妈）
+  if (out.length < count) {
+    const fresh = FW.nodes.filter(n => ok(n) && st(states, n.id).status === 'not_started');
+    if (fresh.length) {
+      const lightFresh = fresh.filter(n => n.tags.trigger.some(t => LIGHT.includes(t)));
+      const pool = lightFresh.length ? lightFresh : fresh;
+      const n = div(pool);
+      const s = selectNode(FW, { ...base, lastSessionId: null, exclude: ex(), assumeDone: FW.nodes.filter(x => st(states, x.id).status === 'partial').map(x => x.id) });
+      const covNode = s.reason === 'coverage' ? nodeById(FW, s.nodeId) : null;
+      const useCov = covNode && !lightFresh.length && sc(covNode) >= Math.max(...fresh.map(sc)) - 1;
+      const pick = useCov ? covNode : n;
+      add({ nodeId: pick.id, reason: 'coverage', dim: useCov ? s.dim : undefined, value: useCov ? s.value : undefined, startDepth: 1 }, 'fresh');
+    }
+  }
+  // 不够：再补轻松 → 其它；换完一轮则放开已展示的
+  for (let i = 0; out.length < count && i < 10; i++) {
+    if (addLight()) continue;
+    const pool = FW.nodes.filter(ok); if (!pool.length) break; const n = div(pool);
+    add({ nodeId: n.id, reason: st(states, n.id).status === 'partial' ? 'deepen' : 'coverage', startDepth: Math.min(4, st(states, n.id).depth + 1) }, 'more');
+  }
   if (out.length < count && exclude.length) return [...out, ...candidates(FW, { profile, states, entities, lastSessionId, prevNodeId, exclude: out.map(x => x.nodeId), count: count - out.length })].slice(0, count);
   return out.slice(0, count);
 }

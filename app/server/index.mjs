@@ -109,7 +109,8 @@ app.post('/api/interviews/:id/choose', up.single('audio'), async (req, res) => {
     sp.prevNodeId = o.plan.prevNodeId;
     const node = { ...sp.nodes[0], reason: c.kind === 'family' ? sp.nodes[0].reason : 'elder_choice', pickedFrom: c.kind, note: c.note || sp.nodes[0].note };
     const base = o.after ? o.plan.nodes.slice(0, o.plan.currentNodeIndex + 1) : [];
-    o.plan = { ...o.plan, ...sp, nodes: [...base, node, ...sp.nodes.slice(1)], currentNodeIndex: base.length, ask: sp.ask, free: false, sessionId: v.id, lastSessionId: o.plan.lastSessionId };
+    // 老人自选：只挂当前选中话题；第二个节点等聊够再选题时再定（planSession 内部备选不写入可见 nodes）
+    o.plan = { ...o.plan, ...sp, nodes: [...base, node], currentNodeIndex: base.length, ask: sp.ask, free: false, sessionId: v.id, lastSessionId: o.plan.lastSessionId };
     o.phase = 'chat';
     say = `好，那咱们就聊${P.nodeTitle(ai.FW, c.nodeId, p)}。` + P.questionFor(ai.FW, sp.ask.nodeId, sp.ask.depth, p, sp.ask.trigger);
   }

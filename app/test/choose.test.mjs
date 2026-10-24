@@ -38,3 +38,39 @@ test('含糊或不说：默认第一个', () => { const c = P.candidates(FW, bas
 test('念出候选、问候无残留变量', () => { const c = P.candidates(FW, base), t = P.choiceText(c);
   assert.match(t, /今天想聊哪个？第一个，.+；第二个，.+；第三个，.+。/); assert.match(P.choiceText(c, { after: true }), /接着聊这个.*今天先到这/);
   const plan = P.planSession(FW, base); assert.doesNotThrow(() => P.greetText(FW, plan, base, false)); });
+
+test('换卡多轮：今日话题不固定「…，还有妈妈」；轻松触发物优先', () => {
+  const states = {
+    'youth-meet': { ...P.emptyState('youth-meet'), status: 'partial', depth: 2, turns: 2, updatedAt: 1 },
+    'youth-date': { ...P.emptyState('youth-date'), status: 'partial', depth: 3, turns: 3, updatedAt: 2 },
+  };
+  const seenTopics = [], motherAsSecond = [];
+  let ex = [];
+  for (let i = 0; i < 4; i++) {
+    const cards = P.candidates(FW, { profile: p, states, exclude: ex });
+    assert.equal(cards.length, 3);
+    // 轻松触发物应出现；coverage/fresh 不应霸占第二张
+    const kinds = cards.map(x => x.kind);
+    assert.ok(kinds.includes('light') || cards.filter(x => x.kind === 'light').length >= 1 || kinds.filter(k => k === 'light').length >= 0);
+    assert.ok(cards.some(x => x.kind === 'light'), '每组应有轻松触发物: ' + kinds.join(','));
+    if (cards[1]?.nodeId === 'child-mother') motherAsSecond.push(i);
+    for (const c of cards) {
+      const plan = P.planSession(FW, { profile: p, states, request: { nodeId: c.nodeId } });
+      // 老人自选可见：只看当前；vars 不拼「还有」
+      const single = { ...plan, nodes: [plan.nodes[0]], ask: plan.ask };
+      const v = P.planVars(FW, single, { profile: p, states });
+      seenTopics.push(v.今天话题);
+      assert.ok(!/，还有/.test(v.今天话题), v.今天话题);
+      assert.equal(v.今天话题, P.nodeTitle(FW, c.nodeId, p));
+    }
+    ex.push(...cards.map(x => x.nodeId));
+  }
+  assert.ok(new Set(seenTopics).size >= 3, '换卡后今日话题应随所选变化: ' + seenTopics.join(' | '));
+  assert.ok(motherAsSecond.length <= 1, '第二候选不应几乎每次都是妈妈: rounds ' + motherAsSecond.join(','));
+  // 卡片 note 可有（家人调试），但覆盖文案不再「补一补」
+  for (let i = 0, e = []; i < 3; i++) {
+    const cards = P.candidates(FW, { profile: p, states, exclude: e });
+    for (const c of cards) assert.ok(!/补一补/.test(c.note || ''), c.note);
+    e.push(...cards.map(x => x.nodeId));
+  }
+});

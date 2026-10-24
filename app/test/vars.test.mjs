@@ -36,3 +36,20 @@ test('顺藤摸瓜：上次提到的人会被接着聊', () => {
 test('跑题归档到对应节点', () => {
   const r = P.applyAnswer(FW, {}, { nodeId: 'youth-date', depth: 2, note: '看电影', short: false, emotion: '开心' }, 's1');
   assert.equal(r.states['youth-date'].depth, 2); assert.equal(r.states['youth-date'].status, 'partial'); });
+
+test('今日话题只写当前选中，不预告第二个「还有…」', () => {
+  const states = { 'youth-meet': { ...P.emptyState('youth-meet'), status: 'partial', depth: 2, turns: 2, updatedAt: 1 } };
+  const plan = P.planSession(FW, { profile: DEMO_PROFILE, states });
+  assert.ok(plan.nodes.length >= 2, 'plan 内部仍可备两个节点');
+  const v = P.planVars(FW, plan, { profile: DEMO_PROFILE, states });
+  assert.equal(v.今天话题, P.nodeTitle(FW, plan.ask.nodeId, DEMO_PROFILE));
+  assert.ok(!/，还有/.test(v.今天话题), v.今天话题);
+  assert.equal(v.今天话题, v.当前话题);
+});
+test('coverage 理由不再写「补一补」', () => {
+  const x = { reason: 'coverage', dim: 'relation', value: 'parents', startDepth: 1 };
+  const t = P.reasonText(FW, x, [], DEMO_PROFILE);
+  assert.match(t, /还没聊过/);
+  assert.ok(!/补一补/.test(t), t);
+  assert.equal(P.reasonText(FW, { reason: 'coverage', startDepth: 1 }, [], DEMO_PROFILE), '还没聊过这边');
+});
