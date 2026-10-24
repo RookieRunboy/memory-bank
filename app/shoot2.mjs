@@ -16,12 +16,12 @@ await pg.goto(U); await pg.evaluate(() => localStorage.clear()); await pg.goto(U
 await pg.click('#start'); await shot('02-profile');
 await pg.click('#demo'); await pg.waitForURL(/stage/); await shot('03-stage');
 await pg.click('[data-s="婚恋"]'); await pg.waitForSelector('#mic'); await shot('04-interview1-opening', false);
-await talk('05-interview1'); await pg.waitForURL(/story/); await shot('06-story1');
+await talk('05-interview1'); await pg.waitForSelector('#storyThinking', { timeout: 5000 }).then(() => shot('16-story-thinking', false)).catch(() => console.log('missed story thinking')); await pg.waitForURL(/story/); await shot('06-story1');
 await pg.goto(U + '#/archive'); await pg.waitForSelector('.archive'); await shot('07-archive');
 await pg.goto(U); await shot('08-home-returning');
 await pg.click('#start'); await pg.waitForURL(/stage/); await shot('09-stage-lasttopic');
 await pg.click('[data-s="婚恋"]'); await pg.waitForSelector('#mic'); await shot('10-interview2-continue-opening', false);
 await talk('11-interview2'); await pg.waitForURL(/story/); await shot('12-story2');
 await pg.goto(U + '#/library'); await shot('13-library');
-await pg.goto(U + '#/archive'); await pg.waitForSelector('.archive'); await pg.$$eval('details', d => d.forEach(x => x.open = true)); await shot('14-archive-after2');
+await pg.goto(U + '#/archive'); await pg.waitForSelector('.archive'); await pg.waitForFunction(() => !document.querySelector('#archPending'), null, { timeout: 200000 }); await pg.$$eval('details', d => d.forEach(x => x.open = true)); await shot('14-archive-after2');
 console.log('errors', errs); await b.close();

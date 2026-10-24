@@ -20,12 +20,13 @@ function nextFixed(p, a, turns) { // 兜底：固定问题库里下一道没问�
   return q ? { qid: q.qid, text: fill(q.text, p) } : null;
 }
 
-export async function opening(p, a, isReturn) {
+export async function opening(p, a, isReturn, recent = []) { // recent：档案还没整理进去的上次访谈记录（兜底）
   try {
-    const r = await gemini([{ text: `【记忆档案（以往访谈积累）】${archText(a)}\n${isReturn ? '这是第二次及以后的访谈：开场先亲切提起上次聊到的具体细节（人、地、物），让老人感到被记得，再顺着那个话题问一个新的小细节。' : '这是第一次访谈，按【开场】说。'}\n结尾只问一个问题，用开放问题（怎么、什么样、说说），不要是非题（不要问“是不是/对吗/……吗”）。\n只输出 JSON：{"say":"要朗读的话（最多三句）"}` }], { system: vars(HOST_PROMPT, p), json: true });
+    const r = await gemini([{ text: `【记忆档案（以往访谈积累）】${archText(a)}\n${recent.length ? `【上次访谈原话（档案还在整理中，以此为准）】\n${histText(recent)}\n` : ''}${isReturn ? '这是第二次及以后的访谈：开场先亲切提起上次聊到的具体细节（人、地、物），让老人感到被记得，再顺着那个话题问一个新的小细节。' : '这是第一次访谈，按【开场】说。'}\n结尾只问一个问题，用开放问题（怎么、什么样、说说），不要是非题（不要问“是不是/对吗/……吗”）。\n只输出 JSON：{"say":"要朗读的话（最多三句）"}` }], { system: vars(HOST_PROMPT, p), json: true });
     if (r.say) return { say: r.say, source: 'gemini' };
   } catch {}
   const q = nextFixed(p, a, []);
+  if (isReturn && recent.length) { const said = recent.map(t => t.clean).filter(Boolean).sort((x, y) => y.length - x.length)[0]; if (said && (!a.lastTopic || a.pendingFallback)) a = { ...a, lastTopic: `“${said.slice(0, 24).replace(/[。.，,！!]+$/, '')}”这些事` }; }
   if (isReturn && a.lastTopic) return { say: fill(`{称呼}，您好呀，我是小忆。上次您跟我讲了${a.lastTopic.replace(/^(上次)?(您)?(跟我)?(讲了|提到|说到|说)?/, '').replace(/[。.，,！!]+$/, '')}，我一直记着呢。今天咱们接着聊，${q ? q.text : '您再跟我说说那时候的事吧。'}`, p), qid: q?.qid, source: 'fallback' };
   return { say: fill(SCRIPT.opening, p) + (q ? q.text : ''), qid: q?.qid, source: 'fallback' };
 }
@@ -57,7 +58,7 @@ export async function nextTurn(p, a, turns) {
 
 const DEMO_STORY = { title: '他说我跟桂花糕一样甜', body: '我是在纺织厂认识老李的。他是修机器的，一身机油味。\n\n头一回见他，傻乎乎的，脸一红就不会说话了。哈哈。\n\n那时候谈对象，我们去瘦西湖，他骑自行车带我。那是哪一年来着，我想不起来了。只记得是春天，柳树都绿了。\n\n他给我买过一包桂花糕，说扬州最甜的就是这个，跟我一样甜。\n\n他走了好多年了。这些事，我讲给小梅听，也讲给孙子听。', people: '李建国（老伴）；小梅（女儿）', timePlace: '江苏扬州，纺织厂、瘦西湖', quotes: '“他说扬州最甜的就是这个，跟我一样甜。”' };
 export async function story(p, turns) {
-  try { const t = await gemini([{ text: vars(STORY_PROMPT, p).replace('{转录文本}', histText(turns)) }], { tier: 'pro', timeout: 60000 }); return { ...parse(t), source: 'gemini' }; } catch {}
+  try { const t = await gemini([{ text: vars(STORY_PROMPT, p).replace('{转录文本}', histText(turns)) }], { tier: 'story' }); return { ...parse(t), source: 'gemini' }; } catch {}
   if (isDemo(turns) && turns.length >= 4 && turns[0].clean === DEMO_ANSWERS[0]) return { ...DEMO_STORY, source: 'fallback' };
   const said = turns.map(t => t.clean).filter(Boolean);
   return { title: `${p.hometown || '老家'}的那些年`, body: said.join('\n\n') || '这一次，我们只是慢慢地坐了一会儿。', quotes: said[0] ? `“${said[0]}”` : '', source: 'fallback' };
@@ -66,7 +67,7 @@ export async function story(p, turns) {
 export async function updateArchive(p, a, turns, stage) {
   const asked = [...(a.asked || []), ...turns.map(t => t.qid).filter(Boolean)];
   try {
-    const r = await gemini([{ text: `你在维护老人${p.name}的「记忆档案」。现有档案：${JSON.stringify(a)}\n本次访谈（阶段：${stage}）：\n${histText(turns)}\n\n把本次老人说的新信息合并进档案，只记老人说过的，不编造；前后矛盾并列保留不纠正。输出 JSON：{"people":[{"name":"","relation":"","note":""}],"places":[{"name":"","note":""}],"events":[{"title":"","when":"","detail":""}],"timeline":[{"when":"","what":""}],"lastTopic":"下次开场可提起的上次话题，一句口语，如：您和李爷爷骑自行车去瘦西湖、他给您买桂花糕","conflicts":[""]}` }], { json: true, tier: 'pro', timeout: 60000 });
+    const r = await gemini([{ text: `你在维护老人${p.name}的「记忆档案」。现有档案：${JSON.stringify(a)}\n本次访谈（阶段：${stage}）：\n${histText(turns)}\n\n把本次老人说的新信息合并进档案，只记老人说过的，不编造；前后矛盾并列保留不纠正。输出 JSON：{"people":[{"name":"","relation":"","note":""}],"places":[{"name":"","note":""}],"events":[{"title":"","when":"","detail":""}],"timeline":[{"when":"","what":""}],"lastTopic":"下次开场可提起的上次话题，一句口语，如：您和李爷爷骑自行车去瘦西湖、他给您买桂花糕","conflicts":[""]}` }], { json: true, tier: 'pro' }) // pro 30 s 超时后回退 flash;
     if (r.people) return { ...r, asked, updatedAt: Date.now(), source: 'gemini' };
   } catch {}
   const m = { people: a.people || [], places: a.places || [], events: a.events || [], timeline: a.timeline || [], conflicts: a.conflicts || [] };

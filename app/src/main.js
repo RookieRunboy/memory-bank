@@ -114,7 +114,7 @@ async function answer(blob, manualText, btext) {
 }
 async function finish() {
   speechSynthesis?.cancel(); speak(fill(SCRIPT.closing, session.p));
-  $app.innerHTML = `<main class="page center"><div class="spinner">📖</div><h2>正在把您的故事<br>写成一本小书…</h2><p class="tip">也在更新记忆档案</p></main>`;
+  $app.innerHTML = `<main class="page center"><div class="thinking" id="storyThinking"><div class="dots"><i></i><i></i><i></i></div><p>小忆在把您的故事写下来……</p><small>就几秒钟，您歇一歇</small></div></main>`;
   if (session.online) { try { const r = await post(`/interviews/${session.id}/finish`, {}); return go('#/story/' + r.storyId); } catch {} }
   const st = await generateStory(session.answers || [], session.p), id = 'local' + Date.now();
   await saveStory({ id, createdAt: Date.now(), ...st, profile: session.p, answers: session.answers || [] }); go('#/story/' + id);
@@ -140,6 +140,7 @@ function archive() {
   const a = cache?.archive || {}, p = getProfile() || {}, ivs = (cache?.interviews || []).filter(i => i.finished);
   const sec = (t, arr, f) => `<h3>${t}</h3>${arr?.length ? arr.map(f).join('') : '<p class="tip">还没有记录</p>'}`;
   $app.innerHTML = `<main class="page archive"><h2>🗂 ${esc(p.callName || p.name || '')}的记忆档案</h2><p class="tip">每次聊完自动整理，小忆下次会接着聊</p>
+  ${cache?.archivePending ? `<div class="thinking small" id="archPending"><div class="dots"><i></i><i></i><i></i></div><p>小忆正在整理这次的记忆……</p><small>整理好会自动刷新</small></div>` : ''}
   ${a.lastTopic ? `<p class="hint">💭 上次聊到：${esc(a.lastTopic)}</p>` : ''}
   ${sec('👥 人物', a.people, x => `<div class="chip"><b>${esc(x.name)}</b> · ${esc(x.relation)}<br><small>${esc(x.note)}</small></div>`)}
   ${sec('📍 地点', a.places, x => `<div class="chip"><b>${esc(x.name)}</b><br><small>${esc(x.note)}</small></div>`)}
@@ -148,5 +149,6 @@ function archive() {
   ${a.conflicts?.filter(Boolean).length ? sec('🔀 前后说法（并列保留）', a.conflicts, x => `<p class="tip">${esc(x)}</p>`) : ''}
   ${sec('🎙 访谈记录', ivs, i => `<details class="chip"><summary>${new Date(i.created).toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })} · ${esc(i.stage)} · ${i.turns.length} 句</summary>${i.turns.map(t => `<p class="cq">小忆：${esc(t.q)}</p>${t.audio ? `<audio controls preload="none" src="/api/audio/${t.audio}"></audio>` : ''}<p>整理：${esc(t.clean)}</p><p class="tip">原始：${esc(t.raw)}</p>`).join('')}</details>`)}
   ${back()}</main>`;
+  if (cache?.archivePending) setTimeout(async () => { if (!location.hash.startsWith('#/archive')) return; await load(); archive(); }, 3000);
 }
 route();

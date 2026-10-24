@@ -7,6 +7,7 @@ try { KEY ||= fs.readFileSync(path.join(root, '.env.local'), 'utf8').match(/^GEM
 const list = (v, d) => (v || d).split(',').map(x => x.trim()).filter(Boolean);
 export const CHAINS = {
   fast: [process.env.GEMINI_MODEL_FAST || 'gemini-3-flash-preview', ...list(process.env.GEMINI_MODEL_FAST_FALLBACKS, 'gemini-3.5-flash')], // 转写整理 + 实时访谈
+  story: [process.env.GEMINI_MODEL_STORY || 'gemini-3-flash-preview', ...list(process.env.GEMINI_MODEL_STORY_FALLBACKS, 'gemini-3.5-flash')], // 结束页故事：要几秒内出来
   pro: [process.env.GEMINI_MODEL_PRO || 'gemini-3.1-pro-preview', ...list(process.env.GEMINI_MODEL_PRO_FALLBACKS, 'gemini-3-flash-preview')], // 故事 + 记忆档案
 };
 export const MODELS = CHAINS;
@@ -14,7 +15,7 @@ const redact = s => (KEY ? String(s).split(KEY).join('<KEY>') : String(s));
 export const status = { ok: null, lastError: null, models: CHAINS, hasKey: !!KEY };
 export async function gemini(parts, opts = {}) { // opts.tier: 'fast' | 'pro'
   const chain = CHAINS[opts.tier || 'fast']; let err;
-  const o = { ...opts, timeout: opts.timeout || (opts.tier === 'pro' ? 60000 : +(process.env.GEMINI_FAST_TIMEOUT_MS || 8000)) }; // 实时对话超时即回退更快的模型
+  const o = { ...opts, timeout: opts.timeout || (opts.tier === 'pro' ? +(process.env.GEMINI_PRO_TIMEOUT_MS || 30000) : opts.tier === 'story' ? +(process.env.GEMINI_STORY_TIMEOUT_MS || 20000) : +(process.env.GEMINI_FAST_TIMEOUT_MS || 8000)) }; // 实时对话超时即回退更快的模型
   for (const m of chain) { try { return await call(m, parts, o); }
     catch (e) { err = e; console.warn('[gemini]', m, '失败', redact(e.message).slice(0, 120), '→ 回退'); } }
   throw err;

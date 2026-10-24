@@ -71,3 +71,8 @@ AI Studio 接口（generativelanguage.googleapis.com）对该 key 403，**不再
 - 结束生成（故事 + 档案并行，3.1-pro-preview）：16.5 s / 20.9 s。
 - 同日早些时候 3.1-pro 出现 HTTP 429 和长时间无响应，pro 链最坏 60+60 s，截图脚本等待已放宽到 240 s。
 - 页面错误 0。
+
+### 结束页拆分（2026-10-24）：故事走 story 链（GEMINI_MODEL_STORY，默认 3-flash → 3.5-flash，20 s/模型），档案后台走 pro 链（3.1-pro，GEMINI_PRO_TIMEOUT_MS=30 s 后回退 3-flash）
+- 故事出现耗时（从点结束到返回）：9759 ms / 12615 ms；更早一次 13452 ms
+- 档案后台完成耗时（自结束起）：9241 ms / 13553 ms；更早一次 8463 ms
+- 第二次开场若档案未完成：最多等 3 s，仍未完成则用上次访谈原话兜底（日志 `[opening] 档案未更新完，用上次访谈记录兜底`，已实测触发一次）
