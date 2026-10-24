@@ -1,5 +1,5 @@
 // v2：后端账户 + Gemini 访谈 Agent；后端不可达时回退到 v1 本地离线流程（固定问题 + 演示故事）
-import { SCRIPT, DEMO_PROFILE, DEMO_ANSWERS, DEMO_ANSWERS_2, fill } from './questions.js';
+import { SCRIPT, DEMO_PROFILE, fill } from './questions.js';
 import { autoCallName, callNameOf } from './callname.js';
 import FW from './framework.json';
 import * as P from './planner.js';
@@ -84,9 +84,10 @@ const back = (h = '#/family', t = '← 返回') => `<button class="link" onclick
 // 老人端首屏：只有「开始聊天」；角落低调入口进入与家人同视角的完整内容（不剥夺老人操作权限）
 function home() {
   const p = getProfile(); if (!p) return family();
-  $app.innerHTML = `<main class="page home elder"><a class="corner" id="more" href="#/family">📖 看看我的故事</a>
+  const radio = `<svg class="mic-ico" viewBox="0 0 48 48" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="14" y="8" width="20" height="14" rx="2"/><circle cx="24" cy="15" r="3.5"/><path d="M18 22v6h12v-6M16 34h16M24 28v6"/></svg>`;
+  $app.innerHTML = `<main class="page home elder"><a class="corner" id="more" href="#/family">看看我的故事</a>
   <p class="hello big2">${esc(callNameOf(p))}，<br>今天想聊聊吗？</p>
-  <button class="huge" id="start">🎙<br>开始聊天</button><p class="slogan">爱比遗忘更强大</p></main>`;
+  <button class="huge" id="start">${radio}开始聊天</button><p class="slogan">爱比遗忘更强大</p></main>`;
   document.getElementById('start').onclick = () => { unlockAudio(); setReq(null); go('#/interview'); };
 }
 function family() {
@@ -171,33 +172,37 @@ async function interview() {
       say: P.greetText(FW, P.offlineQuestions(FW, p, req).plan, { profile: p }, false) + P.choiceText(cards) }; }
   renderTurn();
 }
+function topicLabel(s) {
+  const t = s.ask?.nodeId ? P.nodeTitle(FW, s.ask.nodeId, s.p) : '';
+  if (!t) return s.isReturn ? '接着上次聊' : '今天聊聊';
+  if (s.isReturn && s.n === 0) return `接着聊${t}`;
+  return `今天聊${t}`;
+}
 function renderTurn() {
   const s = session, text = s.say, n = s.n, choosing = s.phase === 'choose';
-  $app.innerHTML = choosing ? `<main class="page interview choose"><p class="stage">${s.after ? '这个话题聊得真好 · 接下来聊什么' : '今天想聊哪个？'}${s.isReturn && !s.after ? ' · <b>接着上次聊</b>' : ''}</p>
+  $app.innerHTML = choosing ? `<main class="page interview choose"><p class="stage">${s.after ? '接下来想聊什么' : (s.isReturn ? '接着上次，想聊哪个？' : '今天想聊哪个？')}</p>
   <div class="bubble"><span class="who">小忆</span>${esc(text)}</div>
-  <p class="speaking-ind hidden" id="speakInd">🔊 小忆在说话…</p><button class="link" id="replay">🔊 再听一遍</button>
+  <p class="speaking-ind hidden" id="speakInd">小忆在说话…</p><button class="link" id="replay">再听一遍</button>
   <div class="cards">${(s.cards || []).map((c, i) => `<button class="tcard" data-i="${i}"><b>${['一', '二', '三'][i]}</b><span>${esc(c.text)}</span></button>`).join('')}</div>
-  <div class="row choose-more"><button class="ghost" data-a="more">🔄 换几个</button><button class="ghost" data-a="free">💬 您想聊什么都行</button></div>
-  ${s.after ? `<div class="row choose-more"><button class="ghost" data-a="stay">↩️ 继续聊这个</button><button class="ghost" data-a="end">🌙 今天先到这</button></div>` : ''}
-  <button class="mic small" id="mic"><span class="ico">🎙</span><span id="micl">或者直接说：“就聊第二个”</span></button>
+  ${s.after ? `<div class="row choose-more"><button class="ghost" data-a="stay">继续聊这个</button><button class="ghost" data-a="end">今天先到这</button></div>` : ''}
+  <details class="choose-extra"><summary>换几个，或随便聊</summary>
+  <div class="row choose-more"><button class="ghost" data-a="more">换几个</button><button class="ghost" data-a="free">您想聊什么都行</button></div></details>
+  <button class="mic small" id="mic"><span id="micl">也可以直接说</span></button>
   <p class="live" id="live" data-after="点卡片，或者说出来都行">小忆说完，您点卡片或直接说</p>
   <div class="thinking hidden" id="thinking"><div class="dots"><i></i><i></i><i></i></div><p id="thinkt">小忆在听您想聊哪个……</p></div>
-  <button class="link" id="demoA">（演示：说“就聊第一个吧”）</button>
   <textarea id="manual" placeholder="（家人可在此打字代说）" class="hidden"></textarea></main>`
-  : `<main class="page interview"><p class="stage">${s.online ? `第 ${n + 1} 轮 · ${esc(P.nodeTitle(FW, s.ask?.nodeId, s.p))} · ${P.LAYER_LABEL[s.ask?.depth] || ''}` : `离线演示 · 第 ${n + 1} 题`}${s.isReturn && n === 0 ? ' · <b>接着上次聊</b>' : ''}</p>
+  : `<main class="page interview"><p class="stage">${esc(topicLabel(s))}</p>
   ${s.log.slice(-1).map(l => `<p class="said">您刚才说：“${esc(l)}”</p>`).join('')}
   <div class="bubble"><span class="who">小忆</span>${esc(text)}</div>
-  <p class="speaking-ind hidden" id="speakInd">🔊 小忆在说话…</p><button class="link" id="replay">🔊 再听一遍</button>
-  <button class="mic" id="mic"><span class="ico">🎙</span><span id="micl">点一下，开始说</span></button>
-  <p class="live" id="live" data-after="该您说了，点一下话筒">慢慢说，不着急，说错了也没关系</p>
+  <p class="speaking-ind hidden" id="speakInd">小忆在说话…</p><button class="link" id="replay">再听一遍</button>
+  <button class="mic" id="mic"><span id="micl">点一下，开始说</span></button>
+  <p class="live" id="live" data-after="该您说了，点一下">慢慢说，不着急，说错了也没关系</p>
   <div class="thinking hidden" id="thinking"><div class="dots"><i></i><i></i><i></i></div><p id="thinkt">小忆在认真听……</p><small>不着急，您喝口水歇一歇</small></div>
-  <button class="link" id="demoA">（演示：填入示范回答）</button>
   <textarea id="manual" placeholder="（家人可在此补记文字）" class="hidden"></textarea>
   <div class="row"><button class="ghost" id="end">今天先聊到这</button></div></main>`;
   const live = document.getElementById('live'), manual = document.getElementById('manual'), micl = document.getElementById('micl'), mic = document.getElementById('mic');
   let rec = null, sr = null, chunks = [], btext = '', recording = false, busy = false;
   document.getElementById('replay').onclick = () => speak(text);
-  document.getElementById('demoA').onclick = () => { manual.classList.remove('hidden'); manual.value = choosing ? '就聊第一个吧' : (s.isReturn ? DEMO_ANSWERS_2 : DEMO_ANSWERS)[n] || ''; };
   if (choosing) { const lock = () => $app.querySelectorAll('.tcard,[data-a]').forEach(b => b.disabled = true);
     $app.querySelectorAll('.tcard').forEach(b => b.onclick = () => { lock(); b.classList.add('on'); choose({ action: 'pick', index: +b.dataset.i }); });
     $app.querySelectorAll('[data-a]').forEach(b => b.onclick = () => { lock(); choose({ action: b.dataset.a }); }); }
@@ -210,7 +215,7 @@ function renderTurn() {
       catch { live.textContent = '没能打开麦克风，可以手动补记'; manual.classList.remove('hidden'); }
       if (SR && !s.online) { sr = new SR(); sr.lang = 'zh-CN'; sr.continuous = true; sr.interimResults = true; // 仅离线兜底用浏览器识别
         sr.onresult = ev => { btext = [...ev.results].map(r => r[0].transcript).join(''); live.textContent = btext; }; try { sr.start(); } catch {} }
-      recording = true; mic.classList.add('rec'); micl.textContent = '说完了，点一下'; live.textContent = '我在听…';
+      recording = true; mic.classList.add('rec'); micl.textContent = choosing ? '说完了，点一下' : '说完了，点一下'; live.textContent = '我在听…';
     } else {
       recording = false; busy = true; if (!choosing && s.online) playAck(); // 选题阶段不播短回应 mic.classList.remove('rec'); mic.classList.add('busy'); micl.textContent = '小忆在听…'; sr?.stop();
       const th = document.getElementById('thinking'), tt = document.getElementById('thinkt'); th.classList.remove('hidden'); mic.classList.add('hidden'); live.classList.add('hidden');
@@ -279,17 +284,17 @@ async function story(id) {
   const paras = s.paras || (s.body || '').split(/\n+/).map(text => ({ text, refs: [] }));
   const au = a => a ? (a.startsWith('blob:') ? a : '/api/audio/' + a) : null;
   $app.innerHTML = `<main class="page story"><p class="stage">${new Date(s.created).toLocaleDateString('zh-CN')} · ${esc(s.elder.name)} 讲述 ${s.stage ? '· ' + esc(s.stage) : ''}</p>
-  <h1 class="title">${esc(s.title)}</h1><article>${paras.map((x, k) => `<div class="para"><p>${esc(x.text)}</p>${x.refs.length ? `<button class="play" data-k="${k}" aria-label="听原声">▶ 原声</button>` : ''}</div>`).join('')}</article>
+  <h1 class="title">${esc(s.title)}</h1><article>${paras.map((x, k) => `<div class="para"><p>${esc(x.text)}</p>${x.refs.length ? `<button class="play" data-k="${k}" aria-label="听原声">原声</button>` : ''}</div>`).join('')}</article>
   ${s.quotes ? `<blockquote>${esc(s.quotes)}</blockquote>` : ''}${s.people ? `<p class="tip">关键人物：${esc(s.people)}</p>` : ''}${s.timePlace ? `<p class="tip">时间地点：${esc(s.timePlace)}</p>` : ''}
-  ${s.fullAudio ? `<h3>🎧 整场录音</h3><audio controls preload="none" src="${au(s.fullAudio)}"></audio>` : ''}
-  <details class="transcript" id="tx"><summary>📜 查看完整访谈稿（${(s.transcript || s.clips || []).length} 轮，原话不改动）</summary>
+  ${s.fullAudio ? `<h3>整场录音</h3><audio controls preload="none" src="${au(s.fullAudio)}"></audio>` : ''}
+  <details class="transcript" id="tx"><summary>查看完整访谈稿（${(s.transcript || s.clips || []).length} 轮，原话不改动）</summary>
   ${(s.transcript?.length ? s.transcript : (s.clips || []).map((c, k) => ({ id: c.id || 'c' + k, question: c.q, raw: c.text, clean: c.text, audio: c.audio || c.src }))).map(t => `<div class="turn" id="${esc(t.id)}"><p class="cq">小忆：${esc(t.question)}</p>
     <p class="ca">“${esc(t.clean || '')}”</p>${t.raw && t.raw !== t.clean ? `<p class="raw">原始转写：${esc(t.raw)}</p>` : ''}
     ${t.audio ? `<audio controls preload="none" src="${au(t.audio)}"></audio>` : ''}
     <p class="meta">${esc(t.id)}${t.nodeId ? ` · ${esc(P.nodeTitle(FW, t.nodeId, s.elder))} · 第${t.depth}层 · ${esc(t.emotion || '')}` : ''}</p></div>`).join('')}</details>
-  ${id.startsWith('local') ? '' : `<button class="ghost wide" id="edit">✏️ 修改故事（原话保留，修改留痕）</button>`}
+  ${id.startsWith('local') ? '' : `<button class="ghost wide" id="edit">修改故事（原话保留，修改留痕）</button>`}
   ${s.edits?.length ? `<details class="edits"><summary>修改记录（${s.edits.length}）</summary>${s.edits.map(x => `<p class="meta">${new Date(x.at).toLocaleString('zh-CN')} · ${esc(x.by)} 改了${x.field === 'title' ? '标题' : '正文'}<br>原来：${esc(x.before.slice(0, 40))}…</p>`).join('')}</details>` : ''}
-  <button class="big" id="share">💌 分享给家人</button><button class="ghost" onclick="location.hash='#/library'">📚 回到记忆库</button></main>`;
+  <button class="big" id="share">分享给家人</button><button class="ghost" onclick="location.hash='#/library'">回到记忆库</button></main>`;
   const player = new Audio();
   $app.querySelectorAll('.play').forEach(b => b.onclick = () => { const refs = paras[b.dataset.k].refs.map(clipOf).filter(Boolean), c = refs[0]; if (!c) return;
     const a = au(c.audio || c.src); document.getElementById('tx').open = true; document.getElementById(c.id)?.classList.add('hl');
