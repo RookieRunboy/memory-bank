@@ -1,5 +1,6 @@
 // v2：后端账户 + Gemini 访谈 Agent；后端不可达时回退到 v1 本地离线流程（固定问题 + 演示故事）
 import { SCRIPT, DEMO_PROFILE, DEMO_ANSWERS, DEMO_ANSWERS_2, fill } from './questions.js';
+import { autoCallName, callNameOf } from './callname.js';
 import FW from './framework.json';
 import * as P from './planner.js';
 import { generateStory } from './story.js';
@@ -30,7 +31,7 @@ const back = (h = '#/family', t = '← 返回') => `<button class="link" onclick
 function home() {
   const p = getProfile(); if (!p) return family();
   $app.innerHTML = `<main class="page home elder"><a class="corner" id="more" href="#/family">📖 看看我的故事</a>
-  <p class="hello big2">${esc(p.callName || p.name)}，<br>今天想聊聊吗？</p>
+  <p class="hello big2">${esc(callNameOf(p))}，<br>今天想聊聊吗？</p>
   <button class="huge" id="start">🎙<br>开始聊天</button><p class="slogan">爱比遗忘更强大</p></main>`;
   document.getElementById('start').onclick = () => { setReq(null); go('#/interview'); };
 }
@@ -39,7 +40,7 @@ function family() {
   const cov = p ? FW.nodes.filter(x => P.st(cache?.states || {}, x.id).status !== 'not_started').length : 0;
   $app.innerHTML = `<main class="page home"><p class="poem">趁我还记得，<br>请听我慢慢说。</p><h1 class="logo">记忆银行</h1><p class="sub">陪伴阿尔茨海默病患者</p>
   <div class="illus">📻 📖 🧸</div>
-  ${p ? `<p class="hello">${esc(p.callName || p.name)}，今天想聊聊吗？${n ? `<br><small>已经聊过 ${n} 次啦</small>` : ''}</p><button class="big" id="start">🎙 开始今天的聊天</button>` : `<button class="big" id="start">开始建档</button>`}
+  ${p ? `<p class="hello">${esc(callNameOf(p))}，今天想聊聊吗？${n ? `<br><small>已经聊过 ${n} 次啦</small>` : ''}</p><button class="big" id="start">🎙 开始今天的聊天</button>` : `<button class="big" id="start">开始建档</button>`}
   ${p && cache?.stories?.[0] ? `<a class="card" href="#/story/${cache.stories[0].id}"><b>最近的故事：${esc(cache.stories[0].title)}</b><span>${new Date(cache.stories[0].created).toLocaleDateString('zh-CN')}</span></a>` : ''}
   <div class="row"><button class="ghost" onclick="location.hash='#/library'">📚 记忆库</button>${p ? `<button class="ghost" onclick="location.hash='#/archive'">🗂 记忆档案</button>` : ''}</div>
   ${p ? `<button class="ghost wide" onclick="location.hash='#/map'">🗺 人生地图 · 已聊 ${cov}/${FW.nodes.length} 个话题</button>` : ''}
@@ -51,14 +52,20 @@ function profile() {
   const p = getProfile() || {};
   $app.innerHTML = `<main class="page"><h2>老人档案</h2><p class="tip">由家人填写，帮 AI 更亲切地提问</p>
   <form id="f"><label>姓名<input name="name" required value="${esc(p.name)}" placeholder="如：王秀兰"></label>
-  <label>希望怎么称呼<input name="callName" value="${esc(p.callName)}" placeholder="如：王奶奶"></label>
+  <label>性别<select name="gender"><option value="">请选择</option><option value="女"${p.gender === '女' ? ' selected' : ''}>女</option><option value="男"${p.gender === '男' ? ' selected' : ''}>男</option></select></label>
+  <label>希望怎么称呼<input name="callName" value="${esc(p.callName)}" placeholder="按姓氏和性别自动生成，如：王女士"><small class="tip">默认“姓＋先生/女士”，可以手动改</small></label>
+  <input type="hidden" name="callNameManual" value="${p.callNameManual ? '1' : ''}">
   <label>出生年份<input name="birthYear" inputmode="numeric" value="${esc(p.birthYear)}" placeholder="如：1948"></label>
   <label>家乡<input name="hometown" value="${esc(p.hometown)}" placeholder="如：江苏扬州"></label>
   <label>重要的人（可选）<input name="people" value="${esc(p.people)}" placeholder="如：老伴李建国、女儿小梅"></label>
   <button class="big" type="submit">保存，下一步</button></form>
-  <button class="ghost" id="demo">✨ 填入演示档案（王奶奶）</button>${back()}</main>`;
-  document.getElementById('f').onsubmit = async e => { e.preventDefault(); await setProfile({ ...p, ...Object.fromEntries(new FormData(e.target)) }); go('#/stage'); };
-  document.getElementById('demo').onclick = async () => { if (!elderId) { elderId = 'demo-wang'; localStorage.setItem('mb_elder', elderId); } await setProfile(DEMO_PROFILE); go('#/stage'); }; // 演示：接上服务器预置的王奶奶数据
+  <button class="ghost" id="demo">✨ 填入演示档案（王女士）</button>${back()}</main>`;
+  const f = document.getElementById('f'), cn = f.callName, man = f.callNameManual;
+  const auto = () => { if (!man.value) cn.value = autoCallName(f.name.value, f.gender.value); }; // 手动改过就不再自动覆盖
+  f.name.oninput = auto; f.gender.onchange = auto; cn.oninput = () => { man.value = cn.value.trim() ? '1' : ''; if (!man.value) auto(); }; auto();
+  f.onsubmit = async e => { e.preventDefault(); const d = Object.fromEntries(new FormData(f)); const np = { ...p, ...d, callNameManual: !!d.callNameManual };
+    if (np.callName !== p.callName) delete np.callNameBy; await setProfile(np); go('#/stage'); };
+  document.getElementById('demo').onclick = async () => { if (!elderId) { elderId = 'demo-wang'; localStorage.setItem('mb_elder', elderId); } await setProfile(DEMO_PROFILE); go('#/stage'); }; // 演示：接上服务器预置的王女士数据
 }
 // 会话规划页：自动选题 + 家人指定（节点或触发物）
 const getReq = () => JSON.parse(sessionStorage.getItem('mb_req') || 'null');
@@ -70,7 +77,7 @@ async function stagePick() {
   try { d = await api(`/elders/${elderId}/plan${req ? '?' + new URLSearchParams(Object.entries(req).filter(([, v]) => v)) : ''}`); } catch {}
   const plan = d?.plan || P.offlineQuestions(FW, p, req).plan, v = d?.vars || P.planVars(FW, plan, { profile: p });
   const T = id => P.nodeTitle(FW, id, p);
-  $app.innerHTML = `<main class="page plan"><h2>今天聊什么？</h2><p class="tip">小忆按话题网替${esc(p.callName || p.name)}挑好了，家人也可以指定</p>
+  $app.innerHTML = `<main class="page plan"><h2>今天聊什么？</h2><p class="tip">小忆按话题网替${esc(callNameOf(p))}挑好了，家人也可以指定</p>
   <div class="plancard"><p class="lbl">今天话题</p><p class="topic">${esc(v.今天话题)}</p>
   ${plan.nodes.map((x, k) => `<p class="why">${k ? '然后' : '先聊'}「${esc(T(x.nodeId))}」<small>${esc(x.note || '')}</small></p>`).join('')}
   <p class="lbl">小忆会先问</p><p class="q">“${esc(v.当前话题入场问题)}”</p>
@@ -91,7 +98,7 @@ function lifeMap() {
   const p = getProfile() || {}, states = cache?.states || {}, cov = P.coverage(FW, states);
   const dot = s => [1, 2, 3, 4].map(k => `<i class="${s.depth >= k ? 'on' : ''}"></i>`).join('');
   const chip = n => { const s = P.st(states, n.id); return `<button class="node ${s.status}${s.sensitive ? ' sens' : ''}" data-n="${n.id}"><b>${esc(P.nodeTitle(FW, n.id, p))}</b><span class="d">${dot(s)}</span>${s.sensitive ? '<small>先放一放</small>' : ''}</button>`; };
-  $app.innerHTML = `<main class="page map"><h2>🗺 ${esc(p.callName || p.name || '')}的人生地图</h2>
+  $app.innerHTML = `<main class="page map"><h2>🗺 ${esc(callNameOf(p))}的人生地图</h2>
   <p class="tip">深色是聊完的，浅色是聊过一些，空白的还没聊。点一个话题，下次就聊它</p>
   <div class="legend"><span class="node done">聊完</span><span class="node partial">聊过一些</span><span class="node not_started">还没聊</span></div>
   ${Object.entries(FW.dimensions.time.values).map(([t, l]) => `<section class="era"><h3>${l}</h3><div class="nodes">${FW.nodes.filter(n => n.tags.time === t).map(chip).join('')}</div></section>`).join('')}
@@ -149,7 +156,7 @@ async function answer(blob, manualText, btext) {
   const s = session;
   if (s.online) {
     const fd = new FormData(); if (blob) fd.append('audio', blob, 'a.webm'); fd.append('question', s.say); if (manualText) fd.append('manual', manualText); if (btext) fd.append('browserText', btext);
-    try { const r = await post(`/interviews/${s.id}/turn`, fd); s.log.push(r.transcript.clean || '……'); s.n++; s.ask = r.next.ask; s.closing = r.closing || s.closing;
+    try { const r = await post(`/interviews/${s.id}/turn`, fd); s.log.push(r.transcript.clean || '……'); s.n++; s.ask = r.next.ask; s.closing = r.closing || s.closing; if (r.profile) { localStorage.setItem('mb_profile', JSON.stringify(r.profile)); if (cache) cache.profile = r.profile; }
       if (r.next.done) { session.closedSpoken = !!r.next.say; if (r.next.say) await speak(r.next.say); return finish(); } s.say = r.next.say; return renderTurn();
     } catch { s.online = false; const o = P.offlineQuestions(FW, s.p, null); s.qs = o.qs; s.plan = o.plan; s.answers = []; }
   }
@@ -209,7 +216,7 @@ async function library() {
 function archive() {
   const a = cache?.archive || {}, p = getProfile() || {}, ivs = (cache?.interviews || []).filter(i => i.finished);
   const sec = (t, arr, f) => `<h3>${t}</h3>${arr?.length ? arr.map(f).join('') : '<p class="tip">还没有记录</p>'}`;
-  $app.innerHTML = `<main class="page archive"><h2>🗂 ${esc(p.callName || p.name || '')}的记忆档案</h2><p class="tip">每次聊完自动整理，小忆下次会接着聊</p>
+  $app.innerHTML = `<main class="page archive"><h2>🗂 ${esc(callNameOf(p))}的记忆档案</h2><p class="tip">每次聊完自动整理，小忆下次会接着聊</p>
   ${cache?.archivePending ? `<div class="thinking small" id="archPending"><div class="dots"><i></i><i></i><i></i></div><p>小忆正在整理这次的记忆……</p><small>整理好会自动刷新</small></div>` : ''}
   ${a.lastTopic ? `<p class="hint">💭 上次聊到：${esc(a.lastTopic)}</p>` : ''}
   ${sec('🧾 实体表（人 · 地 · 物）', cache?.entities, x => `<div class="ent"><span class="ty">${{ person: '👤 人', place: '📍 地', thing: '🎁 物' }[x.type] || x.type}</span><b>${esc(x.name)}</b>${x.relation ? ` · ${esc(FW.dimensions.relation.values[x.relation] || x.relation)}` : ''}${x.deceased ? ' · 已故' : ''}<br><small>来自：${x.sourceNodes.map(id => esc(P.nodeTitle(FW, id, p))).join('、')}${x.sourceTurns?.length ? ` · 出处句子 ${x.sourceTurns.map(esc).join('、')}` : ''}</small>${x.notes?.length ? `<br><small>${esc(x.notes.slice(-2).join('；'))}</small>` : ''}</div>`)}

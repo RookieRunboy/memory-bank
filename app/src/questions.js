@@ -1,3 +1,4 @@
+import { callNameOf } from './callname.js';
 // 数据来源：docs/interview.md（2026-10-24 初稿）。问题库、话术、提示词集中在此，改文档后同步此文件即可。
 // 变量：{姓名}{称呼}{出生年份}{家乡}{重要人物}{阶段}
 export const STAGES = ['童年', '求学工作', '婚恋', '为人父母'];
@@ -62,14 +63,14 @@ export const STORY_PROMPT = `你是一位细心的口述历史整理者。下面
 错在：标题加了书名号且不是老人的话；写了“未提及”“无具体年份”“不详”“无”；时间地点里又套了“时间：”“地点：”小标题。
 访谈转录：
 {转录文本}`;
-export const DEMO_PROFILE = { name: '王秀兰', callName: '王奶奶', birthYear: '1948', hometown: '江苏扬州', people: '老伴李建国（已故）、女儿小梅', stage: '婚恋' };
+export const DEMO_PROFILE = { name: '王秀兰', gender: '女', callName: '王女士', birthYear: '1948', hometown: '江苏扬州', people: '老伴李建国（已故）、女儿小梅', stage: '婚恋' };
 // 路演示范对话（虚构），手动输入兜底/无麦克风时可一键填入
 export const DEMO_ANSWERS = ['那是在厂里……纺织厂。他是修机器的，一身机油味。', '傻乎乎的，脸一红就不会说话了。哈哈。', '去瘦西湖，他骑自行车带我……那是哪一年来着，我想不起来了。', '春天，柳树都绿了。他走了好多年了……', '他给我买过一包桂花糕，说扬州最甜的就是这个，跟我一样甜。'];
 // 从「老伴李建国（已故）、女儿小梅」里只取一个合适的人名：优先配偶，其次第一位；去掉关系词和备注
 export const pickPerson = (people = '', prefer = /老伴|爱人|丈夫|妻子|老公|老婆/) => {
   const items = people.split(/[、，,；;\s]+/).filter(Boolean); const it = items.find(x => prefer.test(x)) || items[0] || '';
   return it.replace(/[（(].*?[)）]/g, '').replace(/^(老伴|爱人|丈夫|妻子|老公|老婆|女儿|儿子|孙子|孙女|闺女)/, '').trim() || '老伴'; };
-export const fill = (t, p = {}) => t.replace(/\{姓名\}/g, p.name || '').replace(/\{称呼\}/g, p.callName || p.name || '您')
+export const fill = (t, p = {}) => t.replace(/\{姓名\}/g, p.name || '').replace(/\{称呼\}/g, callNameOf(p))
   .replace(/\{出生年份\}/g, p.birthYear || '').replace(/\{家乡\}/g, p.hometown || '老家').replace(/\{重要人物\}/g, pickPerson(p.people)).replace(/\{阶段\}/g, p.stage || '');
 export const questionsFor = (p) => { const q = QUESTION_BANK[p.stage] || QUESTION_BANK['童年']; return q.slice(0, DEMO_COUNT).map((t, i) => ({ stage: p.stage, text: fill((i === 0 ? SCRIPT.opening : '') + splitQ(t)[0], p) })); };
 // 第二次访谈的示范回答（虚构，路演用，承接上次瘦西湖/桂花糕话题）

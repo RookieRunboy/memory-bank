@@ -15,7 +15,7 @@ export async function generateStory(answers, profile) {
   }
   return demoStory(profile);
 }
-// 演示假数据：docs/interview.md 第四部分示范对话（扬州王秀兰奶奶，虚构）
+// 演示假数据：docs/interview.md 第四部分示范对话（扬州王秀兰女士，虚构）
 function demoStory(p) {
   return { title: '他说我跟桂花糕一样甜',
     body: `我是在纺织厂认识老李的。他是修机器的，一身机油味。\n\n头一回见他，傻乎乎的，脸一红就不会说话了。哈哈。\n\n那时候谈对象，我们去瘦西湖，他骑自行车带我。那是哪一年来着，我想不起来了。只记得是春天，柳树都绿了。\n\n他给我买过一包桂花糕，说扬州最甜的就是这个，跟我一样甜。\n\n他走了好多年了。这些事，我讲给小梅听，也讲给孙子听。`,

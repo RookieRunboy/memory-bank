@@ -30,12 +30,12 @@ function profile() {
   const p = getProfile() || {};
   $app.innerHTML = `<main class="page"><h2>老人档案</h2><p class="tip">由家人填写，帮 AI 更亲切地提问</p>
   <form id="f"><label>姓名<input name="name" required value="${esc(p.name)}" placeholder="如：王秀兰"></label>
-  <label>希望怎么称呼<input name="callName" value="${esc(p.callName)}" placeholder="如：王奶奶"></label>
+  <label>希望怎么称呼<input name="callName" value="${esc(p.callName)}" placeholder="如：王女士"></label>
   <label>出生年份<input name="birthYear" inputmode="numeric" value="${esc(p.birthYear)}" placeholder="如：1945"></label>
   <label>家乡<input name="hometown" value="${esc(p.hometown)}" placeholder="如：浙江绍兴"></label>
   <label>重要的人（可选）<input name="people" value="${esc(p.people)}" placeholder="如：老伴李建国、女儿小梅"></label>
   <button class="big" type="submit">保存，下一步</button></form>
-  <button class="ghost" id="demo">✨ 填入演示档案（王奶奶）</button>
+  <button class="ghost" id="demo">✨ 填入演示档案（王女士）</button>
   <button class="link" onclick="location.hash='#/'">← 返回</button></main>`;
   document.getElementById('f').onsubmit = e => { e.preventDefault(); setProfile({ ...getProfile(), ...Object.fromEntries(new FormData(e.target)) }); go('#/stage'); };
   document.getElementById('demo').onclick = () => { setProfile(DEMO_PROFILE); go('#/stage'); };

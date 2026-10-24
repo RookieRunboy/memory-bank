@@ -1,6 +1,7 @@
 import express from 'express'; import multer from 'multer'; import initSqlJs from 'sql.js';
 import fs from 'fs'; import path from 'path'; import { fileURLToPath } from 'url';
-import { status } from './gemini.mjs'; import * as ai from './ai.mjs'; import * as P from '../src/planner.js'; import JSZip from 'jszip';
+import { status } from './gemini.mjs'; import * as ai from './ai.mjs'; import { withAutoCallName } from '../src/callname.js';
+import * as P from '../src/planner.js'; import JSZip from 'jszip';
 const dir = path.dirname(fileURLToPath(import.meta.url)), DATA = path.resolve(process.env.DATA_DIR || path.join(dir, 'data')), AUDIO = path.join(DATA, 'audio'), DBF = path.join(DATA, 'mb.sqlite');
 fs.mkdirSync(AUDIO, { recursive: true });
 const SQL = await initSqlJs(); const db = fs.existsSync(DBF) ? new SQL.Database(fs.readFileSync(DBF)) : new SQL.Database();
@@ -18,14 +19,16 @@ const uid = p => p + Date.now().toString(36) + Math.random().toString(36).slice(
 const elder = id => { const e = one('select * from elders where id=?', [id]); return e && { id: e.id, profile: J(e.profile), archive: J(e.archive) || {} }; };
 const iv = id => { const r = one('select * from interviews where id=?', [id]); return r && { ...r, turns: J(r.turns) || [], opening: J(r.opening) }; };
 
-// 空库自动灌入王奶奶演示数据（档案 + 一次访谈 + 故事 + 记忆档案/实体/话题状态），第二次访谈可直接接续开场
-if (!one('select count(*) n from elders').n) { const { seedDemo } = await import('./seed.mjs'); await seedDemo({ db, ai, P }); save(); console.log('[seed] 已灌入王奶奶演示数据（elder id: demo-wang）'); }
+// 空库自动灌入王女士演示数据（档案 + 一次访谈 + 故事 + 记忆档案/实体/话题状态），第二次访谈可直接接续开场
+if (!one('select count(*) n from elders').n) { const { seedDemo } = await import('./seed.mjs'); await seedDemo({ db, ai, P }); save(); console.log('[seed] 已灌入王女士演示数据（elder id: demo-wang）'); }
 const app = express(); app.use(express.json({ limit: '2mb' }));
 const up = multer({ storage: multer.memoryStorage(), limits: { fileSize: 20e6 } });
 import { gemini } from './gemini.mjs';
 app.get('/api/health', async (_, res) => { if (status.ok === null) await gemini([{ text: '回复：好' }], { timeout: 10000 }).catch(() => {}); res.json({ gemini: { ok: status.ok, models: status.models, lastModel: status.lastModel, hasKey: status.hasKey, lastError: status.lastError } }); });
 app.post('/api/elders', (req, res) => { const id = req.body.id || uid('e'); const old = elder(id);
-  db.run('insert or replace into elders values(?,?,?,?)', [id, JSON.stringify(req.body.profile), JSON.stringify(old?.archive || {}), Date.now()]); save(); res.json(elder(id)); });
+  let np = withAutoCallName(req.body.profile || {}); // 称呼默认 姓＋先生/女士；手动改过/老人要求过的不覆盖
+  if (old?.profile?.callNameBy === 'elder' && !np.callNameManual && np.callNameBy !== 'elder') np = { ...np, callName: old.profile.callName, callNameBy: 'elder' };
+  db.run('insert or replace into elders values(?,?,?,?)', [id, JSON.stringify(np), JSON.stringify(old?.archive || {}), Date.now()]); save(); res.json(elder(id)); });
 app.get('/api/elders/:id', (req, res) => { const e = elder(req.params.id); if (!e) return res.status(404).json({});
   e.interviews = all('select id,stage,created,turns,finished from interviews where elder_id=? order by created desc', [e.id]).map(r => ({ ...r, turns: J(r.turns) }));
   e.stories = all('select * from stories where elder_id=? order by created desc', [e.id]).map(s => ({ id: s.id, created: s.created, interview_id: s.interview_id, ...J(s.data) }));
@@ -44,7 +47,7 @@ app.get('/api/elders/:id/plan', (req, res) => { const e = elder(req.params.id); 
   res.json({ plan, vars: P.planVars(ai.FW, plan, { profile: e.profile, states, entities }) }); });
 app.post('/api/elders/:id/nodes/:nid/reset', (req, res) => { const x = getState(req.params.id); delete x.states[req.params.nid]; setState(req.params.id, x); save(); res.json({ ok: true }); }); // 家人手动重置
 app.post('/api/interviews', async (req, res) => { const e = elder(req.body.elderId); if (!e) return res.status(404).json({});
-  const p = e.profile;
+  const p = withAutoCallName(e.profile);
   const isReturn = !!one('select id from interviews where elder_id=? and finished=1', [e.id]);
   // 档案还没整理完：最多等 3 秒，仍未完成就用档案里还没收录的上次访谈记录兜底（节点状态和实体表每轮已同步写入，不受影响）
   const job = archiveJobs.get(e.id); if (job) await Promise.race([job.promise, new Promise(r => setTimeout(r, 3000))]);
@@ -60,7 +63,7 @@ app.post('/api/interviews', async (req, res) => { const e = elder(req.body.elder
   db.run('insert into interviews values(?,?,?,?,?,?,0)', [id, e.id, topic, Date.now(), '[]', JSON.stringify(o)]); save();
   res.json({ id, ...o, isReturn, topic }); });
 app.post('/api/interviews/:id/turn', up.single('audio'), async (req, res) => { const v = iv(req.params.id); if (!v) return res.status(404).json({});
-  const e = elder(v.elder_id), p = e.profile, o = v.opening;
+  const e = elder(v.elder_id), p = withAutoCallName(e.profile), o = v.opening;
   let audio = null; if (req.file?.size > 0) { audio = `${v.id}-${v.turns.length}.${(req.file.mimetype || '').includes('mp4') ? 'm4a' : 'webm'}`; fs.writeFileSync(path.join(AUDIO, audio), req.file.buffer); }
   const t0 = Date.now();
   const tr = req.body.manual ? { raw: req.body.manual, clean: req.body.manual, source: 'manual' } : await ai.transcribe(req.file?.buffer, req.file?.mimetype, req.body.browserText);
@@ -75,16 +78,19 @@ app.post('/api/interviews/:id/turn', up.single('audio'), async (req, res) => { c
   db.run('insert into transcript_turns values(?,?,?,?,?)', [tid, v.id, e.id, v.turns.length, JSON.stringify({ id: tid, idx: v.turns.length, at: T.at, question: T.q, raw: T.raw, clean: T.clean, audio: T.audio, asrSource: T.asrSource, nodeId: n.analysis.nodeId, depth: n.analysis.depth, emotion: n.emotion, note: n.analysis.note, askedNode: ask.nodeId, askedDepth: ask.depth })]);
   const names = new Set((n.analysis.entities || []).map(x => x.name)); // 实体表每条注明出处句子
   for (const x of n.entities) if (names.has(x.name) || (x.aliases || []).some(a => names.has(a))) x.sourceTurns = [...new Set([...(x.sourceTurns || []), tid])];
-  setState(e.id, { states: n.states, entities: n.entities }); o.plan = n.plan; o.closing = ai.closing(p, { states: n.states, entities: n.entities, plan: n.plan });
+  if (n.callName) { // 老人当场改口：写入档案称呼（后续轮次、下次访谈生效）
+    const np = { ...e.profile, callName: n.callName, callNameBy: 'elder', callNameManual: true }, arc = { ...e.archive, callName: n.callName, callNameAt: Date.now() };
+    db.run('update elders set profile=?, archive=? where id=?', [JSON.stringify(np), JSON.stringify(arc), e.id]); console.log(`[callName] ${e.id} 改口为「${n.callName}」`); }
+  setState(e.id, { states: n.states, entities: n.entities }); o.plan = n.plan; o.closing = ai.closing(n.callName ? { ...p, callName: n.callName } : p, { states: n.states, entities: n.entities, plan: n.plan });
   db.run('update interviews set turns=?, opening=? where id=?', [JSON.stringify(v.turns), JSON.stringify(o), v.id]); save();
-  res.json({ transcript: tr, next: { emotion: n.emotion, action: n.action, say: n.say, done: n.done, source: n.source, analysis: n.analysis, ask: n.plan.ask }, closing: o.closing }); });
+  res.json({ transcript: tr, next: { emotion: n.emotion, action: n.action, say: n.say, done: n.done, source: n.source, analysis: n.analysis, ask: n.plan.ask }, closing: o.closing, ...(n.callName ? { profile: elder(e.id).profile } : {}) }); });
 // 记忆档案后台更新：同一位老人串行，不阻塞故事页
 const archiveJobs = new Map(); // elderId -> { promise, since, pending: [interviewId] }
 function queueArchive(eid, v, p) {
   const prev = archiveJobs.get(eid), job = prev || { since: Date.now(), pending: [] }; job.pending.push(v.id);
   job.promise = (prev?.promise || Promise.resolve()).then(async () => { const t0 = Date.now(), e = elder(eid);
-    const a = await ai.updateArchive(p, e.archive, v.turns, v.stage).catch(() => null);
-    if (a) { a.interviews = [...(e.archive.interviews || []), v.id]; db.run('update elders set archive=? where id=?', [JSON.stringify(a), eid]); save(); }
+    const a = await ai.updateArchive(e.profile, e.archive, v.turns, v.stage).catch(() => null);
+    if (a) { a.interviews = [...(e.archive.interviews || []), v.id]; if (e.archive.callName) { a.callName = e.archive.callName; a.callNameAt = e.archive.callNameAt; } db.run('update elders set archive=? where id=?', [JSON.stringify(a), eid]); save(); }
     console.log(`[archive] ${v.id} ${a?.source || 'error'} ${Date.now() - t0}ms（后台，自结束起 ${Date.now() - v.finishedAt}ms）`);
     job.pending = job.pending.filter(x => x !== v.id); if (!job.pending.length) archiveJobs.delete(eid); });
   archiveJobs.set(eid, job);

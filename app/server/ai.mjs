@@ -4,6 +4,7 @@ import fs from 'fs'; import path from 'path'; import { fileURLToPath } from 'url
 import { gemini } from './gemini.mjs';
 import { SCRIPT, DEMO_ANSWERS, fill } from '../src/questions.js';
 import * as P from '../src/planner.js';
+import { detectCallName } from '../src/callname.js';
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 export const FW = JSON.parse(fs.readFileSync(path.join(root, 'src/framework.json'), 'utf8')); // 人生访谈框架 v2
 const md = fs.readFileSync(path.join(root, '../docs/interview.md'), 'utf8');
@@ -58,10 +59,13 @@ export async function nextTurn(p, c, turns, sessionId) {
       `${second ? `今天的下一个话题：${second.nodeId}（${P.nodeTitle(FW, second.nodeId, p)}），入场问题：${P.questionFor(FW, second.nodeId, Math.max(1, second.startDepth || 1), p)}\n` : '今天没有下一个话题了，当前话题聊够了就按【结束】收尾。\n'}` +
       `请按【说话方式】【必须遵守】【话题内引导】【过渡到下一个话题】决定下一句。已经聊了${turns.length}轮，满${MAX}轮或老人累了就按【结束】收尾。\n` +
       `同时分析老人刚才这一句：属于哪个节点（跑题就填它真正讲到的节点 id，找不到就填最接近的）、到达第几层（0 没有实质内容，1 事实，2 场景细节，3 感受，4 想对后辈说的话）、一句要点、提到的人地物。\n` +
-      `只输出 JSON：{"answer":{"nodeId":"","depth":0,"note":"","entities":[{"type":"person|place|thing","name":"","aliases":[],"relation":"parents|siblings|spouse|children|friends|teachers|colleagues|null","deceased":false,"trigger":"photo|song|food|object|festival|null","note":""}]},"emotion":"开心|平静|卡壳|难过|困惑|累了|烦躁","leave":null,"ask":{"nodeId":"下一句问的是哪个节点","depth":1},"action":"追问细节|给台阶|安抚|换话题|过渡|收尾","say":"要朗读的话","done":false}。leave 只在老人难过且安抚后仍未恢复时填 "upset"，累了填 "tired"。` }],
+      `只输出 JSON：{"answer":{"nodeId":"","depth":0,"note":"","entities":[{"type":"person|place|thing","name":"","aliases":[],"relation":"parents|siblings|spouse|children|friends|teachers|colleagues|null","deceased":false,"trigger":"photo|song|food|object|festival|null","note":""}]},"emotion":"开心|平静|卡壳|难过|困惑|累了|烦躁","leave":null,"ask":{"nodeId":"下一句问的是哪个节点","depth":1},"action":"追问细节|给台阶|安抚|换话题|过渡|收尾","callName":null,"say":"要朗读的话","done":false}。leave 只在老人难过且安抚后仍未恢复时填 "upset"，累了填 "tired"。callName 只在老人刚才明确要求换个叫法时填新称呼（如老人说“叫我老王就行”就填 "老王"），并且 say 里当场用新称呼；否则填 null。` }],
       { system: vars(HOST_PROMPT, p, v), json: true });
     if (!r?.say) throw new Error('empty');
   } catch (e) { if (/未替换的变量/.test(e.message)) console.warn('[vars]', e.message); r = null; source = 'fallback'; }
+  // 0) 改口：老人主动要求别的叫法（模型给 callName，或规则从原话识别），当场生效
+  const newCall = (typeof r?.callName === 'string' && r.callName.trim() && r.callName.trim() !== p.callName ? r.callName.trim().slice(0, 8) : null) || (() => { const c = detectCallName(last?.clean); return c && c !== p.callName ? c : null; })();
+  if (newCall) p = { ...p, callName: newCall, callNameBy: 'elder' };
   // 1) 回答归属与状态
   const rule = P.ruleAnalyze(FW, last?.clean || '', ask, p);
   const an = r?.answer && validNode(r.answer.nodeId) ? { ...r.answer, depth: Math.max(0, Math.min(4, +r.answer.depth || 0)) } : rule;
@@ -84,7 +88,7 @@ export async function nextTurn(p, c, turns, sessionId) {
     text = done ? null : say(pre + P.questionFor(FW, plan.ask.nodeId, plan.ask.depth, p));
   }
   if (done) { plan.done = true; if (!r) text = closing(p, { ...c, states, entities, plan }); }
-  return { emotion, action: r?.action || (done ? '收尾' : leave ? '过渡' : '追问细节'), say: text, done, source, analysis: { ...an, short, leave }, plan, states, entities };
+  return { emotion, action: r?.action || (done ? '收尾' : leave ? '过渡' : '追问细节'), say: text, done, source, analysis: { ...an, short, leave }, plan, states, entities, callName: newCall };
 }
 
 export const DEMO_STORY = { title: '他说我跟桂花糕一样甜', body: '我是在纺织厂认识老李的。他是修机器的，一身机油味。\n\n头一回见他，傻乎乎的，脸一红就不会说话了。哈哈。\n\n那时候谈对象，我们去瘦西湖，他骑自行车带我。那是哪一年来着，我想不起来了。只记得是春天，柳树都绿了。\n\n他给我买过一包桂花糕，说扬州最甜的就是这个，跟我一样甜。\n\n他走了好多年了。这些事，我讲给小梅听，也讲给孙子听。', people: '李建国（老伴）；小梅（女儿）', timePlace: '江苏扬州，纺织厂、瘦西湖', quotes: '“他说扬州最甜的就是这个，跟我一样甜。”' };
@@ -98,7 +102,7 @@ export async function story(p, turns) {
 export async function updateArchive(p, a, turns, stage, { offline = false } = {}) {
   const asked = [...(a.asked || []), ...turns.map(t => t.qid).filter(Boolean)];
   if (!offline) try {
-    const r = await gemini([{ text: `你在维护老人${p.name}的「记忆档案」。现有档案：${JSON.stringify(a)}\n本次访谈（阶段：${stage}）：\n${histText(turns)}\n\n把本次老人说的新信息合并进档案，只记老人说过的，不编造；前后矛盾并列保留不纠正。输出 JSON：{"people":[{"name":"","relation":"","note":""}],"places":[{"name":"","note":""}],"events":[{"title":"","when":"","detail":""}],"timeline":[{"when":"","what":""}],"lastTopic":"下次开场可提起的上次话题，一句口语，如：您和李爷爷骑自行车去瘦西湖、他给您买桂花糕","conflicts":[""]}` }], { json: true, tier: 'pro' }) // pro 30 s 超时后回退 flash;
+    const r = await gemini([{ text: `你在维护老人${p.name}的「记忆档案」。现有档案：${JSON.stringify(a)}\n本次访谈（阶段：${stage}）：\n${histText(turns)}\n\n把本次老人说的新信息合并进档案，只记老人说过的，不编造；前后矛盾并列保留不纠正。输出 JSON：{"people":[{"name":"","relation":"","note":""}],"places":[{"name":"","note":""}],"events":[{"title":"","when":"","detail":""}],"timeline":[{"when":"","what":""}],"lastTopic":"下次开场可提起的上次话题，一句口语，如：您和老伴李先生骑自行车去瘦西湖、他给您买桂花糕","conflicts":[""]}` }], { json: true, tier: 'pro' }) // pro 30 s 超时后回退 flash;
     if (r.people) return { ...r, asked, updatedAt: Date.now(), source: 'gemini' };
   } catch {}
   const m = { people: a.people || [], places: a.places || [], events: a.events || [], timeline: a.timeline || [], conflicts: a.conflicts || [] };
@@ -113,7 +117,7 @@ export async function updateArchive(p, a, turns, stage, { offline = false } = {}
     add(m.events, { title: '一包桂花糕', when: '谈对象时', detail: '他说扬州最甜的就是这个，跟我一样甜' }, 'title');
     add(m.timeline, { when: '1948', what: '出生于江苏扬州' }, 'what');
     add(m.timeline, { when: '年轻时', what: '进纺织厂，认识李建国' }, 'what');
-    return { ...m, asked, lastTopic: '李爷爷骑自行车带您去瘦西湖，还给您买了一包桂花糕', updatedAt: Date.now(), source: 'fallback' };
+    return { ...m, asked, lastTopic: '您老伴李先生骑自行车带您去瘦西湖，还给您买了一包桂花糕', updatedAt: Date.now(), source: 'fallback' };
   }
   turns.filter(t => t.clean).forEach(t => add(m.events, { title: t.clean.slice(0, 16), when: stage, detail: t.clean }, 'title'));
   const last = turns.filter(t => t.clean).at(-1)?.clean;

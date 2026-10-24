@@ -1,10 +1,10 @@
-// 王奶奶演示数据（虚构，路演用）：一次已完成的访谈，供第二次访谈接续开场
+// 王女士演示数据（虚构，路演用）：一次已完成的访谈，供第二次访谈接续开场
 import { DEMO_PROFILE, DEMO_ANSWERS } from '../src/questions.js';
 export const DEMO_ID = 'demo-wang';
 export async function seedDemo({ db, ai, P }) {
   const FW = ai.FW, p = { ...DEMO_PROFILE }, iid = 'i-demo-1', t0 = Date.now() - 86400000;
   const A = [ // 每句回答的节点/层次/情绪/实体（与 nextTurn 输出同结构）
-    { ask: ['youth-meet', 1], nodeId: 'youth-meet', depth: 1, emotion: '平静', note: '在纺织厂认识，他是修机器的', entities: [{ type: 'person', name: '李建国', aliases: ['老李'], relation: 'spouse', deceased: true, note: '纺织厂修机器的，一身机油味' }, { type: 'place', name: '扬州纺织厂', note: '相识的地方' }] },
+    { ask: ['youth-meet', 1], nodeId: 'youth-meet', depth: 1, emotion: '平静', note: '在纺织厂认识，他是修机器的', entities: [{ type: 'person', name: '李建国', aliases: ['老李', '李先生'], relation: 'spouse', deceased: true, note: '纺织厂修机器的，一身机油味' }, { type: 'place', name: '扬州纺织厂', note: '相识的地方' }] },
     { ask: ['youth-meet', 2], nodeId: 'youth-meet', depth: 2, emotion: '开心', note: '见面脸一红就不会说话', entities: [{ type: 'person', name: '李建国', note: '见面脸一红不会说话' }] },
     { ask: ['youth-meet', 3], nodeId: 'youth-date', depth: 2, emotion: '卡壳', note: '骑自行车带我去瘦西湖', entities: [{ type: 'place', name: '瘦西湖', note: '谈对象时常去' }, { type: 'thing', name: '自行车', note: '他骑车带我' }] },
     { ask: ['youth-date', 2], nodeId: 'youth-date', depth: 3, emotion: '难过', note: '春天柳树都绿了；他走了好多年', entities: [{ type: 'person', name: '李建国', deceased: true, note: '走了好多年' }] },
