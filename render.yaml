@@ -1,0 +1,37 @@
+# Render Blueprint：记忆银行（一个 Node 进程同时提供前端 dist 和 /api）
+services:
+  - type: web
+    name: memory-bank
+    runtime: node
+    plan: free
+    rootDir: app
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NODE_ENV
+        value: production
+      - key: GEMINI_API_KEY
+        sync: false            # 在 Render 控制台手动填，勿提交
+      - key: DATA_DIR
+        value: /tmp/memory-bank-data   # free 方案无持久盘，重启/重新部署会清空并自动重新灌入演示数据
+      - key: GEMINI_MODEL_FAST
+        value: gemini-3-flash-preview
+      - key: GEMINI_MODEL_FAST_FALLBACKS
+        value: gemini-3.5-flash
+      - key: GEMINI_MODEL_STORY
+        value: gemini-3-flash-preview
+      - key: GEMINI_MODEL_STORY_FALLBACKS
+        value: gemini-3.5-flash
+      - key: GEMINI_MODEL_PRO
+        value: gemini-3.1-pro-preview
+      - key: GEMINI_MODEL_PRO_FALLBACKS
+        value: gemini-3-flash-preview
+      - key: GEMINI_FAST_TIMEOUT_MS
+        value: "8000"
+      - key: GEMINI_STORY_TIMEOUT_MS
+        value: "20000"
+      - key: GEMINI_PRO_TIMEOUT_MS
+        value: "30000"

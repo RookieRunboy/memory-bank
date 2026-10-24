@@ -1,7 +1,7 @@
 import express from 'express'; import multer from 'multer'; import initSqlJs from 'sql.js';
 import fs from 'fs'; import path from 'path'; import { fileURLToPath } from 'url';
 import { status } from './gemini.mjs'; import * as ai from './ai.mjs'; import * as P from '../src/planner.js'; import JSZip from 'jszip';
-const dir = path.dirname(fileURLToPath(import.meta.url)), DATA = path.join(dir, 'data'), AUDIO = path.join(DATA, 'audio'), DBF = path.join(DATA, 'mb.sqlite');
+const dir = path.dirname(fileURLToPath(import.meta.url)), DATA = path.resolve(process.env.DATA_DIR || path.join(dir, 'data')), AUDIO = path.join(DATA, 'audio'), DBF = path.join(DATA, 'mb.sqlite');
 fs.mkdirSync(AUDIO, { recursive: true });
 const SQL = await initSqlJs(); const db = fs.existsSync(DBF) ? new SQL.Database(fs.readFileSync(DBF)) : new SQL.Database();
 db.run(`create table if not exists elders(id text primary key, profile text, archive text, created int);
@@ -18,6 +18,8 @@ const uid = p => p + Date.now().toString(36) + Math.random().toString(36).slice(
 const elder = id => { const e = one('select * from elders where id=?', [id]); return e && { id: e.id, profile: J(e.profile), archive: J(e.archive) || {} }; };
 const iv = id => { const r = one('select * from interviews where id=?', [id]); return r && { ...r, turns: J(r.turns) || [], opening: J(r.opening) }; };
 
+// 空库自动灌入王奶奶演示数据（档案 + 一次访谈 + 故事 + 记忆档案/实体/话题状态），第二次访谈可直接接续开场
+if (!one('select count(*) n from elders').n) { const { seedDemo } = await import('./seed.mjs'); await seedDemo({ db, ai, P }); save(); console.log('[seed] 已灌入王奶奶演示数据（elder id: demo-wang）'); }
 const app = express(); app.use(express.json({ limit: '2mb' }));
 const up = multer({ storage: multer.memoryStorage(), limits: { fileSize: 20e6 } });
 import { gemini } from './gemini.mjs';
@@ -136,4 +138,10 @@ app.get('/api/elders/:id/export.zip', async (req, res) => { const e = elder(req.
   const buf = await z.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE' });
   res.set({ 'Content-Type': 'application/zip', 'Content-Disposition': `attachment; filename*=UTF-8''${encodeURIComponent(`记忆银行-${name}.zip`)}` }).send(buf); });
 app.use('/api/audio', express.static(AUDIO));
-app.listen(8787, () => console.log('memory-bank api on :8787, gemini key', status.hasKey ? 'present' : 'missing'));
+// 生产：同一进程提供前端构建产物（dist）+ SPA 回退
+const DIST = path.join(dir, '../dist');
+if (fs.existsSync(DIST)) { app.use(express.static(DIST, { index: false, maxAge: '1h' }));
+  app.get(/^(?!\/api\/).*/, (_, res) => res.sendFile(path.join(DIST, 'index.html'))); }
+app.use('/api', (_, res) => res.status(404).json({ error: 'not found' }));
+const PORT = +(process.env.PORT || 8787), HOST = process.env.HOST || '0.0.0.0';
+app.listen(PORT, HOST, () => console.log(`memory-bank on ${HOST}:${PORT}${fs.existsSync(DIST) ? ' (含前端 dist)' : ''}, data=${DATA}, gemini key ${status.hasKey ? 'present' : 'missing（走兜底）'}`));

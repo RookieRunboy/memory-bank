@@ -58,7 +58,7 @@ function profile() {
   <button class="big" type="submit">保存，下一步</button></form>
   <button class="ghost" id="demo">✨ 填入演示档案（王奶奶）</button>${back()}</main>`;
   document.getElementById('f').onsubmit = async e => { e.preventDefault(); await setProfile({ ...p, ...Object.fromEntries(new FormData(e.target)) }); go('#/stage'); };
-  document.getElementById('demo').onclick = async () => { await setProfile(DEMO_PROFILE); go('#/stage'); };
+  document.getElementById('demo').onclick = async () => { if (!elderId) { elderId = 'demo-wang'; localStorage.setItem('mb_elder', elderId); } await setProfile(DEMO_PROFILE); go('#/stage'); }; // 演示：接上服务器预置的王奶奶数据
 }
 // 会话规划页：自动选题 + 家人指定（节点或触发物）
 const getReq = () => JSON.parse(sessionStorage.getItem('mb_req') || 'null');

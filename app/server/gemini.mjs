@@ -1,4 +1,4 @@
-// Gemini 封装：key 只在后端从 .env.local 读取，绝不下发前端/打印
+// Gemini 封装：key 只在后端读取（优先环境变量 GEMINI_API_KEY，本地开发可用 .env.local，不存在也不报错），绝不下发前端/打印
 import fs from 'fs'; import path from 'path'; import { fileURLToPath } from 'url';
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 let KEY = process.env.GEMINI_API_KEY;

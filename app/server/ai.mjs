@@ -87,7 +87,7 @@ export async function nextTurn(p, c, turns, sessionId) {
   return { emotion, action: r?.action || (done ? '收尾' : leave ? '过渡' : '追问细节'), say: text, done, source, analysis: { ...an, short, leave }, plan, states, entities };
 }
 
-const DEMO_STORY = { title: '他说我跟桂花糕一样甜', body: '我是在纺织厂认识老李的。他是修机器的，一身机油味。\n\n头一回见他，傻乎乎的，脸一红就不会说话了。哈哈。\n\n那时候谈对象，我们去瘦西湖，他骑自行车带我。那是哪一年来着，我想不起来了。只记得是春天，柳树都绿了。\n\n他给我买过一包桂花糕，说扬州最甜的就是这个，跟我一样甜。\n\n他走了好多年了。这些事，我讲给小梅听，也讲给孙子听。', people: '李建国（老伴）；小梅（女儿）', timePlace: '江苏扬州，纺织厂、瘦西湖', quotes: '“他说扬州最甜的就是这个，跟我一样甜。”' };
+export const DEMO_STORY = { title: '他说我跟桂花糕一样甜', body: '我是在纺织厂认识老李的。他是修机器的，一身机油味。\n\n头一回见他，傻乎乎的，脸一红就不会说话了。哈哈。\n\n那时候谈对象，我们去瘦西湖，他骑自行车带我。那是哪一年来着，我想不起来了。只记得是春天，柳树都绿了。\n\n他给我买过一包桂花糕，说扬州最甜的就是这个，跟我一样甜。\n\n他走了好多年了。这些事，我讲给小梅听，也讲给孙子听。', people: '李建国（老伴）；小梅（女儿）', timePlace: '江苏扬州，纺织厂、瘦西湖', quotes: '“他说扬州最甜的就是这个，跟我一样甜。”' };
 export async function story(p, turns) {
   try { const t = await gemini([{ text: vars(STORY_PROMPT.replace('{转录文本}', () => histText(turns)), p) }], { tier: 'story' }); return { ...parse(t), source: 'gemini' }; } catch {}
   if (isDemo(turns) && turns.length >= 4 && turns[0].clean === DEMO_ANSWERS[0]) return { ...DEMO_STORY, source: 'fallback' };
@@ -95,9 +95,9 @@ export async function story(p, turns) {
   return { title: `${p.hometown || '老家'}的那些年`, body: said.join('\n\n') || '这一次，我们只是慢慢地坐了一会儿。', quotes: said[0] ? `“${said[0]}”` : '', source: 'fallback' };
 }
 
-export async function updateArchive(p, a, turns, stage) {
+export async function updateArchive(p, a, turns, stage, { offline = false } = {}) {
   const asked = [...(a.asked || []), ...turns.map(t => t.qid).filter(Boolean)];
-  try {
+  if (!offline) try {
     const r = await gemini([{ text: `你在维护老人${p.name}的「记忆档案」。现有档案：${JSON.stringify(a)}\n本次访谈（阶段：${stage}）：\n${histText(turns)}\n\n把本次老人说的新信息合并进档案，只记老人说过的，不编造；前后矛盾并列保留不纠正。输出 JSON：{"people":[{"name":"","relation":"","note":""}],"places":[{"name":"","note":""}],"events":[{"title":"","when":"","detail":""}],"timeline":[{"when":"","what":""}],"lastTopic":"下次开场可提起的上次话题，一句口语，如：您和李爷爷骑自行车去瘦西湖、他给您买桂花糕","conflicts":[""]}` }], { json: true, tier: 'pro' }) // pro 30 s 超时后回退 flash;
     if (r.people) return { ...r, asked, updatedAt: Date.now(), source: 'gemini' };
   } catch {}
