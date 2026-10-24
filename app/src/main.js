@@ -3,7 +3,7 @@ import { SCRIPT, DEMO_PROFILE, DEMO_ANSWERS, DEMO_ANSWERS_2, fill } from './ques
 import { autoCallName, callNameOf } from './callname.js';
 import FW from './framework.json';
 import * as P from './planner.js';
-import { generateStory } from './story.js';
+import { generateStory } from './story.js'; import { splitSentences } from './split.js';
 import { saveStory, listStories, getStory } from './db.js';
 const $app = document.getElementById('app');
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -17,10 +17,27 @@ async function setProfile(p) { localStorage.setItem('mb_profile', JSON.stringify
   try { const e = await post('/elders', { id: elderId, profile: p }); elderId = e.id; localStorage.setItem('mb_elder', e.id); cache = e; } catch {} }
 api('/health').then(h => aiMode = h.gemini.ok === false ? '演示模式' : h.gemini.hasKey ? 'AI 在线' : '演示模式').catch(() => aiMode = '离线');
 
-function speak(text) { text = P.speakable(text || ""); return new Promise(res => { if (!('speechSynthesis' in window)) return res();
-  speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'zh-CN'; u.rate = 0.85;
-  const v = speechSynthesis.getVoices().find(v => v.lang.startsWith('zh')); if (v) u.voice = v;
-  u.onend = u.onerror = res; speechSynthesis.speak(u); setTimeout(res, 25000); }); }
+// 小忆语音：Gemini TTS（Kore）按句合成，第一句好了就播，后面并行合成按序播；单句失败/超时退回浏览器朗读，对话不中断
+const player = new Audio(); let speakGen = 0, ttsOn = null;
+const ttsReady = () => ttsOn ??= fetch('/api/tts/config').then(r => r.json()).then(c => !!c.enabled).catch(() => false);
+function unlockAudio() { // 手机浏览器：首次用户点击时解锁自动播放
+  try { player.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA='; player.play().catch(() => {});
+    if ('speechSynthesis' in window) { const u = new SpeechSynthesisUtterance(''); u.volume = 0; speechSynthesis.speak(u); } } catch {} ttsReady(); }
+function browserSay(text) { return new Promise(res => { if (!('speechSynthesis' in window)) return res();
+  const u = new SpeechSynthesisUtterance(text); u.lang = 'zh-CN'; u.rate = 1.0;
+  const zh = speechSynthesis.getVoices().find(v => /zh|Chinese/i.test(v.lang)); if (zh) u.voice = zh;
+  u.onend = u.onerror = res; speechSynthesis.speak(u); setTimeout(res, 15000); }); }
+const fetchTTS = t => { const c = new AbortController(), tm = setTimeout(() => c.abort(), 9000); // 服务端单句 8 秒超时，这里多留 1 秒网络
+  return fetch('/api/tts?t=' + encodeURIComponent(t), { signal: c.signal }).then(r => r.ok ? r.blob() : null).catch(() => null).finally(() => clearTimeout(tm)); };
+const playBlob = b => new Promise(res => { const u = URL.createObjectURL(b); player.onended = player.onerror = () => { URL.revokeObjectURL(u); res(true); }; player.src = u; player.play().catch(() => { URL.revokeObjectURL(u); res(false); }); });
+function setSpeaking(on) { document.body.classList.toggle('speaking', on); const el = document.getElementById('speakInd'); if (el) el.classList.toggle('hidden', !on);
+  const live = document.getElementById('live'); if (live && !on && live.dataset.after) live.textContent = live.dataset.after; }
+function stopSpeak() { speakGen++; player.pause(); try { speechSynthesis.cancel(); } catch {} setSpeaking(false); }
+async function speak(text) { text = P.speakable(text || ''); stopSpeak(); const g = speakGen; const parts = splitSentences(text); if (!parts.length) return;
+  setSpeaking(true); const jobs = (await ttsReady()) ? parts.map(fetchTTS) : parts.map(() => Promise.resolve(null));
+  for (let i = 0; i < parts.length && g === speakGen; i++) { const b = await jobs[i]; if (g !== speakGen) break;
+    if (!(b && await playBlob(b))) await browserSay(parts[i]); }
+  if (g === speakGen) setSpeaking(false); }
 const routes = { '': home, family, profile, stage: stagePick, interview, story, library, archive, map: lifeMap };
 const route = async () => { const [p, id] = location.hash.slice(2).split('/'); await load(); (routes[p || ''] || home)(id); };
 window.addEventListener('hashchange', route);
@@ -33,7 +50,7 @@ function home() {
   $app.innerHTML = `<main class="page home elder"><a class="corner" id="more" href="#/family">📖 看看我的故事</a>
   <p class="hello big2">${esc(callNameOf(p))}，<br>今天想聊聊吗？</p>
   <button class="huge" id="start">🎙<br>开始聊天</button><p class="slogan">爱比遗忘更强大</p></main>`;
-  document.getElementById('start').onclick = () => { setReq(null); go('#/interview'); };
+  document.getElementById('start').onclick = () => { unlockAudio(); setReq(null); go('#/interview'); };
 }
 function family() {
   const p = getProfile(), n = cache?.interviews?.filter(i => i.finished).length || 0;
@@ -121,21 +138,21 @@ function renderTurn() {
   const s = session, text = s.say, n = s.n, choosing = s.phase === 'choose';
   $app.innerHTML = choosing ? `<main class="page interview choose"><p class="stage">${s.after ? '这个话题聊得真好 · 接下来聊什么' : '今天想聊哪个？'}${s.isReturn && !s.after ? ' · <b>接着上次聊</b>' : ''}</p>
   <div class="bubble"><span class="who">小忆</span>${esc(text)}</div>
-  <button class="link" id="replay">🔊 再听一遍</button>
+  <p class="speaking-ind hidden" id="speakInd">🔊 小忆在说话…</p><button class="link" id="replay">🔊 再听一遍</button>
   <div class="cards">${(s.cards || []).map((c, i) => `<button class="tcard" data-i="${i}"><b>${['一', '二', '三'][i]}</b><span>${esc(c.text)}</span></button>`).join('')}</div>
   <div class="row choose-more"><button class="ghost" data-a="more">🔄 换几个</button><button class="ghost" data-a="free">💬 您想聊什么都行</button></div>
   ${s.after ? `<div class="row choose-more"><button class="ghost" data-a="stay">↩️ 继续聊这个</button><button class="ghost" data-a="end">🌙 今天先到这</button></div>` : ''}
   <button class="mic small" id="mic"><span class="ico">🎙</span><span id="micl">或者直接说：“就聊第二个”</span></button>
-  <p class="live" id="live">点卡片，或者说出来都行</p>
+  <p class="live" id="live" data-after="点卡片，或者说出来都行">小忆说完，您点卡片或直接说</p>
   <div class="thinking hidden" id="thinking"><div class="dots"><i></i><i></i><i></i></div><p id="thinkt">小忆在听您想聊哪个……</p></div>
   <button class="link" id="demoA">（演示：说“就聊第一个吧”）</button>
   <textarea id="manual" placeholder="（家人可在此打字代说）" class="hidden"></textarea></main>`
   : `<main class="page interview"><p class="stage">${s.online ? `第 ${n + 1} 轮 · ${esc(P.nodeTitle(FW, s.ask?.nodeId, s.p))} · ${P.LAYER_LABEL[s.ask?.depth] || ''}` : `离线演示 · 第 ${n + 1} 题`}${s.isReturn && n === 0 ? ' · <b>接着上次聊</b>' : ''}</p>
   ${s.log.slice(-1).map(l => `<p class="said">您刚才说：“${esc(l)}”</p>`).join('')}
   <div class="bubble"><span class="who">小忆</span>${esc(text)}</div>
-  <button class="link" id="replay">🔊 再听一遍</button>
+  <p class="speaking-ind hidden" id="speakInd">🔊 小忆在说话…</p><button class="link" id="replay">🔊 再听一遍</button>
   <button class="mic" id="mic"><span class="ico">🎙</span><span id="micl">点一下，开始说</span></button>
-  <p class="live" id="live">慢慢说，不着急，说错了也没关系</p>
+  <p class="live" id="live" data-after="该您说了，点一下话筒">慢慢说，不着急，说错了也没关系</p>
   <div class="thinking hidden" id="thinking"><div class="dots"><i></i><i></i><i></i></div><p id="thinkt">小忆在认真听……</p><small>不着急，您喝口水歇一歇</small></div>
   <button class="link" id="demoA">（演示：填入示范回答）</button>
   <textarea id="manual" placeholder="（家人可在此补记文字）" class="hidden"></textarea>
@@ -151,7 +168,7 @@ function renderTurn() {
   mic.onclick = async () => {
     if (busy) return;
     if (!recording) {
-      speechSynthesis?.cancel();
+      stopSpeak();
       try { const st = await navigator.mediaDevices.getUserMedia({ audio: true }); rec = new MediaRecorder(st); chunks = []; rec.ondataavailable = e => chunks.push(e.data); rec.start(); }
       catch { live.textContent = '没能打开麦克风，可以手动补记'; manual.classList.remove('hidden'); }
       if (SR && !s.online) { sr = new SR(); sr.lang = 'zh-CN'; sr.continuous = true; sr.interimResults = true; // 仅离线兜底用浏览器识别
@@ -170,7 +187,7 @@ function renderTurn() {
 }
 // 选话题：点卡片 / 按钮（action），或录音、打字（交给后端：Gemini 判断 + 规则兜底）；无网时本地规则解析
 async function choose({ action, index, blob, manual, btext }) {
-  const s = session; speechSynthesis?.cancel();
+  const s = session; stopSpeak();
   if (s.online) {
     const fd = new FormData(); if (action) { fd.append('action', action); fd.append('index', index ?? 0); }
     if (blob) fd.append('audio', blob, 'a.webm'); if (manual) fd.append('manual', manual); if (btext) fd.append('browserText', btext);
@@ -210,7 +227,7 @@ async function stopFull(id) { if (!full) return; const { r, ch } = full; full = 
   const b = await new Promise(res => { r.onstop = () => res(new Blob(ch, { type: r.mimeType || 'audio/webm' })); r.stop(); r.stream.getTracks().forEach(t => t.stop()); });
   if (b.size && id) { const fd = new FormData(); fd.append('audio', b, 'full.webm'); await post(`/interviews/${id}/full`, fd).catch(() => {}); } }
 async function finish() {
-  speechSynthesis?.cancel(); if (!session.closedSpoken) speak(P.speakable(session.closing || fill(SCRIPT.closing, session.p)));
+  stopSpeak(); if (!session.closedSpoken) speak(P.speakable(session.closing || fill(SCRIPT.closing, session.p)));
   $app.innerHTML = `<main class="page center"><div class="thinking" id="storyThinking"><div class="dots"><i></i><i></i><i></i></div><p>小忆在把您的故事写下来……</p><small>就几秒钟，您歇一歇</small></div></main>`;
   if (session.online) { await stopFull(session.id); try { const r = await post(`/interviews/${session.id}/finish`, {}); return go(r.storyId ? '#/story/' + r.storyId : '#/'); } catch {} }
   const st = await generateStory(session.answers || [], session.p), id = 'local' + Date.now();
@@ -267,4 +284,5 @@ function archive() {
   ${back()}</main>`;
   if (cache?.archivePending) setTimeout(async () => { if (!location.hash.startsWith('#/archive')) return; await load(); archive(); }, 3000);
 }
+document.addEventListener('pointerdown', unlockAudio, { once: true }); // 首次点击解锁音频（「开始聊天」也会再解锁一次）
 route();

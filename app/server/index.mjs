@@ -1,7 +1,7 @@
 import express from 'express'; import multer from 'multer'; import initSqlJs from 'sql.js';
 import fs from 'fs'; import path from 'path'; import { fileURLToPath } from 'url';
 import { status } from './gemini.mjs'; import * as ai from './ai.mjs'; import { withAutoCallName } from '../src/callname.js';
-import * as P from '../src/planner.js'; import JSZip from 'jszip';
+import * as P from '../src/planner.js'; import { makeTTS, TTS } from './tts.mjs'; import JSZip from 'jszip';
 const dir = path.dirname(fileURLToPath(import.meta.url)), DATA = path.resolve(process.env.DATA_DIR || path.join(dir, 'data')), AUDIO = path.join(DATA, 'audio'), DBF = path.join(DATA, 'mb.sqlite');
 fs.mkdirSync(AUDIO, { recursive: true });
 const SQL = await initSqlJs(); const db = fs.existsSync(DBF) ? new SQL.Database(fs.readFileSync(DBF)) : new SQL.Database();
@@ -67,6 +67,14 @@ app.post('/api/interviews', async (req, res) => { const e = elder(req.body.elder
   console.log(`[opening] ${id} ${o.source} ${Date.now() - t0}ms cards=${cards.map(c => c.nodeId + '/' + c.kind).join(',')} plan=${plan.nodes.map(x => x.nodeId + '/' + x.reason).join(',')} next=${plan.nextNodePreview.nodeId}`);
   db.run('insert into interviews values(?,?,?,?,?,?,0)', [id, e.id, topic, Date.now(), '[]', JSON.stringify(o)]); save();
   res.json({ id, ...o, isReturn, topic }); });
+// 小忆语音：Gemini TTS 单句合成（缓存命中直接返回）；超时/失败回 504，前端退回浏览器朗读
+const tts = makeTTS(path.join(DATA, 'tts'));
+app.get('/api/tts', async (req, res) => { const t = String(req.query.t || '').slice(0, 300).trim(); if (!t) return res.status(400).end();
+  const t0 = Date.now();
+  try { const { wav, cached } = await tts.get(t); res.set({ 'Content-Type': 'audio/wav', 'Cache-Control': 'public, max-age=31536000, immutable', 'X-TTS-Ms': Date.now() - t0, 'X-TTS-Cached': cached ? 1 : 0 }); res.end(wav);
+    if (!cached) console.log(`[tts] ${Date.now() - t0}ms ${TTS.model} 「${t.slice(0, 12)}…」`); }
+  catch (e) { console.warn(`[tts] 回退浏览器朗读 ${Date.now() - t0}ms ${e.message.slice(0, 60)}`); res.status(504).json({ error: 'tts' }); } });
+app.get('/api/tts/config', (req, res) => res.json({ model: TTS.model, voice: TTS.voice, timeout: TTS.timeout, enabled: status.hasKey }));
 // 选话题：点卡片（index / action）或说出来（audio / manual 文本），Gemini 判断 + 本地规则兜底
 const chatted = o => o.plan.nodes.slice(0, o.plan.currentNodeIndex + 1).map(x => x.nodeId);
 app.post('/api/interviews/:id/choose', up.single('audio'), async (req, res) => { const v = iv(req.params.id); if (!v) return res.status(404).json({});
@@ -203,4 +211,13 @@ if (fs.existsSync(DIST)) { app.use(express.static(DIST, { index: false, maxAge: 
   app.get(/^(?!\/api\/).*/, (_, res) => res.sendFile(path.join(DIST, 'index.html'))); }
 app.use('/api', (_, res) => res.status(404).json({ error: 'not found' }));
 const PORT = +(process.env.PORT || 8787), HOST = process.env.HOST || '0.0.0.0';
-app.listen(PORT, HOST, () => console.log(`memory-bank on ${HOST}:${PORT}${fs.existsSync(DIST) ? ' (含前端 dist)' : ''}, data=${DATA}, gemini key ${status.hasKey ? 'present' : 'missing（走兜底）'}`));
+// 启动后后台预热固定话术（不阻塞启动）：演示老人的候选念白、选题回应、收尾、通用回应
+function warmTTS() { if (!status.hasKey || process.env.GEMINI_TTS_WARM === '0') return;
+  setTimeout(async () => { const t0 = Date.now(), texts = [];
+    try { for (const e of all('select id from elders').map(r => elder(r.id))) { const p = withAutoCallName(e.profile), { plan, states, entities } = makePlan(e, null);
+        let ex = []; for (let k = 0; k < 2; k++) { const c = P.candidates(ai.FW, { profile: p, states, entities, lastSessionId: plan.lastSessionId, prevNodeId: plan.prevNodeId, exclude: ex }); ex.push(...c.map(x => x.nodeId));
+          texts.push(P.choiceText(c), P.choiceText(c, { after: true }), '好，那再换几个。', ...c.map(x => `好，那咱们就聊${P.nodeTitle(ai.FW, x.nodeId, p)}。` + P.questionFor(ai.FW, x.nodeId, x.startDepth || 1, p))); }
+        texts.push(ai.closing(p, { states, entities, plan }), P.fillAll('好，{称呼}想聊什么都行，想到哪儿说到哪儿。您想先讲讲哪件事呀？', p), '好，那咱们接着聊。'); }
+      texts.push('嗯，是这样。', '没关系，想不起来就不想了。', '说起他，您心里肯定还惦记着。', '这段我都好好记下了。');
+      const n = await tts.warm(texts.map(t => P.speakable ? P.speakable(t) : t)); console.log(`[tts] 预热完成 新合成 ${n} 句 ${Date.now() - t0}ms`); } catch (e) { console.warn('[tts] 预热失败', e.message.slice(0, 80)); } }, 1000); }
+app.listen(PORT, HOST, () => { warmTTS(); console.log(`memory-bank on ${HOST}:${PORT}${fs.existsSync(DIST) ? ' (含前端 dist)' : ''}, data=${DATA}, gemini key ${status.hasKey ? 'present' : 'missing（走兜底）'}`); });

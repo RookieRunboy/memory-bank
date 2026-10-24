@@ -8,7 +8,7 @@ let session = null;
 
 function speak(text) {
   return new Promise(res => { if (!('speechSynthesis' in window)) return res();
-    speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'zh-CN'; u.rate = 0.85;
+    speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'zh-CN'; u.rate = 1.0;
     const v = speechSynthesis.getVoices().find(v => v.lang.startsWith('zh')); if (v) u.voice = v;
     u.onend = u.onerror = res; speechSynthesis.speak(u); setTimeout(res, 20000); });
 }

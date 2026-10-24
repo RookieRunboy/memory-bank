@@ -36,3 +36,20 @@ async function call(MODEL, parts, { system, json = false, timeout = 30000, tempe
   } catch (e) { status.ok = false; status.lastError = redact(e.message).slice(0, 200); throw e; }
   finally { clearTimeout(t); }
 }
+
+// Gemini TTS（同一 Vertex express 端点）：返回 24kHz 单声道 16bit PCM（audio/L16），由 tts.mjs 加 WAV 头
+export async function ttsCall(MODEL, text, voice, timeout = 8000) {
+  if (!KEY) throw new Error('未配置 GEMINI_API_KEY');
+  const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), timeout);
+  try {
+    const r = await fetch(`https://aiplatform.googleapis.com/v1/publishers/google/models/${MODEL}:generateContent?key=${encodeURIComponent(KEY)}`, {
+      method: 'POST', signal: ctl.signal, headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text }] }],
+        generationConfig: { responseModalities: ['AUDIO'], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: voice } } } } }) });
+    const j = await r.json();
+    if (!r.ok) throw new Error(`HTTP ${r.status} ${j.error?.status || ''} ${redact(j.error?.message || '')}`);
+    const d = j.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData;
+    if (!d?.data) throw new Error('TTS 无音频');
+    return { pcm: Buffer.from(d.data, 'base64'), mime: d.mimeType };
+  } finally { clearTimeout(t); }
+}

@@ -35,3 +35,13 @@ services:
         value: "20000"
       - key: GEMINI_PRO_TIMEOUT_MS
         value: "30000"
+      - key: GEMINI_TTS_MODEL
+        value: gemini-2.5-flash-lite-preview-tts   # 实测比 gemini-2.5-flash-tts 快约 1 秒
+      - key: GEMINI_TTS_FALLBACK
+        value: gemini-2.5-flash-tts
+      - key: GEMINI_TTS_VOICE
+        value: Kore
+      - key: GEMINI_TTS_TIMEOUT_MS
+        value: "8000"
+      - key: GEMINI_TTS_PREFIX
+        value: "像一个开朗、亲切的年轻电台主播在和长辈聊天，语气自然有起伏，带点笑意，语速正常偏快，不要拖音："

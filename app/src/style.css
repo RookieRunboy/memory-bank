@@ -76,3 +76,4 @@ a.btn{display:block;text-align:center;text-decoration:none;box-sizing:border-box
 .tcard.on{border-color:var(--rose);background:#f8e3d6}
 .choose-more{width:100%;gap:10px}.choose-more .ghost{flex:1;font-size:20px;min-height:60px}
 .mic.small{width:150px;height:150px;font-size:16px;text-align:center;padding:0 12px}.mic.small .ico{font-size:44px}
+.speaking-ind{align-self:center;margin:4px 0;padding:6px 16px;border-radius:999px;background:#6f8a5c;color:#fff;font-size:20px;animation:pulse 1.4s infinite}
