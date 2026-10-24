@@ -10,10 +10,11 @@ export const CHAINS = {
   pro: [process.env.GEMINI_MODEL_PRO || 'gemini-3.1-pro-preview', ...list(process.env.GEMINI_MODEL_PRO_FALLBACKS, 'gemini-3-flash-preview')], // 故事 + 记忆档案
 };
 export const MODELS = CHAINS;
+const redact = s => (KEY ? String(s).split(KEY).join('<KEY>') : String(s));
 export const status = { ok: null, lastError: null, models: CHAINS, hasKey: !!KEY };
 export async function gemini(parts, opts = {}) { // opts.tier: 'fast' | 'pro'
   const chain = CHAINS[opts.tier || 'fast']; let err;
-  const o = { ...opts, timeout: opts.timeout || (opts.tier === 'pro' ? 60000 : +(process.env.GEMINI_FAST_TIMEOUT_MS || 12000)) }; // 实时对话超时即回退更快的模型
+  const o = { ...opts, timeout: opts.timeout || (opts.tier === 'pro' ? 60000 : +(process.env.GEMINI_FAST_TIMEOUT_MS || 8000)) }; // 实时对话超时即回退更快的模型
   for (const m of chain) { try { return await call(m, parts, o); }
     catch (e) { err = e; console.warn('[gemini]', m, '失败', redact(e.message).slice(0, 120), '→ 回退'); } }
   throw err;

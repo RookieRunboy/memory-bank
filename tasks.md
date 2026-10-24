@@ -5,6 +5,13 @@
 - [x] 访谈问题库与 AI 主持人话术（docs/interview.md 初稿）
 - [x] 手机网页 demo（10-24，app/：建档→选阶段→语音访谈→记忆故事→记忆库，已接入 docs/interview.md；截图 app/screenshots/）
 - [ ] 技术选型（语音识别、语音合成、大模型）——demo 暂用浏览器 speechSynthesis + Web Speech API + MediaRecorder；generateStory 已预留 OpenAI 兼容接口，待定模型与 key
-- [ ] 真机（安卓 Chrome）走查 + 配置大模型 key 联调
+- [x] Gemini 连通实测（Vertex express，见 app/gemini-test.md）
+- [x] v2 后端：Node + SQLite(sql.js) + 本地音频，Vite 代理 /api（10-24）
+- [x] v2 Gemini 听音频转写+整理，替换 Web Speech API（离线兜底仍可用）
+- [x] v2 引导式访谈 Agent（interview.md 主持人提示词全文 + 记忆档案 + 对话历史，逐轮生成）
+- [x] v2 按老人账户存储：档案/访谈(原声+逐句原始+整理)/故事/记忆档案（访谈后自动更新）
+- [x] v2 第二次访谈接着上次话题开场；故事生成走后端 Gemini；示范回答 + 无网/失败兜底保留
+- [ ] 真机（安卓 Chrome）走查：真实人声转写质量、延迟
+- [ ] 降低实时轮次延迟（3.8-flash 常超 8s 被回退）/ 申请配额（3.5-flash 出现 429）
 - [ ] 开发 demo 并找 1-2 位老人试用
 - [ ] 决策：国内语音识别方案、路演设备、大模型 key 放后端代理

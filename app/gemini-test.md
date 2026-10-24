@@ -52,6 +52,6 @@ AI Studio 接口（generativelanguage.googleapis.com）对该 key 403，**不再
 | 语音转写整理 + 实时访谈 | gemini-3.8-flash → gemini-3.5-flash → gemini-3-flash-preview | `GEMINI_MODEL_FAST`、`GEMINI_MODEL_FAST_FALLBACKS`（逗号分隔） | 3.8-flash 200，但延迟波动大：6.5 s / 7.3 s / 26 s（首次） |
 | 记忆故事 + 记忆档案更新 | gemini-3.1-pro-preview → gemini-3-flash-preview | `GEMINI_MODEL_PRO`、`GEMINI_MODEL_PRO_FALLBACKS` | 200，约 5.5 s |
 
-- 为保证现场流畅，实时链每个模型 12 s 超时（`GEMINI_FAST_TIMEOUT_MS`），超时或报错就换下一个；pro 链 60 s。
+- 为保证现场流畅，实时链每个模型 8 s 超时（`GEMINI_FAST_TIMEOUT_MS`），超时或报错就换下一个；pro 链 60 s。
 - 截图实跑时 3.5-flash 出现过 429 RESOURCE_EXHAUSTED，自动回退成功。
 - 已知风险：fake 麦克风的蜂鸣音偶尔被听写出“嗯，那会儿”一类短句（prompt 已要求无人声返回空、temperature=0，大部分情况返回空）。

@@ -24,7 +24,7 @@ export async function opening(p, a, isReturn) {
     if (r.say) return { say: r.say, source: 'gemini' };
   } catch {}
   const q = nextFixed(p, a, []);
-  if (isReturn && a.lastTopic) return { say: fill(`{称呼}，您好呀，我是小忆。上次您跟我讲了${a.lastTopic}，我一直记着呢。今天咱们接着聊，${q ? q.text : '您再跟我说说那时候的事？'}`, p), qid: q?.qid, source: 'fallback' };
+  if (isReturn && a.lastTopic) return { say: fill(`{称呼}，您好呀，我是小忆。上次您跟我讲了${a.lastTopic.replace(/^(上次)?(您)?(跟我)?(讲了|提到|说到|说)?/, '').replace(/[。.，,！!]+$/, '')}，我一直记着呢。今天咱们接着聊，${q ? q.text : '您再跟我说说那时候的事？'}`, p), qid: q?.qid, source: 'fallback' };
   return { say: fill(SCRIPT.opening, p) + (q ? q.text : ''), qid: q?.qid, source: 'fallback' };
 }
 

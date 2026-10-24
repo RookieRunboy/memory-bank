@@ -7,3 +7,4 @@
 - 2026-10-24：大模型与语音识别统一用 Google Gemini（Tammy 提供 key，存于 app/.env.local，仅后端读取）。用多模态直接处理音频。
 - 2026-10-24：模型实测：Gemini 4 系列均不可用；可用 gemini-3.5-flash（实时对话/语音整理）、gemini-3.1-pro-preview（故事与记忆档案）、gemini-3-flash-preview（兜底），走 Vertex express 接口。
 - 2026-10-24：gemini-3.8-flash 实测可用，改为实时对话/语音整理主模型（回退 3.5-flash → 3-flash-preview）。
+- 2026-10-24：代码托管到 GitHub 私有仓库 RookieRunboy/memory-bank（.env* 已忽略）。
