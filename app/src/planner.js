@@ -29,7 +29,7 @@ function diverse(cands, prev) {
 }
 function matchEntity(n, e) {
   const names = [e.name, ...(e.aliases || [])].filter(Boolean), hint = n.entity_hints.some(h => names.some(x => x.includes(h) || h.includes(x)));
-  if (e.type === 'person') return (e.relation && n.tags.relation === e.relation) || hint;
+  if (e.type === 'person') return e.relation ? n.tags.relation === e.relation : hint; // 已知关系就只按关系跟（避免别名“李先生”误配“先生=老师”）
   if (e.type === 'place') return n.tags.domain === 'places' || hint;
   return (e.trigger && n.tags.trigger.includes(e.trigger)) || hint;
 }
@@ -47,8 +47,8 @@ export function selectNode(FW, ctx) {
   const TY = { person: 0, thing: 1, place: 2 }; // 顺藤摸瓜先跟人，再跟物、地
   const recentEnts = (ctx.entities || []).filter(e => ctx.lastSessionId && e.lastSessionId === ctx.lastSessionId).sort((a, b) => (TY[a.type] ?? 3) - (TY[b.type] ?? 3));
   for (const e of recentEnts) {
-    const c = N.filter(n => status(ctx, n.id) === 'not_started' && eligible(FW, ctx, n) && matchEntity(n, e));
-    const n = diverse(c, prev); if (n) return { nodeId: n.id, reason: 'follow_entity', entity: e.id, startDepth: 1 };
+    const c0 = N.filter(n => status(ctx, n.id) === 'not_started' && eligible(FW, ctx, n) && matchEntity(n, e));
+    const c = c0; const n = diverse(c, prev); if (n) return { nodeId: n.id, reason: 'follow_entity', entity: e.id, startDepth: 1 };
   }
   // 3 加深
   const part = N.filter(n => status(ctx, n.id) === 'partial' && st(ctx.states, n.id).depth < 4 && eligible(FW, ctx, n))
@@ -129,6 +129,14 @@ export function openingText(FW, plan, ctx, isReturn) {
     ? `{称呼}，您好呀，我是小忆。上次您说到${(v.顺藤线索 || v.已聊要点.split('；')[0]).replace(/[。.！!]+$/, '')}，我一直记着呢。今天想听您讲讲{今天话题}。`
     : '{称呼}，您好呀。我是记忆银行的小忆。今天想听您讲讲{今天话题}。咱们慢慢聊，想到哪儿说到哪儿。';
   return assertNoVars(fillAll(head, p, v) + v.当前话题入场问题, '开场');
+}
+// 只问候（老人自己选话题时用）：老访谈提上次一个细节；接着由 choiceText 念候选
+export function greetText(FW, plan, ctx, isReturn) {
+  const v = planVars(FW, plan, ctx), p = ctx.profile;
+  const head = isReturn && (v.顺藤线索 || v.已聊要点)
+    ? `{称呼}，您好呀，我是小忆。上次您说到${(v.顺藤线索 || v.已聊要点.split('；')[0]).replace(/[。.！!]+$/, '')}，我一直记着呢。`
+    : '{称呼}，您好呀。我是记忆银行的小忆。咱们慢慢聊，想到哪儿说到哪儿。';
+  return assertNoVars(fillAll(head, p, v), '问候');
 }
 export function closingText(FW, plan, ctx) {
   const v = planVars(FW, plan, ctx);
@@ -217,4 +225,65 @@ export function offlineQuestions(FW, p, request) {
   qs.push({ nodeId: b.nodeId, depth: 1, text: questionFor(FW, b.nodeId, 1, p) });
   qs[0].text = openingText(FW, plan, { profile: p }, false);
   return { plan, qs };
+}
+
+// ===== 老人自己选话题（2026-10-24）：3 个候选卡片 + 换几个 + 想聊什么都行 =====
+export const cardText = (FW, id, p) => { const n = nodeById(FW, id); return n ? fill(n.card || n.title, p) : ''; };
+const LIGHT = ['food', 'song', 'festival'];
+// 候选：家人指定放第一；尽量 ① 顺藤/加深 ② 轻松触发物（吃食/老歌/节日）③ 没聊过的补覆盖；避开敏感/需平静/缺前提；维度错开；exclude 里的（已展示过/本次已聊）不再出
+export function candidates(FW, { profile, states = {}, entities = [], lastSessionId = null, prevNodeId = null, request = null, exclude = [], count = 3 } = {}) {
+  const out = [], base = { profile, states, entities, lastSessionId, prev: prevNodeId && nodeById(FW, prevNodeId) ? { relation: nodeById(FW, prevNodeId).tags.relation, domain: nodeById(FW, prevNodeId).tags.domain } : undefined };
+  const ex = () => [...exclude, ...out.map(x => x.nodeId)];
+  const tags = () => out.map(x => nodeById(FW, x.nodeId).tags);
+  const ok = n => eligible(FW, { ...base, exclude: ex() }, n) && st(states, n.id).status !== 'done';
+  const div = list => [...list].sort((a, b) => sc(b) - sc(a))[0];
+  const sc = n => tags().reduce((s, t) => s + (t.relation !== n.tags.relation) + (t.domain !== n.tags.domain) + (t.time !== n.tags.time), 0);
+  const add = (x, kind) => { if (x && !ex().includes(x.nodeId) && nodeById(FW, x.nodeId)) out.push({ ...x, kind, text: cardText(FW, x.nodeId, profile), note: reasonText(FW, x, entities, profile) }); };
+  if (request?.nodeId || request?.trigger) { const f = selectNode(FW, { ...base, request, exclude: ex() }); if (['family', 'family_trigger'].includes(f.reason)) add(f, 'family'); }
+  // ① 顺藤 / 加深
+  const f1 = selectNode(FW, { ...base, exclude: ex() }); if (['follow_entity', 'deepen'].includes(f1.reason)) add(f1, 'follow');
+  // ② 轻松触发物：安全节点优先，再其他带吃食/老歌/节日的
+  const safe = FW.planning.fallback_safe_nodes.map(id => nodeById(FW, id));
+  const lightPool = [...safe, ...FW.nodes.filter(n => !safe.includes(n))].filter(n => n.tags.trigger.some(t => LIGHT.includes(t)) && ok(n));
+  const notStartedLight = lightPool.filter(n => st(states, n.id).status === 'not_started');
+  const l = div(notStartedLight.length ? notStartedLight : lightPool);
+  if (l && out.length < count) { const tr = l.tags.trigger.find(t => LIGHT.includes(t)); add({ nodeId: l.id, reason: 'light', trigger: null, light: tr, startDepth: Math.min(4, st(states, l.id).depth + 1) }, 'light'); }
+  // ③ 没聊过的：补覆盖（假设已聊的都聊完，只在 not_started 里挑），多样性优先
+  const fresh = FW.nodes.filter(n => ok(n) && st(states, n.id).status === 'not_started');
+  if (fresh.length && out.length < count) { const s = selectNode(FW, { ...base, lastSessionId: null, exclude: ex(), assumeDone: FW.nodes.filter(n => st(states, n.id).status === 'partial').map(n => n.id) });
+    const n = s.reason === 'coverage' && sc(nodeById(FW, s.nodeId)) >= Math.max(...fresh.map(sc)) - 1 ? nodeById(FW, s.nodeId) : div(fresh);
+    add({ nodeId: n.id, reason: 'coverage', dim: s.dim, value: s.value, startDepth: 1 }, 'fresh'); }
+  // 不够 3 个：按算法继续补；实在没了（换完一轮）就放开已展示的
+  for (let i = 0; out.length < count && i < 10; i++) { const pool = FW.nodes.filter(ok); if (!pool.length) break; const n = div(pool);
+    add({ nodeId: n.id, reason: st(states, n.id).status === 'partial' ? 'deepen' : 'coverage', startDepth: Math.min(4, st(states, n.id).depth + 1) }, 'more'); }
+  if (out.length < count && exclude.length) return [...out, ...candidates(FW, { profile, states, entities, lastSessionId, prevNodeId, exclude: out.map(x => x.nodeId), count: count - out.length })].slice(0, count);
+  return out.slice(0, count);
+}
+const NUM = ['一', '二', '三', '四', '五'];
+// 念出候选：“今天想聊哪个？第一个，…；第二个，…；第三个，…。”
+export function choiceText(cards, { after = false } = {}) {
+  const list = cards.map((c, i) => `第${NUM[i]}个，${c.text}`).join('；');
+  return after ? `接下来想聊哪个？${list}。也可以接着聊这个，或者今天先到这。` : `今天想聊哪个？${list}。您点一下，或者直接跟我说。`;
+}
+// 语音/文字选择解析（本地规则）：返回 { action: pick|more|free|stay|end, index, sure }；含糊默认第一个
+export function parseChoice(FW, text = '', cards = [], p = {}, { after = false } = {}) {
+  const t = String(text).replace(/\s/g, '');
+  if (!t) return { action: 'pick', index: 0, sure: false };
+  if (/换(几个|一批|一组|别的|个别的|一下)|再换|都不想|别的(话题)?吧|有没有别的/.test(t)) return { action: 'more', sure: true };
+  if (after && /(今天)?(先)?(到这|聊到这|不聊了|歇|累了|下次再)/.test(t)) return { action: 'end', sure: true };
+  if (after && /(继续|接着|还)(聊|说)?(这个|刚才)|没说完/.test(t)) return { action: 'stay', sure: true };
+  const ord = t.match(/第([一二三123])个?|([一二三123])号|头一个|最后一个|中间那个/);
+  if (ord) { const m = ord[0]; const i = /头一个/.test(m) ? 0 : /最后/.test(m) ? cards.length - 1 : /中间/.test(m) ? 1 : '一二三'.indexOf(ord[1] || ord[2]) >= 0 ? '一二三'.indexOf(ord[1] || ord[2]) : (+(ord[1] || ord[2]) - 1);
+    if (cards[i]) return { action: 'pick', index: i, sure: true }; }
+  // 关键词：卡片短句/标题/实体线索里的词（两字以上片段命中）
+  const score = c => { const n = nodeById(FW, c.nodeId), words = [c.text, nodeTitle(FW, c.nodeId, p), ...(n?.entity_hints || [])].join('|');
+    let s = 0; for (let k = 0; k < t.length - 1; k++) { const g = t.slice(k, k + 2); if (!/^(聊聊|就聊|聊吧|想聊|那个|这个|一个|小时|时候|的事|我们|我想|讲讲|说说|里的|的那|那时|咱们|您的|我的)$/.test(g) && words.includes(g)) s++; } return s; };
+  const sc = cards.map(score), best = Math.max(0, ...sc);
+  if (best > 0) return { action: 'pick', index: sc.indexOf(best), sure: true };
+  // 说的是卡片外的话题（如“聊过年吧”）：直接按那个节点聊（敏感/需平静的也允许，因为是老人主动要聊）
+  const other = FW.nodes.filter(n => !cards.some(c => c.nodeId === n.id)).map(n => ({ nodeId: n.id, text: n.card || n.title })), so = other.map(score), bo = Math.max(0, ...so);
+  if (bo >= 1 && !/随便|都行|都可以/.test(t)) return { action: 'pick', nodeId: other[so.indexOf(bo)].nodeId, sure: bo >= 2 }; // 只沾一个词：拿不准，交给 Gemini 再判
+  if (/随便|都行|都可以|你定|您定|都好|听你的|无所谓/.test(t)) return { action: 'pick', index: 0, sure: true };
+  if (/想聊什么都行|我自己(说|讲)|我想(说|讲|聊)|聊聊我/.test(t) && t.length > 4) return { action: 'free', sure: false };
+  return { action: 'pick', index: 0, sure: false };
 }

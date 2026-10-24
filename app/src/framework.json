@@ -149,6 +149,7 @@
     {
       "id": "child-home",
       "title": "老家的房子",
+      "card": "小时候住的老房子",
       "tags": {
         "time": "child",
         "relation": null,
@@ -203,6 +204,7 @@
     {
       "id": "child-mother",
       "title": "妈妈",
+      "card": "说说您的妈妈",
       "tags": {
         "time": "child",
         "relation": "parents",
@@ -256,6 +258,7 @@
     {
       "id": "child-father-bike",
       "title": "和父亲学骑车",
+      "card": "跟父亲学骑车",
       "tags": {
         "time": "child",
         "relation": "parents",
@@ -309,6 +312,7 @@
     {
       "id": "child-siblings",
       "title": "兄弟姐妹",
+      "card": "家里的兄弟姐妹",
       "tags": {
         "time": "child",
         "relation": "siblings",
@@ -363,6 +367,7 @@
     {
       "id": "child-play",
       "title": "玩伴与游戏",
+      "card": "小时候玩什么",
       "tags": {
         "time": "child",
         "relation": "friends",
@@ -416,6 +421,7 @@
     {
       "id": "child-newyear",
       "title": "小时候过年",
+      "card": "小时候家里过年",
       "tags": {
         "time": "child",
         "relation": "parents",
@@ -471,6 +477,7 @@
     {
       "id": "child-food",
       "title": "小时候的吃食",
+      "card": "小时候爱吃的东西",
       "tags": {
         "time": "child",
         "relation": "parents",
@@ -524,6 +531,7 @@
     {
       "id": "child-river",
       "title": "家乡的河与树",
+      "card": "老家的河和树",
       "tags": {
         "time": "child",
         "relation": null,
@@ -578,6 +586,7 @@
     {
       "id": "teen-school",
       "title": "上学",
+      "card": "上学那会儿",
       "tags": {
         "time": "teen",
         "relation": "friends",
@@ -632,6 +641,7 @@
     {
       "id": "teen-teacher",
       "title": "难忘的老师",
+      "card": "难忘的老师",
       "tags": {
         "time": "teen",
         "relation": "teachers",
@@ -681,6 +691,7 @@
     {
       "id": "teen-chores",
       "title": "帮家里干活",
+      "card": "帮家里干活",
       "tags": {
         "time": "teen",
         "relation": "parents",
@@ -735,6 +746,7 @@
     {
       "id": "teen-friend",
       "title": "少年时的好朋友",
+      "card": "少年时的好朋友",
       "tags": {
         "time": "teen",
         "relation": "friends",
@@ -784,6 +796,7 @@
     {
       "id": "teen-song",
       "title": "少年时唱的歌",
+      "card": "年轻时爱唱的歌",
       "tags": {
         "time": "teen",
         "relation": "friends",
@@ -837,6 +850,7 @@
     {
       "id": "teen-times",
       "title": "少年时的大事",
+      "card": "少年时的大事",
       "tags": {
         "time": "teen",
         "relation": null,
@@ -886,6 +900,7 @@
     {
       "id": "teen-dream",
       "title": "少年时的心愿",
+      "card": "小时候的心愿",
       "tags": {
         "time": "teen",
         "relation": null,
@@ -935,6 +950,7 @@
     {
       "id": "youth-firstjob",
       "title": "第一份工作",
+      "card": "第一份工作",
       "tags": {
         "time": "youth",
         "relation": "colleagues",
@@ -990,6 +1006,7 @@
     {
       "id": "youth-master",
       "title": "带我入门的师傅",
+      "card": "带您入门的师傅",
       "tags": {
         "time": "youth",
         "relation": "teachers",
@@ -1039,6 +1056,7 @@
     {
       "id": "youth-meet",
       "title": "和{重要人物}相识",
+      "card": "和{重要人物}怎么认识的",
       "tags": {
         "time": "youth",
         "relation": "spouse",
@@ -1092,6 +1110,7 @@
     {
       "id": "youth-date",
       "title": "谈对象的日子",
+      "card": "谈对象那会儿",
       "tags": {
         "time": "youth",
         "relation": "spouse",
@@ -1146,6 +1165,7 @@
     {
       "id": "youth-wedding",
       "title": "结婚那天",
+      "card": "结婚那天",
       "tags": {
         "time": "youth",
         "relation": "spouse",
@@ -1201,6 +1221,7 @@
     {
       "id": "youth-newhome",
       "title": "刚成家住的地方",
+      "card": "刚成家住的地方",
       "tags": {
         "time": "youth",
         "relation": "spouse",
@@ -1255,6 +1276,7 @@
     {
       "id": "youth-firstchild",
       "title": "第一个孩子出生",
+      "card": "第一个孩子出生",
       "tags": {
         "time": "youth",
         "relation": "children",
@@ -1305,6 +1327,7 @@
     {
       "id": "youth-coworkers",
       "title": "年轻时的工友",
+      "card": "年轻时的工友",
       "tags": {
         "time": "youth",
         "relation": "colleagues",
@@ -1358,6 +1381,7 @@
     {
       "id": "youth-pride",
       "title": "年轻时得意的事",
+      "card": "年轻时最得意的事",
       "tags": {
         "time": "youth",
         "relation": null,
@@ -1407,6 +1431,7 @@
     {
       "id": "youth-times",
       "title": "青年时的大事",
+      "card": "年轻时的大事",
       "tags": {
         "time": "youth",
         "relation": null,
@@ -1456,6 +1481,7 @@
     {
       "id": "midlife-kids",
       "title": "把孩子拉扯大",
+      "card": "把孩子拉扯大",
       "tags": {
         "time": "midlife",
         "relation": "children",
@@ -1510,6 +1536,7 @@
     {
       "id": "midlife-naughty",
       "title": "孩子的调皮事",
+      "card": "孩子小时候的调皮事",
       "tags": {
         "time": "midlife",
         "relation": "children",
@@ -1558,6 +1585,7 @@
     {
       "id": "midlife-work",
       "title": "工作上的那些年",
+      "card": "工作上的那些年",
       "tags": {
         "time": "midlife",
         "relation": "colleagues",
@@ -1611,6 +1639,7 @@
     {
       "id": "midlife-craft",
       "title": "拿手的手艺",
+      "card": "您的拿手手艺",
       "tags": {
         "time": "midlife",
         "relation": null,
@@ -1666,6 +1695,7 @@
     {
       "id": "midlife-siblings",
       "title": "成家后的兄弟姐妹",
+      "card": "成家后的兄弟姐妹",
       "tags": {
         "time": "midlife",
         "relation": "siblings",
@@ -1719,6 +1749,7 @@
     {
       "id": "midlife-move",
       "title": "搬过的家",
+      "card": "搬过的家",
       "tags": {
         "time": "midlife",
         "relation": null,
@@ -1772,6 +1803,7 @@
     {
       "id": "midlife-hard",
       "title": "难走的日子",
+      "card": "难走的那些日子",
       "tags": {
         "time": "midlife",
         "relation": null,
@@ -1825,6 +1857,7 @@
     {
       "id": "midlife-travel",
       "title": "出过的远门",
+      "card": "出过的远门",
       "tags": {
         "time": "midlife",
         "relation": null,
@@ -1879,6 +1912,7 @@
     {
       "id": "midlife-parents-old",
       "title": "陪父母变老",
+      "card": "陪父母变老",
       "tags": {
         "time": "midlife",
         "relation": "parents",
@@ -1932,6 +1966,7 @@
     {
       "id": "elder-grandkids",
       "title": "孙辈",
+      "card": "说说孙辈",
       "tags": {
         "time": "elder",
         "relation": "children",
@@ -1985,6 +2020,7 @@
     {
       "id": "elder-hometown-food",
       "title": "家乡的味道",
+      "card": "家乡的味道",
       "tags": {
         "time": "elder",
         "relation": null,
@@ -2038,6 +2074,7 @@
     {
       "id": "elder-festivals",
       "title": "节日和习俗",
+      "card": "过节的老习俗",
       "tags": {
         "time": "elder",
         "relation": null,
@@ -2093,6 +2130,7 @@
     {
       "id": "elder-songs",
       "title": "喜欢的歌和戏",
+      "card": "喜欢的歌和戏",
       "tags": {
         "time": "elder",
         "relation": null,
@@ -2148,6 +2186,7 @@
     {
       "id": "elder-friends",
       "title": "老朋友老邻居",
+      "card": "老朋友老邻居",
       "tags": {
         "time": "elder",
         "relation": "friends",
@@ -2201,6 +2240,7 @@
     {
       "id": "elder-hobby",
       "title": "现在的爱好",
+      "card": "现在的爱好",
       "tags": {
         "time": "elder",
         "relation": null,
@@ -2253,6 +2293,7 @@
     {
       "id": "elder-oldthing",
       "title": "珍藏的老物件",
+      "card": "珍藏的老物件",
       "tags": {
         "time": "elder",
         "relation": null,
@@ -2308,6 +2349,7 @@
     {
       "id": "elder-wishes",
       "title": "想对家人说的话",
+      "card": "想对家人说的话",
       "tags": {
         "time": "elder",
         "relation": "children",
@@ -2521,6 +2563,7 @@
         "下次话题": "小梅出生那天",
         "上一个话题": "骑自行车去瘦西湖"
       }
-    }
+    },
+    "candidates": "开场不强制指定话题：选题算法给出 3 个候选（家人指定的放第一个；尽量一个顺藤上次线索/加深、一个轻松触发物类如吃食老歌节日、一个没聊过的补覆盖；避开敏感与需平静节点，维度尽量错开），小忆念出来并显示大卡片，老人点卡片或用语音选（序号/关键词，含糊默认第一个），可“换几个”（不重复）或“想聊什么都行”自由聊（按内容归档到节点）。一个话题聊够后同样给候选，并可“继续聊这个”或“今天先到这”。"
   }
 }

@@ -25,13 +25,27 @@ const ctxText = (c, p) => { const s = c.plan && P.st(c.states, c.plan.ask.nodeId
 export async function opening(p, c, isReturn, recent = []) { // c: { archive, states, entities, plan }；recent：档案还没整理进去的上次访谈记录（兜底）
   const v = P.planVars(FW, c.plan, c);
   try {
-    const r = await gemini([{ text: `${ctxText(c, p)}${recent.length ? `【上次访谈原话（档案还在整理中，以此为准）】\n${histText(recent)}\n` : ''}${isReturn ? '这是第二次及以后的访谈：按【开场】“以后的访谈”说，先提一个已聊要点或顺藤线索里的具体细节，再说今天聊什么。' : '这是第一次访谈，按【开场】“第一次访谈”说。'}然后接当前话题入场问题。\n结尾只问一个问题，用开放问题（怎么、什么样、说说），不要是非题（不要问“是不是/对吗/……吗”）。\n只输出 JSON：{"say":"要朗读的话（最多四句）"}` }], { system: vars(HOST_PROMPT, p, v), json: true });
+    const r = await gemini([{ text: `${ctxText(c, p)}${recent.length ? `【上次访谈原话（档案还在整理中，以此为准）】\n${histText(recent)}\n` : ''}${isReturn ? '这是第二次及以后的访谈：按【开场】“以后的访谈”说，先提一个已聊要点或顺藤线索里的具体细节，再说今天聊什么。' : '这是第一次访谈，按【开场】“第一次访谈”说。'}只说问候，最多两句，不要提问，也不要说今天聊什么（今天的候选话题由系统紧接着念出来让老人自己选）。\n只输出 JSON：{"say":"要朗读的问候"}` }], { system: vars(HOST_PROMPT, p, v), json: true });
     if (r.say) return { say: say(r.say), ask: c.plan.ask, source: 'gemini' };
   } catch (e) { if (/未替换的变量/.test(e.message)) console.warn('[vars]', e.message); }
   let cc = c;
   if (isReturn && recent.length && !v.顺藤线索 && !v.已聊要点) { const said = recent.map(t => t.clean).filter(Boolean).sort((x, y) => y.length - x.length)[0];
     if (said) cc = { ...c, recentNote: `“${said.slice(0, 24).replace(/[。.，,！!…]+$/, '')}”这些事` }; }
-  return { say: P.openingText(FW, c.plan, { ...cc, profile: p }, isReturn), ask: c.plan.ask, source: 'fallback' };
+  return { say: P.greetText(FW, c.plan, { ...cc, profile: p }, isReturn), ask: c.plan.ask, source: 'fallback' };
+}
+// 老人选话题：本地规则先判（序号/关键词/换几个…），拿不准再问 Gemini，失败就用规则（含糊默认第一个）
+export async function chooseTopic(p, cards, text, { after = false } = {}) {
+  const rule = P.parseChoice(FW, text, cards, p, { after });
+  if (rule.sure || !String(text || '').trim()) return { ...rule, source: 'rule' };
+  try {
+    const r = await gemini([{ text: `小忆刚给老人念了几个话题让他选：${cards.map((c, i) => `${i + 1}. ${c.text}（${c.nodeId}）`).join('；')}${after ? '；也可以继续聊刚才的话题，或者今天先到这' : ''}。\n老人说：“${text}”\n判断老人的选择。action：pick 选了某个（index 为 0 起的序号；如果老人说的是别的具体话题，index 填 -1 并在 nodeId 填最接近的节点 id，节点：${NODE_LIST}）；more 想换几个；free 想自由聊别的、没有明确话题；${after ? 'stay 继续聊刚才的；end 今天先到这；' : ''}含糊或都行就 pick 0。\n只输出 JSON：{"action":"pick|more|free${after ? '|stay|end' : ''}","index":0,"nodeId":null}` }], { json: true, timeout: 6000 });
+    const ok = ['pick', 'more', 'free', ...(after ? ['stay', 'end'] : [])];
+    if (ok.includes(r?.action)) { if (r.action !== 'pick') return { action: r.action, source: 'gemini' };
+      if (cards[r.index]) return { action: 'pick', index: +r.index, source: 'gemini' };
+      if (r.nodeId && validNode(r.nodeId)) return { action: 'pick', nodeId: r.nodeId, source: 'gemini' };
+      return { action: 'pick', index: 0, source: 'gemini' }; }
+  } catch {}
+  return { ...rule, source: 'rule' };
 }
 export const closing = (p, c) => P.closingText(FW, c.plan, { ...c, profile: p });
 
@@ -56,7 +70,8 @@ export async function nextTurn(p, c, turns, sessionId) {
   try {
     const v = P.planVars(FW, c.plan, { ...c, profile: p });
     r = await gemini([{ text: `${ctxText(c, p)}【本次对话】\n${histText(turns)}\n\n【话题网节点】${NODE_LIST}\n` +
-      `${second ? `今天的下一个话题：${second.nodeId}（${P.nodeTitle(FW, second.nodeId, p)}），入场问题：${P.questionFor(FW, second.nodeId, Math.max(1, second.startDepth || 1), p)}\n` : '今天没有下一个话题了，当前话题聊够了就按【结束】收尾。\n'}` +
+      (c.plan.free ? '老人选了“想聊什么都行”：顺着老人自己说的内容聊，不要拉回任何指定话题，ask.nodeId 填老人正在讲的节点。\n'
+        : '当前话题聊够了（到了第4层，或老人连着几句没什么可说），不要自己开新话题：ask.nodeId 填 "switch"，say 只用一句话谢谢老人讲的这个故事、复述一个细节，不要提问，系统会接着念几个候选话题让老人自己选。\n') +
       `请按【说话方式】【必须遵守】【话题内引导】【过渡到下一个话题】决定下一句。已经聊了${turns.length}轮，满${MAX}轮或老人累了就按【结束】收尾。\n` +
       `同时分析老人刚才这一句：属于哪个节点（跑题就填它真正讲到的节点 id，找不到就填最接近的）、到达第几层（0 没有实质内容，1 事实，2 场景细节，3 感受，4 想对后辈说的话）、一句要点、提到的人地物。\n` +
       `只输出 JSON：{"answer":{"nodeId":"","depth":0,"note":"","entities":[{"type":"person|place|thing","name":"","aliases":[],"relation":"parents|siblings|spouse|children|friends|teachers|colleagues|null","deceased":false,"trigger":"photo|song|food|object|festival|null","note":""}]},"emotion":"开心|平静|卡壳|难过|困惑|累了|烦躁","leave":null,"ask":{"nodeId":"下一句问的是哪个节点","depth":1},"action":"追问细节|给台阶|安抚|换话题|过渡|收尾","callName":null,"say":"要朗读的话","done":false}。leave 只在老人难过且安抚后仍未恢复时填 "upset"，累了填 "tired"。callName 只在老人刚才明确要求换个叫法时填新称呼（如老人说“叫我老王就行”就填 "老王"），并且 say 里当场用新称呼；否则填 null。` }],
@@ -76,19 +91,30 @@ export async function nextTurn(p, c, turns, sessionId) {
   const curS = P.st(states, ask.nodeId), leave = an.nodeId === ask.nodeId ? upd.leave : (curS.depth >= 4 ? 'deep' : null);
   // 2) 规划推进
   let plan = { ...c.plan }, text, done;
-  if (r) {
+  let sw = false;
+  if (r && r.ask?.nodeId === 'switch' && !c.plan.free) { sw = true; text = say(r.say); done = turns.length >= MAX; }
+  else if (r) {
     const nA = r.ask && validNode(r.ask.nodeId) ? { nodeId: r.ask.nodeId, depth: Math.max(1, Math.min(4, +r.ask.depth || 1)) } : ask;
+    if (!c.plan.free && nA.nodeId !== ask.nodeId && nA.nodeId !== an.nodeId && leave !== 'upset' && !r.done && turns.length < MAX) { // 模型想换话题：不直接跳，交给老人选
+      sw = true; text = say(r.say); done = false;
+    } else {
     const k = plan.nodes.findIndex(x => x.nodeId === nA.nodeId);
     if (k > plan.currentNodeIndex) plan.currentNodeIndex = k;
     plan.ask = nA; text = say(r.say); done = !!r.done || turns.length >= MAX;
+    }
   } else {
-    plan = P.nextAsk(FW, plan, states, leave); done = plan.done || turns.length >= 5;
+    const nx = P.nextAsk(FW, plan, states, leave);
+    if (leave !== 'upset' && leave !== 'tired' && turns.length < 5 && (nx.currentNodeIndex !== plan.currentNodeIndex || nx.done)) sw = true; // 聊够了：让老人自己选下一个
+    else plan = nx;
+    done = !sw && (plan.done || turns.length >= 5);
     const sad = emotion === '难过', forgot = /卡壳/.test(emotion);
-    const pre = sad ? '听得出来，您很想他。' : forgot ? '没关系，想不起来就不想了。' : fill(SCRIPT.acks[turns.length % 3], p);
-    text = done ? null : say(pre + P.questionFor(FW, plan.ask.nodeId, plan.ask.depth, p));
+    // 先接住：用老人自己的话点一句（小结），只答几个字就短短回应
+    const clip = (last?.clean || '').split(/[，。,.！!？?…；;]/).map(x => x.trim()).find(x => x.length >= 4 && x.length <= 14);
+    const pre = sad ? '说起他，您心里肯定还惦记着。' : forgot ? '没关系，想不起来就不想了。' : short ? '嗯，是这样。' : clip ? `原来是${clip.replace(/^(我|那时候|那会儿)/, '')}。` : fill(SCRIPT.acks[turns.length % 3], p);
+    text = done ? null : sw ? say(sad ? '说起他，您心里肯定还惦记着。' : clip ? `${clip}，这些我都记下了。` : '这段我都好好记下了。') : say(pre + P.questionFor(FW, plan.ask.nodeId, plan.ask.depth, p));
   }
   if (done) { plan.done = true; if (!r) text = closing(p, { ...c, states, entities, plan }); }
-  return { emotion, action: r?.action || (done ? '收尾' : leave ? '过渡' : '追问细节'), say: text, done, source, analysis: { ...an, short, leave }, plan, states, entities, callName: newCall };
+  return { emotion, action: r?.action || (done ? '收尾' : leave ? '过渡' : '追问细节'), say: text, done, source, analysis: { ...an, short, leave }, plan, states, entities, callName: newCall, switch: sw && !done };
 }
 
 export const DEMO_STORY = { title: '他说我跟桂花糕一样甜', body: '我是在纺织厂认识老李的。他是修机器的，一身机油味。\n\n头一回见他，傻乎乎的，脸一红就不会说话了。哈哈。\n\n那时候谈对象，我们去瘦西湖，他骑自行车带我。那是哪一年来着，我想不起来了。只记得是春天，柳树都绿了。\n\n他给我买过一包桂花糕，说扬州最甜的就是这个，跟我一样甜。\n\n他走了好多年了。这些事，我讲给小梅听，也讲给孙子听。', people: '李建国（老伴）；小梅（女儿）', timePlace: '江苏扬州，纺织厂、瘦西湖', quotes: '“他说扬州最甜的就是这个，跟我一样甜。”' };

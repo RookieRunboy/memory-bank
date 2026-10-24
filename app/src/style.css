@@ -68,3 +68,11 @@ a.btn{display:block;text-align:center;text-decoration:none;box-sizing:border-box
 .transcript,.edits{background:#fffdf7;border:1.5px solid #ead9b8;border-radius:14px;padding:10px 12px;margin:14px 0}.transcript summary,.edits summary{font-size:18px;color:#6b4a26}
 .turn{border-top:1px dashed #ead9b8;padding:8px 0}.turn.hl{background:#fbe9c8;border-radius:8px}.turn .raw{color:#8a7458;font-size:15px}.meta{color:#9a7b4f;font-size:14px}
 .edit input,.edit textarea{width:100%;box-sizing:border-box;font-size:18px;padding:10px;border-radius:10px;border:1.5px solid #e0c99f;margin-bottom:10px;background:#fffdf7}
+/* 选话题卡片（老人自己选） */
+.choose .bubble{font-size:21px}
+.cards{display:flex;flex-direction:column;gap:12px;width:100%;margin:8px 0}
+.tcard{display:flex;align-items:center;gap:14px;width:100%;min-height:84px;padding:14px 18px;border-radius:20px;background:var(--card);border:3px solid #e6cdb2;font-size:28px;font-weight:700;color:#4a3426;text-align:left;box-shadow:0 4px 10px #8a5a3420}
+.tcard b{flex:none;width:48px;height:48px;border-radius:50%;background:var(--rose);color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px}
+.tcard.on{border-color:var(--rose);background:#f8e3d6}
+.choose-more{width:100%;gap:10px}.choose-more .ghost{flex:1;font-size:20px;min-height:60px}
+.mic.small{width:150px;height:150px;font-size:16px;text-align:center;padding:0 12px}.mic.small .ico{font-size:44px}

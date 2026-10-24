@@ -39,7 +39,8 @@ const getState = id => { const r = one('select * from elder_state where elder_id
 const setState = (id, x) => db.run('insert or replace into elder_state values(?,?,?)', [id, JSON.stringify(x.states), JSON.stringify(x.entities)]);
 const lastDone = id => { const r = one('select id,opening from interviews where elder_id=? and finished=1 order by created desc limit 1', [id]); return r && { id: r.id, plan: J(r.opening)?.plan }; };
 const makePlan = (e, request) => { const { states, entities } = getState(e.id), last = lastDone(e.id);
-  return { states, entities, plan: { ...P.planSession(ai.FW, { profile: e.profile, states, entities, lastSessionId: last?.id, prevNodeId: last?.plan?.ask?.nodeId || last?.plan?.nodes?.[0]?.nodeId, request }), lastSessionId: last?.id || null } }; };
+  const prevNodeId = last?.plan?.ask?.nodeId || last?.plan?.nodes?.[0]?.nodeId;
+  return { states, entities, plan: { ...P.planSession(ai.FW, { profile: e.profile, states, entities, lastSessionId: last?.id, prevNodeId, request }), lastSessionId: last?.id || null, prevNodeId } }; };
 // 会话规划预览（家人页）：?nodeId= 或 ?trigger= 指定
 app.get('/api/elders/:id/plan', (req, res) => { const e = elder(req.params.id); if (!e) return res.status(404).json({});
   const request = req.query.nodeId || req.query.trigger ? { nodeId: req.query.nodeId || null, trigger: req.query.trigger || null } : null;
@@ -57,11 +58,52 @@ app.post('/api/interviews', async (req, res) => { const e = elder(req.body.elder
   const { plan, states, entities } = makePlan(e, req.body.request || null);
   const id = uid('i'); plan.sessionId = id;
   const t0 = Date.now(), o = await ai.opening(p, { archive: ea, states, entities, plan }, isReturn, recent);
+  // 老人自己选话题：问候后念出 3 个候选（家人指定的排第一），屏幕同时出卡片
+  const cards = P.candidates(ai.FW, { profile: p, states, entities, lastSessionId: plan.lastSessionId, prevNodeId: plan.prevNodeId, request: req.body.request || null });
+  o.greet = o.say; o.say = ((o.say.match(/[^。！!？?]+[。！!？?]?/g) || []).filter(x => !/[？?]$/.test(x)).join('') || o.say) + P.choiceText(cards);
+  Object.assign(o, { phase: 'choose', after: false, cards, shown: cards.map(c => c.nodeId), choices: [] });
   o.plan = plan; o.closing = ai.closing(p, { states, entities, plan });
   const topic = P.nodeTitle(ai.FW, plan.nodes[0].nodeId, p);
-  console.log(`[opening] ${id} ${o.source} ${Date.now() - t0}ms plan=${plan.nodes.map(x => x.nodeId + '/' + x.reason).join(',')} next=${plan.nextNodePreview.nodeId}`);
+  console.log(`[opening] ${id} ${o.source} ${Date.now() - t0}ms cards=${cards.map(c => c.nodeId + '/' + c.kind).join(',')} plan=${plan.nodes.map(x => x.nodeId + '/' + x.reason).join(',')} next=${plan.nextNodePreview.nodeId}`);
   db.run('insert into interviews values(?,?,?,?,?,?,0)', [id, e.id, topic, Date.now(), '[]', JSON.stringify(o)]); save();
   res.json({ id, ...o, isReturn, topic }); });
+// 选话题：点卡片（index / action）或说出来（audio / manual 文本），Gemini 判断 + 本地规则兜底
+const chatted = o => o.plan.nodes.slice(0, o.plan.currentNodeIndex + 1).map(x => x.nodeId);
+app.post('/api/interviews/:id/choose', up.single('audio'), async (req, res) => { const v = iv(req.params.id); if (!v) return res.status(404).json({});
+  const e = elder(v.elder_id), p = withAutoCallName(e.profile), o = v.opening, { states, entities } = getState(e.id);
+  if (o.phase !== 'choose') return res.status(409).json({ error: 'not choosing' });
+  const t0 = Date.now(); let heard = null, ch;
+  if (req.body.action) ch = { action: req.body.action, index: +req.body.index || 0, source: 'tap' };
+  else { const tr = req.body.manual ? { clean: req.body.manual, source: 'manual' } : await ai.transcribe(req.file?.buffer, req.file?.mimetype, req.body.browserText);
+    heard = tr.clean || ''; ch = await ai.chooseTopic(p, o.cards, heard, { after: o.after }); }
+  if (ch.action === 'stay' && !o.after || ch.action === 'end' && !o.after) ch = { ...ch, action: 'pick', index: 0 };
+  o.choices.push({ at: Date.now(), heard, ...ch, cards: o.cards.map(c => c.nodeId) });
+  let say, cards = null;
+  const cur = o.plan.nodes[o.plan.currentNodeIndex];
+  if (ch.action === 'more') {
+    cards = P.candidates(ai.FW, { profile: p, states, entities, lastSessionId: o.plan.lastSessionId, prevNodeId: o.plan.prevNodeId, exclude: [...o.shown, ...(o.after ? chatted(o) : [])] });
+    o.cards = cards; o.shown = [...o.shown, ...cards.map(c => c.nodeId)];
+    say = '好，那再换几个。' + P.choiceText(cards, { after: o.after }).replace(/^(今天|接下来)想聊哪个？/, '');
+  } else if (ch.action === 'end') { say = null;
+  } else if (ch.action === 'stay') { o.phase = 'chat';
+    const d = Math.min(4, (o.plan.ask.depth || 1) + 1); o.plan.ask = { ...o.plan.ask, depth: d };
+    say = '好，那咱们接着聊。' + P.questionFor(ai.FW, o.plan.ask.nodeId, d, p);
+  } else if (ch.action === 'free') { o.phase = 'chat'; o.plan.free = true;
+    say = P.fillAll('好，{称呼}想聊什么都行，想到哪儿说到哪儿。您想先讲讲哪件事呀？', p);
+  } else { // pick
+    const c = o.cards[ch.index] || (ch.nodeId && { nodeId: ch.nodeId, kind: 'voice', reason: 'elder_choice' }) || o.cards[0];
+    const sp = P.planSession(ai.FW, { profile: p, states, entities, lastSessionId: o.plan.lastSessionId, prevNodeId: o.plan.prevNodeId, request: { nodeId: c.nodeId } });
+    sp.prevNodeId = o.plan.prevNodeId;
+    const node = { ...sp.nodes[0], reason: c.kind === 'family' ? sp.nodes[0].reason : 'elder_choice', pickedFrom: c.kind, note: c.note || sp.nodes[0].note };
+    const base = o.after ? o.plan.nodes.slice(0, o.plan.currentNodeIndex + 1) : [];
+    o.plan = { ...o.plan, ...sp, nodes: [...base, node, ...sp.nodes.slice(1)], currentNodeIndex: base.length, ask: sp.ask, free: false, sessionId: v.id, lastSessionId: o.plan.lastSessionId };
+    o.phase = 'chat';
+    say = `好，那咱们就聊${P.nodeTitle(ai.FW, c.nodeId, p)}。` + P.questionFor(ai.FW, sp.ask.nodeId, sp.ask.depth, p, sp.ask.trigger);
+  }
+  o.closing = ai.closing(p, { states, entities, plan: o.plan });
+  console.log(`[choose] ${v.id} heard=${heard ?? '(点击)'} → ${ch.action}${ch.index != null ? '#' + ch.index : ''}${ch.nodeId ? ' ' + ch.nodeId : ''} (${ch.source}) ${Date.now() - t0}ms ask=${o.plan.ask.nodeId}:${o.plan.ask.depth}`);
+  db.run('update interviews set opening=? where id=?', [JSON.stringify(o), v.id]); save();
+  res.json({ heard, choice: ch, say, phase: o.phase, cards: o.phase === 'choose' ? o.cards : null, after: o.after, ask: o.plan.ask, closing: o.closing, end: ch.action === 'end' }); });
 app.post('/api/interviews/:id/turn', up.single('audio'), async (req, res) => { const v = iv(req.params.id); if (!v) return res.status(404).json({});
   const e = elder(v.elder_id), p = withAutoCallName(e.profile), o = v.opening;
   let audio = null; if (req.file?.size > 0) { audio = `${v.id}-${v.turns.length}.${(req.file.mimetype || '').includes('mp4') ? 'm4a' : 'webm'}`; fs.writeFileSync(path.join(AUDIO, audio), req.file.buffer); }
@@ -81,9 +123,20 @@ app.post('/api/interviews/:id/turn', up.single('audio'), async (req, res) => { c
   if (n.callName) { // 老人当场改口：写入档案称呼（后续轮次、下次访谈生效）
     const np = { ...e.profile, callName: n.callName, callNameBy: 'elder', callNameManual: true }, arc = { ...e.archive, callName: n.callName, callNameAt: Date.now() };
     db.run('update elders set profile=?, archive=? where id=?', [JSON.stringify(np), JSON.stringify(arc), e.id]); console.log(`[callName] ${e.id} 改口为「${n.callName}」`); }
+  if (o.plan.free && !n.done) { // 自由聊：第一句话讲到哪个节点，就把它定为当前话题
+    const nid = n.analysis.nodeId && P.nodeById(ai.FW, n.analysis.nodeId) ? n.analysis.nodeId : n.plan.ask.nodeId;
+    const nodes = [...n.plan.nodes.slice(0, n.plan.currentNodeIndex), { nodeId: nid, reason: 'elder_free', startDepth: 1, note: '老人自己想聊的' }];
+    n.plan = { ...n.plan, free: false, nodes, currentNodeIndex: nodes.length - 1, ask: n.plan.ask.nodeId === nid ? n.plan.ask : { nodeId: nid, depth: Math.min(4, (n.analysis.depth || 1) + 1) } };
+    if (n.switch) n.switch = false; }
+  let cards = null;
+  if (n.switch) { // 聊够了：念出新候选让老人选（继续聊这个 / 今天先到这），不直接跳
+    const tmp = { ...o, plan: n.plan };
+    cards = P.candidates(ai.FW, { profile: p, states: n.states, entities: n.entities, lastSessionId: n.plan.lastSessionId, prevNodeId: n.plan.ask.nodeId, exclude: chatted(tmp) });
+    Object.assign(o, { phase: 'choose', after: true, cards, shown: [...(o.shown || []), ...cards.map(c => c.nodeId)] });
+    n.say = n.say.replace(/[^。！!]*[？?]\s*$/, '') + P.choiceText(cards, { after: true }); }
   setState(e.id, { states: n.states, entities: n.entities }); o.plan = n.plan; o.closing = ai.closing(n.callName ? { ...p, callName: n.callName } : p, { states: n.states, entities: n.entities, plan: n.plan });
   db.run('update interviews set turns=?, opening=? where id=?', [JSON.stringify(v.turns), JSON.stringify(o), v.id]); save();
-  res.json({ transcript: tr, next: { emotion: n.emotion, action: n.action, say: n.say, done: n.done, source: n.source, analysis: n.analysis, ask: n.plan.ask }, closing: o.closing, ...(n.callName ? { profile: elder(e.id).profile } : {}) }); });
+  res.json({ transcript: tr, next: { emotion: n.emotion, action: n.action, say: n.say, done: n.done, source: n.source, analysis: n.analysis, ask: n.plan.ask, phase: cards ? 'choose' : 'chat', cards }, closing: o.closing, ...(n.callName ? { profile: elder(e.id).profile } : {}) }); });
 // 记忆档案后台更新：同一位老人串行，不阻塞故事页
 const archiveJobs = new Map(); // elderId -> { promise, since, pending: [interviewId] }
 function queueArchive(eid, v, p) {

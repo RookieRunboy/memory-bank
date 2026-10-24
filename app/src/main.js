@@ -111,13 +111,26 @@ async function interview() {
   $app.innerHTML = `<main class="page center"><div class="thinking"><div class="dots"><i></i><i></i><i></i></div><p>小忆来啦，正在翻看上次的记录……</p></div></main>`;
   try { if (!elderId) throw 0; const o = await post('/interviews', { elderId, request: getReq() }); setReq(null);
     startFull();
-    session = { online: true, id: o.id, p, say: o.say, n: 0, isReturn: o.isReturn, log: [], topic: o.topic, ask: o.ask, closing: o.closing };
-  } catch { const { qs, plan } = P.offlineQuestions(FW, p, getReq()); session = { online: false, p, qs, plan, n: 0, say: qs[0].text, answers: [], log: [], closing: P.closingText(FW, plan, { profile: p }) }; }
+    session = { online: true, id: o.id, p, say: o.say, n: 0, isReturn: o.isReturn, log: [], topic: o.topic, ask: o.ask, closing: o.closing, phase: o.phase || 'chat', cards: o.cards, after: false };
+  } catch { const req = getReq(); setReq(null); const cards = P.candidates(FW, { profile: p, request: req }); // 无网兜底：本地出候选、本地解析选择
+    session = { online: false, p, n: 0, answers: [], log: [], phase: 'choose', cards, shown: cards.map(c => c.nodeId), after: false,
+      say: P.greetText(FW, P.offlineQuestions(FW, p, req).plan, { profile: p }, false) + P.choiceText(cards) }; }
   renderTurn();
 }
 function renderTurn() {
-  const s = session, text = s.say, n = s.n;
-  $app.innerHTML = `<main class="page interview"><p class="stage">${s.online ? `第 ${n + 1} 轮 · ${esc(P.nodeTitle(FW, s.ask?.nodeId, s.p))} · ${P.LAYER_LABEL[s.ask?.depth] || ''}` : `离线演示 · 第 ${n + 1} 题`}${s.isReturn && n === 0 ? ' · <b>接着上次聊</b>' : ''}</p>
+  const s = session, text = s.say, n = s.n, choosing = s.phase === 'choose';
+  $app.innerHTML = choosing ? `<main class="page interview choose"><p class="stage">${s.after ? '这个话题聊得真好 · 接下来聊什么' : '今天想聊哪个？'}${s.isReturn && !s.after ? ' · <b>接着上次聊</b>' : ''}</p>
+  <div class="bubble"><span class="who">小忆</span>${esc(text)}</div>
+  <button class="link" id="replay">🔊 再听一遍</button>
+  <div class="cards">${(s.cards || []).map((c, i) => `<button class="tcard" data-i="${i}"><b>${['一', '二', '三'][i]}</b><span>${esc(c.text)}</span></button>`).join('')}</div>
+  <div class="row choose-more"><button class="ghost" data-a="more">🔄 换几个</button><button class="ghost" data-a="free">💬 您想聊什么都行</button></div>
+  ${s.after ? `<div class="row choose-more"><button class="ghost" data-a="stay">↩️ 继续聊这个</button><button class="ghost" data-a="end">🌙 今天先到这</button></div>` : ''}
+  <button class="mic small" id="mic"><span class="ico">🎙</span><span id="micl">或者直接说：“就聊第二个”</span></button>
+  <p class="live" id="live">点卡片，或者说出来都行</p>
+  <div class="thinking hidden" id="thinking"><div class="dots"><i></i><i></i><i></i></div><p id="thinkt">小忆在听您想聊哪个……</p></div>
+  <button class="link" id="demoA">（演示：说“就聊第一个吧”）</button>
+  <textarea id="manual" placeholder="（家人可在此打字代说）" class="hidden"></textarea></main>`
+  : `<main class="page interview"><p class="stage">${s.online ? `第 ${n + 1} 轮 · ${esc(P.nodeTitle(FW, s.ask?.nodeId, s.p))} · ${P.LAYER_LABEL[s.ask?.depth] || ''}` : `离线演示 · 第 ${n + 1} 题`}${s.isReturn && n === 0 ? ' · <b>接着上次聊</b>' : ''}</p>
   ${s.log.slice(-1).map(l => `<p class="said">您刚才说：“${esc(l)}”</p>`).join('')}
   <div class="bubble"><span class="who">小忆</span>${esc(text)}</div>
   <button class="link" id="replay">🔊 再听一遍</button>
@@ -130,7 +143,10 @@ function renderTurn() {
   const live = document.getElementById('live'), manual = document.getElementById('manual'), micl = document.getElementById('micl'), mic = document.getElementById('mic');
   let rec = null, sr = null, chunks = [], btext = '', recording = false, busy = false;
   document.getElementById('replay').onclick = () => speak(text);
-  document.getElementById('demoA').onclick = () => { manual.classList.remove('hidden'); manual.value = (s.isReturn ? DEMO_ANSWERS_2 : DEMO_ANSWERS)[n] || ''; };
+  document.getElementById('demoA').onclick = () => { manual.classList.remove('hidden'); manual.value = choosing ? '就聊第一个吧' : (s.isReturn ? DEMO_ANSWERS_2 : DEMO_ANSWERS)[n] || ''; };
+  if (choosing) { const lock = () => $app.querySelectorAll('.tcard,[data-a]').forEach(b => b.disabled = true);
+    $app.querySelectorAll('.tcard').forEach(b => b.onclick = () => { lock(); b.classList.add('on'); choose({ action: 'pick', index: +b.dataset.i }); });
+    $app.querySelectorAll('[data-a]').forEach(b => b.onclick = () => { lock(); choose({ action: b.dataset.a }); }); }
   setTimeout(() => speak(text), 300);
   mic.onclick = async () => {
     if (busy) return;
@@ -147,18 +163,40 @@ function renderTurn() {
       const tmr = setTimeout(() => tt.textContent = '小忆在想下一个问题……', 2500);
       const blob = await new Promise(res => { if (!rec || rec.state === 'inactive') return res(null);
         rec.onstop = () => res(new Blob(chunks, { type: rec.mimeType || 'audio/webm' })); rec.stop(); rec.stream.getTracks().forEach(t => t.stop()); });
-      await answer(blob, manual.value.trim(), btext); clearTimeout(tmr);
+      if (choosing) await choose({ blob, manual: manual.value.trim(), btext }); else await answer(blob, manual.value.trim(), btext); clearTimeout(tmr);
     }
   };
-  document.getElementById('end').onclick = finish;
+  document.getElementById('end')?.addEventListener('click', finish);
+}
+// 选话题：点卡片 / 按钮（action），或录音、打字（交给后端：Gemini 判断 + 规则兜底）；无网时本地规则解析
+async function choose({ action, index, blob, manual, btext }) {
+  const s = session; speechSynthesis?.cancel();
+  if (s.online) {
+    const fd = new FormData(); if (action) { fd.append('action', action); fd.append('index', index ?? 0); }
+    if (blob) fd.append('audio', blob, 'a.webm'); if (manual) fd.append('manual', manual); if (btext) fd.append('browserText', btext);
+    try { const r = await post(`/interviews/${s.id}/choose`, fd);
+      if (r.end) return finish();
+      Object.assign(s, { phase: r.phase, cards: r.cards || s.cards, ask: r.ask, closing: r.closing || s.closing, say: r.say, heard: r.heard });
+      if (r.heard) s.log.push(r.heard);
+      return renderTurn();
+    } catch { s.online = false; }
+  }
+  const ch = action ? { action, index } : P.parseChoice(FW, manual || btext || '', s.cards, s.p);
+  if (ch.action === 'end') return finish();
+  if (ch.action === 'more') { s.cards = P.candidates(FW, { profile: s.p, exclude: s.shown }); s.shown.push(...s.cards.map(c => c.nodeId)); s.say = '好，那再换几个。' + P.choiceText(s.cards).replace(/^今天想聊哪个？/, ''); return renderTurn(); }
+  const nodeId = ch.action === 'pick' ? (s.cards[ch.index]?.nodeId || ch.nodeId || s.cards[0].nodeId) : s.cards[0].nodeId;
+  const { qs, plan } = P.offlineQuestions(FW, s.p, { nodeId });
+  Object.assign(s, { phase: 'chat', qs, plan, answers: [], closing: P.closingText(FW, plan, { profile: s.p }), say: (ch.action === 'free' ? '好，想聊什么都行。' : `好，那咱们就聊${P.nodeTitle(FW, nodeId, s.p)}。`) + qs[0].text });
+  renderTurn();
 }
 async function answer(blob, manualText, btext) {
   const s = session;
   if (s.online) {
     const fd = new FormData(); if (blob) fd.append('audio', blob, 'a.webm'); fd.append('question', s.say); if (manualText) fd.append('manual', manualText); if (btext) fd.append('browserText', btext);
     try { const r = await post(`/interviews/${s.id}/turn`, fd); s.log.push(r.transcript.clean || '……'); s.n++; s.ask = r.next.ask; s.closing = r.closing || s.closing; if (r.profile) { localStorage.setItem('mb_profile', JSON.stringify(r.profile)); if (cache) cache.profile = r.profile; }
-      if (r.next.done) { session.closedSpoken = !!r.next.say; if (r.next.say) await speak(r.next.say); return finish(); } s.say = r.next.say; return renderTurn();
-    } catch { s.online = false; const o = P.offlineQuestions(FW, s.p, null); s.qs = o.qs; s.plan = o.plan; s.answers = []; }
+      if (r.next.done) { session.closedSpoken = !!r.next.say; if (r.next.say) await speak(r.next.say); return finish(); } s.say = r.next.say;
+      if (r.next.phase === 'choose') Object.assign(s, { phase: 'choose', cards: r.next.cards, after: true }); return renderTurn();
+    } catch { s.online = false; const o = P.offlineQuestions(FW, s.p, s.ask?.nodeId ? { nodeId: s.ask.nodeId } : null); s.qs = o.qs; s.plan = o.plan; s.answers = []; }
   }
   const q = s.qs[s.answers.length] || s.qs.at(-1); s.answers.push({ question: q.text, stage: P.nodeTitle(FW, q.nodeId, s.p), text: manualText || btext, audio: blob });
   s.log.push(manualText || btext || '……'); s.n++;
