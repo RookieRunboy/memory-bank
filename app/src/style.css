@@ -57,3 +57,14 @@ blockquote{margin:0;padding:12px 16px;border-left:5px solid var(--sage);backgrou
 .legend{display:flex;gap:8px;margin:8px 0}.legend .node{padding:4px 10px;font-size:15px}
 .bar{display:flex;align-items:center;gap:8px;font-size:17px;margin:6px 0}.bar span{width:5.5em}.bar .track{flex:1;height:12px;background:#f1e4c9;border-radius:8px;overflow:hidden}.bar .fill{height:100%;background:#d99a4e}.bar small{width:2.6em;text-align:right;color:#9a7b4f}
 .ent{background:#fff8ea;border-radius:12px;padding:10px 12px;margin:6px 0;font-size:18px}.ent .ty{color:#9a7b4f;margin-right:6px}.ent small{color:#8a7458;font-size:15px}
+/* v4 老人首屏 / 故事原声与访谈稿 */
+.home.elder{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+.corner{position:absolute;top:14px;right:14px;font-size:15px;color:#9a7b4f;text-decoration:none;padding:6px 10px;border-radius:12px;background:rgba(255,248,234,.7)}
+.big2{font-size:30px;text-align:center;line-height:1.5;color:#5b3d1e}
+.huge{width:240px;height:240px;border-radius:50%;border:0;font-size:34px;line-height:1.5;color:#fff;background:linear-gradient(#c98a4b,#9c5f2c);box-shadow:0 10px 30px rgba(156,95,44,.35);margin:24px 0}
+a.btn{display:block;text-align:center;text-decoration:none;box-sizing:border-box}
+.para{display:flex;gap:8px;align-items:flex-start}.para p{flex:1;margin:0 0 12px}
+.play{flex:none;border:1.5px solid #d9a066;background:#fff8ea;color:#9c5f2c;border-radius:16px;padding:4px 10px;font-size:15px;margin-top:4px}
+.transcript,.edits{background:#fffdf7;border:1.5px solid #ead9b8;border-radius:14px;padding:10px 12px;margin:14px 0}.transcript summary,.edits summary{font-size:18px;color:#6b4a26}
+.turn{border-top:1px dashed #ead9b8;padding:8px 0}.turn.hl{background:#fbe9c8;border-radius:8px}.turn .raw{color:#8a7458;font-size:15px}.meta{color:#9a7b4f;font-size:14px}
+.edit input,.edit textarea{width:100%;box-sizing:border-box;font-size:18px;padding:10px;border-radius:10px;border:1.5px solid #e0c99f;margin-bottom:10px;background:#fffdf7}
