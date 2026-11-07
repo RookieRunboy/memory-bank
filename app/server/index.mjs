@@ -21,6 +21,7 @@ const iv = id => { const r = one('select * from interviews where id=?', [id]); r
 
 // 空库自动灌入王女士演示数据（档案 + 一次访谈 + 故事 + 记忆档案/实体/话题状态），第二次访谈可直接接续开场
 if (!one('select count(*) n from elders').n) { const { seedDemo } = await import('./seed.mjs'); await seedDemo({ db, ai, P }); save(); console.log('[seed] 已灌入王女士演示数据（elder id: demo-wang）'); }
+if (!one('select 1 n from elders where id=?', ['demo-fugui'])) { const { seedFugui } = await import('./seed-fugui.mjs'); await seedFugui({ db, ai, P }); save(); console.log('[seed] 已灌入徐先生演示数据（elder id: demo-fugui，人物原型取自《活着》，内容为自编）'); }
 const app = express(); app.use(express.json({ limit: '2mb' }));
 const up = multer({ storage: multer.memoryStorage(), limits: { fileSize: 20e6 } });
 import { gemini } from './gemini.mjs';
