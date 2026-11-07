@@ -1,6 +1,6 @@
 {
-  "version": "2.0",
-  "updated": "2026-10-24",
+  "version": "3.0",
+  "updated": "2026-11-07",
   "variables": {
     "称呼": "profile.callName",
     "姓名": "profile.name",
@@ -9,16 +9,6 @@
     "重要人物": "profile.people 去掉前缀后的人名"
   },
   "dimensions": {
-    "time": {
-      "label": "时间",
-      "values": {
-        "child": "儿童",
-        "teen": "少年",
-        "youth": "青年",
-        "midlife": "中年",
-        "elder": "老年"
-      }
-    },
     "relation": {
       "label": "人际关系",
       "values": {
@@ -75,83 +65,12 @@
       "label": "想对后辈说的话"
     }
   ],
-  "layer_rules": [
-    "每个节点由浅入深四层：1 事实，2 场景细节，3 感受，4 想对后辈说的话。每层一个入场问题，一次只问一个",
-    "老人对某层问题给出实质回答，或自己主动讲到了那层的内容，就算到达该层，depth 取已到达的最大层",
-    "可以跳层：老人一开口就讲感受，直接记 depth 3，回头再补场景也行",
-    "家人提供了触发物（照片、老歌、菜、物件、节日），用 trigger_openers 里对应的问题代替第 1 层开场，老人回答后照常从第 1 层或第 2 层接着走",
-    "第 4 层只在老人情绪愉快、平稳时问；老人难过时停在第 3 层，不追问"
-  ],
-  "enough_default": {
-    "rule": "满足任一条件即可离开当前节点",
-    "conditions": [
-      {
-        "id": "deep",
-        "desc": "depth 到达 4，即四层都聊到",
-        "check": "depth>=4"
-      },
-      {
-        "id": "short_replies",
-        "desc": "老人在本节点连续两次简短回答，每次少于八个字，或说不知道、忘了",
-        "check": "consecutive_short>=2"
-      },
-      {
-        "id": "tired",
-        "desc": "老人表现出疲倦、烦躁，或说累了、不想说了",
-        "check": "emotion in [累了, 烦躁]"
-      },
-      {
-        "id": "upset",
-        "desc": "出现悲伤或困惑，安抚后仍未恢复，立刻离开节点，状态记为 partial 并标记 sensitive",
-        "check": "emotion in [难过, 困惑] after soothe"
-      },
-      {
-        "id": "max_turns",
-        "desc": "本节点已问满八轮",
-        "check": "node_turns>=8"
-      }
-    ]
-  },
-  "coverage_summary": {
-    "time": {
-      "child": 8,
-      "teen": 7,
-      "youth": 10,
-      "midlife": 9,
-      "elder": 8
-    },
-    "relation": {
-      "parents": 6,
-      "siblings": 2,
-      "spouse": 4,
-      "children": 5,
-      "friends": 5,
-      "teachers": 2,
-      "colleagues": 3
-    },
-    "domain": {
-      "school": 4,
-      "work": 5,
-      "family": 17,
-      "craft": 5,
-      "places": 8,
-      "times": 3
-    },
-    "trigger": {
-      "photo": 12,
-      "song": 4,
-      "food": 8,
-      "object": 10,
-      "festival": 3
-    }
-  },
   "nodes": [
     {
       "id": "child-home",
       "title": "老家的房子",
       "card": "小时候住的老房子",
       "tags": {
-        "time": "child",
         "relation": null,
         "domain": "places",
         "trigger": [
@@ -206,7 +125,6 @@
       "title": "妈妈",
       "card": "说说您的妈妈",
       "tags": {
-        "time": "child",
         "relation": "parents",
         "domain": "family",
         "trigger": [
@@ -260,7 +178,6 @@
       "title": "和父亲学骑车",
       "card": "跟父亲学骑车",
       "tags": {
-        "time": "child",
         "relation": "parents",
         "domain": "family",
         "trigger": [
@@ -314,7 +231,6 @@
       "title": "兄弟姐妹",
       "card": "家里的兄弟姐妹",
       "tags": {
-        "time": "child",
         "relation": "siblings",
         "domain": "family",
         "trigger": [
@@ -369,7 +285,6 @@
       "title": "玩伴与游戏",
       "card": "小时候玩什么",
       "tags": {
-        "time": "child",
         "relation": "friends",
         "domain": "craft",
         "trigger": [
@@ -423,7 +338,6 @@
       "title": "小时候过年",
       "card": "小时候家里过年",
       "tags": {
-        "time": "child",
         "relation": "parents",
         "domain": "family",
         "trigger": [
@@ -479,7 +393,6 @@
       "title": "小时候的吃食",
       "card": "小时候爱吃的东西",
       "tags": {
-        "time": "child",
         "relation": "parents",
         "domain": "family",
         "trigger": [
@@ -533,7 +446,6 @@
       "title": "家乡的河与树",
       "card": "老家的河和树",
       "tags": {
-        "time": "child",
         "relation": null,
         "domain": "places",
         "trigger": [
@@ -588,7 +500,6 @@
       "title": "上学",
       "card": "上学那会儿",
       "tags": {
-        "time": "teen",
         "relation": "friends",
         "domain": "school",
         "trigger": [
@@ -643,7 +554,6 @@
       "title": "难忘的老师",
       "card": "难忘的老师",
       "tags": {
-        "time": "teen",
         "relation": "teachers",
         "domain": "school",
         "trigger": []
@@ -693,7 +603,6 @@
       "title": "帮家里干活",
       "card": "帮家里干活",
       "tags": {
-        "time": "teen",
         "relation": "parents",
         "domain": "family",
         "trigger": [
@@ -748,7 +657,6 @@
       "title": "少年时的好朋友",
       "card": "少年时的好朋友",
       "tags": {
-        "time": "teen",
         "relation": "friends",
         "domain": "school",
         "trigger": []
@@ -798,7 +706,6 @@
       "title": "少年时唱的歌",
       "card": "年轻时爱唱的歌",
       "tags": {
-        "time": "teen",
         "relation": "friends",
         "domain": "craft",
         "trigger": [
@@ -852,7 +759,6 @@
       "title": "少年时的大事",
       "card": "少年时的大事",
       "tags": {
-        "time": "teen",
         "relation": null,
         "domain": "times",
         "trigger": []
@@ -902,7 +808,6 @@
       "title": "少年时的心愿",
       "card": "小时候的心愿",
       "tags": {
-        "time": "teen",
         "relation": null,
         "domain": "school",
         "trigger": []
@@ -952,7 +857,6 @@
       "title": "第一份工作",
       "card": "第一份工作",
       "tags": {
-        "time": "youth",
         "relation": "colleagues",
         "domain": "work",
         "trigger": [
@@ -1008,7 +912,6 @@
       "title": "带我入门的师傅",
       "card": "带您入门的师傅",
       "tags": {
-        "time": "youth",
         "relation": "teachers",
         "domain": "work",
         "trigger": []
@@ -1058,7 +961,6 @@
       "title": "和{重要人物}相识",
       "card": "和{重要人物}怎么认识的",
       "tags": {
-        "time": "youth",
         "relation": "spouse",
         "domain": "family",
         "trigger": [
@@ -1112,7 +1014,6 @@
       "title": "谈对象的日子",
       "card": "谈对象那会儿",
       "tags": {
-        "time": "youth",
         "relation": "spouse",
         "domain": "places",
         "trigger": [
@@ -1167,7 +1068,6 @@
       "title": "结婚那天",
       "card": "结婚那天",
       "tags": {
-        "time": "youth",
         "relation": "spouse",
         "domain": "family",
         "trigger": [
@@ -1223,7 +1123,6 @@
       "title": "刚成家住的地方",
       "card": "刚成家住的地方",
       "tags": {
-        "time": "youth",
         "relation": "spouse",
         "domain": "places",
         "trigger": [
@@ -1278,7 +1177,6 @@
       "title": "第一个孩子出生",
       "card": "第一个孩子出生",
       "tags": {
-        "time": "youth",
         "relation": "children",
         "domain": "family",
         "trigger": []
@@ -1329,7 +1227,6 @@
       "title": "年轻时的工友",
       "card": "年轻时的工友",
       "tags": {
-        "time": "youth",
         "relation": "colleagues",
         "domain": "work",
         "trigger": [
@@ -1383,7 +1280,6 @@
       "title": "年轻时得意的事",
       "card": "年轻时最得意的事",
       "tags": {
-        "time": "youth",
         "relation": null,
         "domain": "work",
         "trigger": []
@@ -1433,7 +1329,6 @@
       "title": "青年时的大事",
       "card": "年轻时的大事",
       "tags": {
-        "time": "youth",
         "relation": null,
         "domain": "times",
         "trigger": []
@@ -1483,7 +1378,6 @@
       "title": "把孩子拉扯大",
       "card": "把孩子拉扯大",
       "tags": {
-        "time": "midlife",
         "relation": "children",
         "domain": "family",
         "trigger": [
@@ -1538,7 +1432,6 @@
       "title": "孩子的调皮事",
       "card": "孩子小时候的调皮事",
       "tags": {
-        "time": "midlife",
         "relation": "children",
         "domain": "family",
         "trigger": []
@@ -1587,7 +1480,6 @@
       "title": "工作上的那些年",
       "card": "工作上的那些年",
       "tags": {
-        "time": "midlife",
         "relation": "colleagues",
         "domain": "work",
         "trigger": [
@@ -1641,7 +1533,6 @@
       "title": "拿手的手艺",
       "card": "您的拿手手艺",
       "tags": {
-        "time": "midlife",
         "relation": null,
         "domain": "craft",
         "trigger": [
@@ -1697,7 +1588,6 @@
       "title": "成家后的兄弟姐妹",
       "card": "成家后的兄弟姐妹",
       "tags": {
-        "time": "midlife",
         "relation": "siblings",
         "domain": "family",
         "trigger": [
@@ -1751,7 +1641,6 @@
       "title": "搬过的家",
       "card": "搬过的家",
       "tags": {
-        "time": "midlife",
         "relation": null,
         "domain": "places",
         "trigger": [
@@ -1805,7 +1694,6 @@
       "title": "难走的日子",
       "card": "难走的那些日子",
       "tags": {
-        "time": "midlife",
         "relation": null,
         "domain": "times",
         "trigger": []
@@ -1859,7 +1747,6 @@
       "title": "出过的远门",
       "card": "出过的远门",
       "tags": {
-        "time": "midlife",
         "relation": null,
         "domain": "places",
         "trigger": [
@@ -1914,7 +1801,6 @@
       "title": "陪父母变老",
       "card": "陪父母变老",
       "tags": {
-        "time": "midlife",
         "relation": "parents",
         "domain": "family",
         "trigger": []
@@ -1968,7 +1854,6 @@
       "title": "孙辈",
       "card": "说说孙辈",
       "tags": {
-        "time": "elder",
         "relation": "children",
         "domain": "family",
         "trigger": [
@@ -2022,7 +1907,6 @@
       "title": "家乡的味道",
       "card": "家乡的味道",
       "tags": {
-        "time": "elder",
         "relation": null,
         "domain": "places",
         "trigger": [
@@ -2076,7 +1960,6 @@
       "title": "节日和习俗",
       "card": "过节的老习俗",
       "tags": {
-        "time": "elder",
         "relation": null,
         "domain": "family",
         "trigger": [
@@ -2132,7 +2015,6 @@
       "title": "喜欢的歌和戏",
       "card": "喜欢的歌和戏",
       "tags": {
-        "time": "elder",
         "relation": null,
         "domain": "craft",
         "trigger": [
@@ -2188,7 +2070,6 @@
       "title": "老朋友老邻居",
       "card": "老朋友老邻居",
       "tags": {
-        "time": "elder",
         "relation": "friends",
         "domain": "places",
         "trigger": [
@@ -2242,7 +2123,6 @@
       "title": "现在的爱好",
       "card": "现在的爱好",
       "tags": {
-        "time": "elder",
         "relation": null,
         "domain": "craft",
         "trigger": [
@@ -2295,7 +2175,6 @@
       "title": "珍藏的老物件",
       "card": "珍藏的老物件",
       "tags": {
-        "time": "elder",
         "relation": null,
         "domain": "family",
         "trigger": [
@@ -2351,7 +2230,6 @@
       "title": "想对家人说的话",
       "card": "想对家人说的话",
       "tags": {
-        "time": "elder",
         "relation": "children",
         "domain": "family",
         "trigger": []
@@ -2397,15 +2275,11 @@
     }
   ],
   "state": {
-    "status_values": {
-      "not_started": "未聊",
-      "partial": "聊过一些",
-      "done": "聊完"
-    },
+    "desc": "只记老人讲到哪，不记完成度。没讲过的话题没有记录，也不会被当成待补的空白。",
     "node_state_example": {
       "nodeId": "youth-date",
-      "status": "partial",
       "depth": 2,
+      "enough": false,
       "turns": 3,
       "notes": [
         "骑自行车带我去瘦西湖",
@@ -2416,14 +2290,11 @@
       "updatedAt": 1761300000000
     },
     "update_rules": [
-      "depth 为 0 时 status 为 not_started；老人第一次有实质回答，depth 至少为 1，status 变为 partial",
-      "每轮老人回答后，判断这轮到达了第几层，depth 取最大值，turns 加一，并把一句要点追加到 notes",
-      "depth 到达 4 或问满八轮，status 置为 done",
-      "因 short_replies 或 tired 离开时，depth 已到 3 则置为 done，否则保持 partial",
-      "因 upset 离开时保持 partial，并把 sensitive 置为 true；之后自动选题跳过，只有老人主动提起或家人指定才再聊",
-      "老人跑题讲到别的节点，把这段内容记到那个节点下，更新它的 depth 和 notes，不打断老人；没有合适节点时记到最接近的节点，并在 notes 里注明",
-      "每轮从老人话里抽取人、地、物，写入记忆档案 entities，记下来源节点",
-      "状态和 depth 只前进不后退，家人可以手动重置"
+      "depth：老人讲到的最深一层（0 到 4），只前进不后退；0 表示还没讲过",
+      "enough：这个话题聊够了。depth 到 4、问满八轮，或累了、连着简短回答而 depth 已到 3，置为 true",
+      "每轮把一句要点追加到 notes；每轮从老人话里抽取人、地、物写入实体表",
+      "因 upset 离开：置 sensitive，之后不主动提，只有老人自己提起才聊",
+      "老人跑题，就记到他真正讲到的话题下，不打断；找不到合适的就记到最接近的"
     ]
   },
   "archive": {
@@ -2498,16 +2369,15 @@
     ]
   },
   "planning": {
-    "nodes_per_session": "1到2个节点，路演默认1个节点走深，再视情况进第2个",
+    "nodes_per_session": "一次访谈聊到哪算哪：老人选一个话题走深，聊够了再给候选让他选，不预设今天要聊几个",
     "selection_algorithm": [
-      "第一步，家人指定：家人指定了节点或触发物，就用指定的，跳过后面步骤（敏感节点也允许家人指定）。只给了触发物时，选 tags.trigger 包含它、且 status 不是 done 的节点，用对应的 trigger_openers 开场",
-      "第二步，顺藤摸瓜：取记忆档案里 lastSessionId 为上次访谈的实体，按 archive.match_rules 找相关且 status 为 not_started 的节点。例如上次讲到李建国和自行车，就选 youth-wedding 或 youth-newhome",
-      "第三步，加深：找 status 为 partial 且 depth 小于 4 的节点，选 lastSessionId 最近的，从 depth 加一层接着问",
-      "第四步，兜底补覆盖：统计已聊节点（partial 或 done）在 relation、domain、time 三个维度上每个取值的数量，找出数量最少的那个取值，同样少时按 relation、domain、time 的维度顺序，再按 dimensions 里取值的顺序；在带这个取值的 not_started 节点里，按 nodes 列表顺序取第一个",
-      "每一步都先排除：sensitive 为 true 的节点；needs_calm 节点，除非老人情绪平稳且主动聊到；档案缺少前提的节点，例如没填爱人跳过 relation 为 spouse 的节点，没有子女跳过 relation 为 children 的节点",
-      "避免连续两次同一维度：每一步有多个候选时，优先选 relation 和 domain 都与上一个节点不同的；没有，就选至少一个维度不同的；仍然没有，才用同维度的。同一次访谈里的两个节点也照此错开",
-      "所有节点都 done，就回到老人讲得最开心的节点，挑 notes 里一个细节再聊一层",
-      "下次节点 next_node 用同样算法，在假设今天节点都已 done 的前提下预先算出，用于结束语预告"
+      "第一步，指定：老人从首页点了触发物（老照片、老歌、家乡菜等），或选了某个话题，就用它。只给触发物时用对应的 trigger_openers 开场",
+      "第二步，顺藤摸瓜：取上次访谈里提到的人、地、物，找相关且老人还没讲过的话题",
+      "第三步，加深：老人讲过一些、还没聊够的话题，选最近的，从下一层接着问",
+      "第四步，没有线索可跟：只用轻松的话题（吃食、老歌、节日）起头，不去补哪个年龄段、哪类关系还空着。老人没提过的人生阶段，就不提",
+      "每一步都先排除：sensitive 的话题；需要情绪平稳的话题；档案缺少前提的话题（没填爱人跳过 spouse，没有子女跳过 children）",
+      "有多个候选时，优先选和上一个话题关系、领域都不同的",
+      "轻松话题也聊过了，就回到老人讲得最开心的话题，挑 notes 里一个细节再聊一层"
     ],
     "needs_calm": [
       "teen-times",
@@ -2522,48 +2392,6 @@
       "child-newyear"
     ],
     "off_topic": "老人讲到别的节点时，主持人顺着聊，不拉回。后台把这几轮归到最匹配的节点下，并抽取实体。老人讲完后，主持人用一句过渡回到当前节点，或者顺势把那个节点当作今天第二个节点",
-    "session_plan_example": {
-      "sessionId": "s2",
-      "elderId": "e1",
-      "requestedBy": "auto",
-      "previousNode": {
-        "nodeId": "youth-date",
-        "tags": {
-          "relation": "spouse",
-          "domain": "places"
-        }
-      },
-      "nodes": [
-        {
-          "nodeId": "youth-date",
-          "reason": "deepen",
-          "startDepth": 3,
-          "note": "上次到第2层，这次从感受问起"
-        },
-        {
-          "nodeId": "youth-wedding",
-          "reason": "follow_entity",
-          "entity": "p-lijianguo",
-          "note": "顺着李建国。relation 与上个相同，但 domain 不同（family 对 places），且是第二步唯一高相关候选"
-        }
-      ],
-      "currentNodeIndex": 0,
-      "nextNodePreview": {
-        "nodeId": "youth-firstchild",
-        "reason": "follow_entity",
-        "entity": "小梅"
-      },
-      "prompt_vars": {
-        "今天话题": "您和老伴去瘦西湖的事，还有结婚那天",
-        "当前话题": "谈对象的日子",
-        "当前层次": "第3层，感受",
-        "当前话题入场问题": "跟他在一块儿，您心里什么滋味？",
-        "顺藤线索": "您老伴李先生骑自行车带您去瘦西湖，还给您买了桂花糕",
-        "已聊要点": "在纺织厂认识，他是修机器的；骑车去瘦西湖；桂花糕跟我一样甜",
-        "下次话题": "小梅出生那天",
-        "上一个话题": "骑自行车去瘦西湖"
-      }
-    },
-    "candidates": "开场不强制指定话题：选题算法给出 3 个候选（家人指定的放第一个；尽量一个顺藤上次线索/加深、一个轻松触发物类如吃食老歌节日、一个没聊过的补覆盖；避开敏感与需平静节点，维度尽量错开），小忆念出来并显示大卡片，老人点卡片或用语音选（序号/关键词，含糊默认第一个），可“换几个”（不重复）或“想聊什么都行”自由聊（按内容归档到节点）。一个话题聊够后同样给候选，并可“继续聊这个”或“今天先到这”。"
+    "candidates": "开场不强制指定话题：小忆问候后念 3 个候选，屏幕同时显示大卡片。候选尽量来自不同方面：一个顺着上次线索或加深，其余是轻松话题（吃食、老歌、节日）。避开敏感与需平静的话题。老人点卡片或用语音选，可“换几个”或“想聊什么都行”自由聊（按内容归档）。一个话题聊够后同样给候选，并可“继续聊这个”或“今天先到这”。"
   }
 }

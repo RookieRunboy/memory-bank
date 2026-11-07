@@ -6,6 +6,7 @@ import * as P from './planner.js';
 import { generateStory } from './story.js'; import { splitSentences, firstShort, ACKS, pickAck } from './split.js';
 import { saveStory, listStories, getStory } from './db.js';
 import * as Shell from './shell.js';
+import { ic, wave, loader, alive } from './ui.js';
 const $app = document.getElementById('app');
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -76,13 +77,13 @@ async function speak(text) { text = P.speakable(text || ''); stopSpeak(); const 
   for (let i = 0; i < parts.length && g === speakGen; i++) { const b = await jobs[i]; if (g !== speakGen) break;
     if (!(b && await playBlob(b))) await browserSay(parts[i]); }
   if (g === speakGen) setSpeaking(false); }
-const routes = { me: Shell.chatHome, history: Shell.history, account: Shell.account, settings: Shell.settings, profile, stage: stagePick, interview, story, library, archive, map: lifeMap };
+const routes = { me: Shell.chatHome, account: Shell.account, settings: Shell.settings, profile, interview, story, library, archive };
 const route = async () => { const [p, id] = location.hash.slice(2).split('/'); await load(); const name = routes[p] ? p : 'me'; // 没有首页：根路径和未知路径都进“我的”
   if (!getProfile() && name !== 'profile') return go('#/profile');
   Shell.mount(name); window.scrollTo(0, 0); routes[name](id); };
 window.addEventListener('hashchange', route);
 const go = h => location.hash = h;
-const back = (h = '#/me', t = '← 返回') => `<button class="link" onclick="location.hash='${h}'">${t}</button>`;
+const back = (h = '#/me', t = '返回') => `<button class="link" onclick="location.hash='${h}'">${ic('back', 16)}${t}</button>`;
 
 function profile() {
   const p = getProfile() || {};
@@ -95,56 +96,20 @@ function profile() {
   <label>家乡<input name="hometown" value="${esc(p.hometown)}" placeholder="如：江苏扬州"></label>
   <label>身边重要的人（可选）<input name="people" value="${esc(p.people)}" placeholder="如：老伴李建国、女儿小梅"></label>
   <button class="big" type="submit">保存，下一步</button></form>
-  <button class="ghost" id="demo">✨ 填入演示档案（王女士）</button>${back()}</main>`;
+  <button class="ghost" id="demo">填入演示档案（王女士）</button>${back()}</main>`;
   const f = document.getElementById('f'), cn = f.callName, man = f.callNameManual;
   const auto = () => { if (!man.value) cn.value = autoCallName(f.name.value, f.gender.value); }; // 手动改过就不再自动覆盖
   f.name.oninput = auto; f.gender.onchange = auto; cn.oninput = () => { man.value = cn.value.trim() ? '1' : ''; if (!man.value) auto(); }; auto();
   f.onsubmit = async e => { e.preventDefault(); const d = Object.fromEntries(new FormData(f)); const np = { ...p, ...d, callNameManual: !!d.callNameManual };
-    if (np.callName !== p.callName) delete np.callNameBy; await setProfile(np); go('#/stage'); };
-  document.getElementById('demo').onclick = async () => { if (!elderId) { elderId = 'demo-wang'; localStorage.setItem('mb_elder', elderId); } await setProfile(DEMO_PROFILE); go('#/stage'); }; // 演示：接上服务器预置的王女士数据
+    if (np.callName !== p.callName) delete np.callNameBy; await setProfile(np); go('#/interview'); };
+  document.getElementById('demo').onclick = async () => { if (!elderId) { elderId = 'demo-wang'; localStorage.setItem('mb_elder', elderId); } await setProfile(DEMO_PROFILE); go('#/interview'); }; // 演示：接上服务器预置的王女士数据
 }
-// 会话规划页：自动选题 + 老人自己指定（节点或触发物）
+// 没有“今天聊什么”预览页：点开始直接进访谈，小忆问候后念候选，老人自己选。手边有老照片、老歌、家乡菜时，从首页的小按钮带着进来。
 const getReq = () => JSON.parse(sessionStorage.getItem('mb_req') || 'null');
 const setReq = r => r ? sessionStorage.setItem('mb_req', JSON.stringify(r)) : sessionStorage.removeItem('mb_req');
-const TRIG_ICON = { photo: '🖼', song: '🎵', food: '🥮', object: '⌚', festival: '🏮' };
-async function stagePick() {
-  const p = getProfile(); if (!p) return go('#/profile');
-  const req = getReq(); let d = null;
-  try { d = await api(`/elders/${elderId}/plan${req ? '?' + new URLSearchParams(Object.entries(req).filter(([, v]) => v)) : ''}`); } catch {}
-  const plan = d?.plan || P.offlineQuestions(FW, p, req).plan, v = d?.vars || P.planVars(FW, plan, { profile: p });
-  const T = id => P.nodeTitle(FW, id, p);
-  $app.innerHTML = `<main class="page plan"><h2>今天聊什么？</h2><p class="tip">小忆替${esc(callNameOf(p))}挑好了，您也可以自己指定</p>
-  <div class="plancard"><p class="lbl">今天话题</p><p class="topic">${esc(v.今天话题)}</p>
-  ${(() => { const x = plan.nodes[plan.currentNodeIndex || 0] || plan.nodes[0]; return x ? `<p class="why">先聊「${esc(T(x.nodeId))}」</p>` : ''; })()}
-  <p class="lbl">小忆会先问</p><p class="q">“${esc(v.当前话题入场问题)}”</p>
-  ${v.顺藤线索 ? `<p class="lbl">顺藤线索</p><p class="why">${esc(v.顺藤线索)}</p>` : ''}
-  ${v.下次话题 ? `<p class="lbl">下次预告</p><p class="why">${esc(v.下次话题)}</p>` : ''}</div>
-  <button class="big" id="go">🎙 就聊这个</button>
-  <h3>想从哪儿聊起</h3><p class="tip">手边有老照片、老歌、家乡菜？点一下，小忆用它开场</p>
-  <div class="trigs">${Object.entries(FW.dimensions.trigger.values).map(([k, l]) => `<button class="${req?.trigger === k ? 'big' : 'ghost'} trig" data-t="${k}">${TRIG_ICON[k]} ${l}</button>`).join('')}</div>
-  <button class="ghost wide" onclick="location.hash='#/map'">🗺 从人生地图里挑一个话题</button>
-  ${req ? `<p class="hint">已指定：${esc(req.nodeId ? T(req.nodeId) : FW.dimensions.trigger.values[req.trigger])} <button class="link" id="clr">清除，改回自动</button></p>` : ''}
-  ${cache?.archive?.lastTopic ? `<p class="hint">💭 上次聊到：${esc(cache.archive.lastTopic)}</p>` : ''}${back()}</main>`;
-  document.getElementById('go').onclick = () => go('#/interview');
-  $app.querySelectorAll('.trig').forEach(b => b.onclick = () => { setReq(req?.trigger === b.dataset.t ? null : { trigger: b.dataset.t }); stagePick(); });
-  const c = document.getElementById('clr'); if (c) c.onclick = () => { setReq(null); stagePick(); };
-}
-// 人生地图：各维度哪些聊过、哪些空着；点节点即指定为下次话题
-function lifeMap() {
-  const p = getProfile() || {}, states = cache?.states || {}, cov = P.coverage(FW, states);
-  const dot = s => [1, 2, 3, 4].map(k => `<i class="${s.depth >= k ? 'on' : ''}"></i>`).join('');
-  const chip = n => { const s = P.st(states, n.id); return `<button class="node ${s.status}${s.sensitive ? ' sens' : ''}" data-n="${n.id}"><b>${esc(P.nodeTitle(FW, n.id, p))}</b><span class="d">${dot(s)}</span>${s.sensitive ? '<small>先放一放</small>' : ''}</button>`; };
-  $app.innerHTML = `<main class="page map"><h2>🗺 ${esc(callNameOf(p))}的人生地图</h2>
-  <p class="tip">深色是聊完的，浅色是聊过一些，空白的还没聊。点一个话题，下次就聊它</p>
-  <div class="legend"><span class="node done">聊完</span><span class="node partial">聊过一些</span><span class="node not_started">还没聊</span></div>
-  ${Object.entries(FW.dimensions.time.values).map(([t, l]) => `<section class="era"><h3>${l}</h3><div class="nodes">${FW.nodes.filter(n => n.tags.time === t).map(chip).join('')}</div></section>`).join('')}
-  ${['relation', 'domain', 'trigger'].map(dim => `<section class="cov"><h3>${FW.dimensions[dim].label}</h3>${cov[dim].map(x => `<div class="bar"><span>${x.label}</span><div class="track"><div class="fill" style="width:${x.total ? 100 * x.chatted / x.total : 0}%"></div></div><small>${x.chatted}/${x.total}</small></div>`).join('')}</section>`).join('')}
-  ${back()}</main>`;
-  $app.querySelectorAll('.node[data-n]').forEach(b => b.onclick = () => { setReq({ nodeId: b.dataset.n }); go('#/stage'); });
-}
 async function interview() {
   const p = getProfile(); if (!p) return go('#/profile');
-  $app.innerHTML = `<main class="page center"><div class="thinking"><div class="dots"><i></i><i></i><i></i></div><p>小忆来啦，正在翻看上次的记录……</p></div></main>`;
+  $app.innerHTML = `<main class="page center interview">${loader('小忆来啦，正在翻看上次的记录……')}</main>`;
   try { if (!elderId) throw 0; const o = await post('/interviews', { elderId, request: getReq() }); setReq(null);
     startFull();
     session = { online: true, id: o.id, p, say: o.say, n: 0, isReturn: o.isReturn, log: [], topic: o.topic, ask: o.ask, closing: o.closing, phase: o.phase || 'chat', cards: o.cards, after: false };
@@ -161,24 +126,24 @@ function topicLabel(s) {
 }
 function renderTurn() {
   const s = session, text = s.say, n = s.n, choosing = s.phase === 'choose';
-  $app.innerHTML = choosing ? `<main class="page interview choose"><p class="stage">${s.after ? '接下来想聊什么' : (s.isReturn ? '接着上次，想聊哪个？' : '今天想聊哪个？')}</p>
-  <div class="bubble"><span class="who">小忆</span>${esc(text)}</div>
-  <p class="speaking-ind hidden" id="speakInd">小忆在说话…</p><button class="link" id="replay">再听一遍</button>
+  $app.innerHTML = choosing ? `<main class="page interview choose"><p class="stage stg">${s.after ? '接下来想聊什么' : (s.isReturn ? '接着上次，想聊哪个？' : '今天想聊哪个？')}</p>
+  <div class="bubble"><span class="who">${ic('mic', 14)}小忆</span>${esc(text)}</div>
+  <p class="speaking-ind hidden" id="speakInd">小忆在说话…</p><button class="link" id="replay">${ic('play', 14)}再听一遍</button>
   <div class="cards">${(s.cards || []).map((c, i) => `<button class="tcard" data-i="${i}"><b>${['一', '二', '三'][i]}</b><span>${esc(c.text)}</span></button>`).join('')}</div>
   ${s.after ? `<div class="row choose-more"><button class="ghost" data-a="stay">继续聊这个</button><button class="ghost" data-a="end">今天先到这</button></div>` : ''}
   <details class="choose-extra"><summary>换几个，或随便聊</summary>
   <div class="row choose-more"><button class="ghost" data-a="more">换几个</button><button class="ghost" data-a="free">您想聊什么都行</button></div></details>
   <button class="mic small" id="mic"><span id="micl">也可以直接说</span></button>
   <p class="live" id="live" data-after="点卡片，或者说出来都行">小忆说完，您点卡片或直接说</p>
-  <div class="thinking hidden" id="thinking"><div class="dots"><i></i><i></i><i></i></div><p id="thinkt">小忆在听您想聊哪个……</p></div>
+  <div class="thinking hidden" id="thinking"><span class="wave live"><i></i><i></i><i></i><i></i><i></i></span><p id="thinkt">小忆在听您想聊哪个……</p></div>
   <textarea id="manual" placeholder="（也可以在这里打字）" class="hidden"></textarea></main>`
-  : `<main class="page interview"><p class="stage">${esc(topicLabel(s))}</p>
+  : `<main class="page interview"><p class="stage stg">${esc(topicLabel(s))}</p>
   ${s.log.slice(-1).map(l => `<p class="said">您刚才说：“${esc(l)}”</p>`).join('')}
-  <div class="bubble"><span class="who">小忆</span>${esc(text)}</div>
-  <p class="speaking-ind hidden" id="speakInd">小忆在说话…</p><button class="link" id="replay">再听一遍</button>
+  <div class="bubble"><span class="who">${ic('mic', 14)}小忆</span>${esc(text)}</div>
+  <p class="speaking-ind hidden" id="speakInd">小忆在说话…</p><button class="link" id="replay">${ic('play', 14)}再听一遍</button>
   <button class="mic" id="mic"><span id="micl">点一下，开始说</span></button>
   <p class="live" id="live" data-after="该您说了，点一下">慢慢说，不着急，说错了也没关系</p>
-  <div class="thinking hidden" id="thinking"><div class="dots"><i></i><i></i><i></i></div><p id="thinkt">小忆在认真听……</p><small>不着急，您喝口水歇一歇</small></div>
+  <div class="thinking hidden" id="thinking"><span class="wave live"><i></i><i></i><i></i><i></i><i></i></span><p id="thinkt">小忆在认真听……</p><small>不着急，您喝口水歇一歇</small></div>
   <textarea id="manual" placeholder="（也可以在这里补写文字）" class="hidden"></textarea>
   <div class="row"><button class="ghost" id="end">今天先聊到这</button></div></main>`;
   const live = document.getElementById('live'), manual = document.getElementById('manual'), micl = document.getElementById('micl'), mic = document.getElementById('mic');
@@ -252,7 +217,7 @@ async function stopFull(id) { if (!full) return; const { r, ch } = full; full = 
   if (b.size && id) { const fd = new FormData(); fd.append('audio', b, 'full.webm'); await post(`/interviews/${id}/full`, fd).catch(() => {}); } }
 async function finish() {
   stopSpeak(); if (!session.closedSpoken) speak(P.speakable(session.closing || fill(SCRIPT.closing, session.p)));
-  $app.innerHTML = `<main class="page center"><div class="thinking" id="storyThinking"><div class="dots"><i></i><i></i><i></i></div><p>小忆在把您的故事写下来……</p><small>就几秒钟，您歇一歇</small></div></main>`;
+  $app.innerHTML = `<main class="page center interview">${loader('小忆在把您的故事写下来……', '就几秒钟，您歇一歇')}</main>`;
   if (session.online) { await stopFull(session.id); try { const r = await post(`/interviews/${session.id}/finish`, {}); return go(r.storyId ? '#/story/' + r.storyId : '#/'); } catch {} }
   const st = await generateStory(session.answers || [], session.p), id = 'local' + Date.now();
   await saveStory({ id, createdAt: Date.now(), ...st, profile: session.p, answers: session.answers || [] }); go('#/story/' + id);
@@ -264,8 +229,8 @@ async function story(id) {
   const T = Object.fromEntries((s.transcript || []).map(t => [t.id, t])), clipOf = id => T[id] || (s.clips || []).find(c => c.id === id);
   const paras = s.paras || (s.body || '').split(/\n+/).map(text => ({ text, refs: [] }));
   const au = a => a ? (a.startsWith('blob:') ? a : '/api/audio/' + a) : null;
-  $app.innerHTML = `<main class="page story"><p class="stage">${new Date(s.created).toLocaleDateString('zh-CN')} · ${esc(s.elder.name)} 讲述 ${s.stage ? '· ' + esc(s.stage) : ''}</p>
-  <h1 class="title">${esc(s.title)}</h1><article>${paras.map((x, k) => `<div class="para"><p>${esc(x.text)}</p>${x.refs.length ? `<button class="play" data-k="${k}" aria-label="听原声">原声</button>` : ''}</div>`).join('')}</article>
+  $app.innerHTML = `<main class="page story"><p class="stage stg">${new Date(s.created).toLocaleDateString('zh-CN')} · ${esc(s.elder.name)} 讲述 ${s.stage ? '· ' + esc(s.stage) : ''}</p>
+  <h1 class="title">${esc(s.title)}</h1><div class="signal">${ic('mic', 18)}${wave(s.id || id, 48)}<small>${(s.transcript || s.clips || []).length} 段原声</small></div><article>${paras.map((x, k) => `<div class="para"><p>${esc(x.text)}</p>${x.refs.length ? `<button class="play" data-k="${k}" aria-label="听原声">${ic('play', 12)}原声</button>` : ''}</div>`).join('')}</article>
   ${s.quotes ? `<blockquote>${esc(s.quotes)}</blockquote>` : ''}${s.people ? `<p class="tip">关键人物：${esc(s.people)}</p>` : ''}${s.timePlace ? `<p class="tip">时间地点：${esc(s.timePlace)}</p>` : ''}
   ${s.fullAudio ? `<h3>整场录音</h3><audio controls preload="none" src="${au(s.fullAudio)}"></audio>` : ''}
   <details class="transcript" id="tx"><summary>查看完整访谈稿（${(s.transcript || s.clips || []).length} 轮，原话不改动）</summary>
@@ -273,9 +238,9 @@ async function story(id) {
     <p class="ca">“${esc(t.clean || '')}”</p>${t.raw && t.raw !== t.clean ? `<p class="raw">原始转写：${esc(t.raw)}</p>` : ''}
     ${t.audio ? `<audio controls preload="none" src="${au(t.audio)}"></audio>` : ''}
     <p class="meta">${esc(t.id)}${t.nodeId ? ` · ${esc(P.nodeTitle(FW, t.nodeId, s.elder))} · 第${t.depth}层 · ${esc(t.emotion || '')}` : ''}</p></div>`).join('')}</details>
-  ${id.startsWith('local') ? '' : `<button class="ghost wide" id="edit">修改故事（原话保留，修改留痕）</button>`}
+  ${id.startsWith('local') ? '' : `<button class="ghost wide" id="edit">${ic('edit', 16)}修改故事（原话保留，修改留痕）</button>`}
   ${s.edits?.length ? `<details class="edits"><summary>修改记录（${s.edits.length}）</summary>${s.edits.map(x => `<p class="meta">${new Date(x.at).toLocaleString('zh-CN')} · ${esc(x.by)} 改了${x.field === 'title' ? '标题' : '正文'}<br>原来：${esc(x.before.slice(0, 40))}…</p>`).join('')}</details>` : ''}
-  <button class="big" id="share">分享这个故事</button><button class="ghost" onclick="location.hash='#/library'">回到我的故事</button></main>`;
+  <div class="actions"><button class="big" id="share">${ic('share', 18)}分享这个故事</button><button class="ghost" onclick="location.hash='#/library'">我的故事</button></div></main>`;
   const player = new Audio();
   $app.querySelectorAll('.play').forEach(b => b.onclick = () => { const refs = paras[b.dataset.k].refs.map(clipOf).filter(Boolean), c = refs[0]; if (!c) return;
     const a = au(c.audio || c.src); document.getElementById('tx').open = true; document.getElementById(c.id)?.classList.add('hl');
@@ -287,27 +252,33 @@ async function story(id) {
   document.getElementById('share').onclick = () => navigator.share ? navigator.share({ title: s.title, text: s.body, url: location.href }).catch(() => {}) : (navigator.clipboard?.writeText(s.title + '\n\n' + s.body), alert('故事文字已复制，可以发给家人'));
 }
 async function library() {
-  const list = [...(cache?.stories || []), ...(await listStories()).map(l => ({ ...l, created: l.createdAt, local: true }))];
-  $app.innerHTML = `<main class="page"><h2>📚 我的故事</h2><p class="tip">每一段，都是留给孩子们的宝藏</p>
-  ${list.length ? list.map(s => `<a class="card" href="#/story/${s.id}"><b>${esc(s.title)}</b><span>${new Date(s.created).toLocaleDateString('zh-CN')} · ${esc(s.stage || '')} · ${(s.clips || s.answers || []).length} 段原声${s.local ? ' · 本机' : ''}</span></a>`).join('') : '<p class="empty">还没有故事。<br>去和老人聊一聊吧。</p>'}
-  <button class="big" onclick="location.hash='#/stage'">🎙 再聊一次</button>${back('#/me', '← 返回')}</main>`;
+  const stories = [...(cache?.stories || []), ...(await listStories()).map(l => ({ ...l, created: l.createdAt, local: true }))];
+  const noStory = (cache?.interviews || []).filter(i => i.finished && !stories.some(s => s.interview_id === i.id)).map(i => ({ id: i.id, created: i.created, stage: i.stage, chatOnly: true, n: (i.turns || []).length }));
+  const list = [...stories, ...noStory].sort((a, b) => b.created - a.created), groups = {};
+  for (const s of list) (groups[Shell.dayLabel(s.created)] ||= []).push(s);
+  const row = s => s.chatOnly
+    ? `<a class="card hrow" href="#/archive"><b>一次聊天</b><span>${Shell.when(s.created)} · ${esc(s.stage || '')} · ${s.n} 句</span></a>`
+    : `<a class="card hrow" href="#/story/${s.id}"><b>${esc(s.title)}</b><span>${Shell.when(s.created)} · ${esc(s.stage || '')} · ${(s.clips || s.answers || []).length} 段原声${s.local ? ' · 本机' : ''}</span>${wave(s.id, 40)}</a>`;
+  $app.innerHTML = `<main class="page history"><h2>我的故事</h2><p class="tip">每次聊天都在这里，点开回看故事和原声，都是留给孩子们的宝藏</p>
+  ${list.length ? ['今天', '昨天', '本周', '更早'].filter(k => groups[k]).map(k => `<h3>${k}</h3>${groups[k].map(row).join('')}`).join('') : '<p class="empty">还没有故事。<br>咱们聊第一次吧。</p>'}
+  <button class="big" onclick="location.hash='#/interview'">${ic('mic', 18)}再聊一次</button>${back('#/me', '返回')}</main>`;
 }
 function archive() {
   const a = cache?.archive || {}, p = getProfile() || {}, ivs = (cache?.interviews || []).filter(i => i.finished);
   const sec = (t, arr, f) => `<h3>${t}</h3>${arr?.length ? arr.map(f).join('') : '<p class="tip">还没有记录</p>'}`;
-  $app.innerHTML = `<main class="page archive"><h2>🗂 ${esc(callNameOf(p))}的记忆档案</h2><p class="tip">每次聊完自动整理，小忆下次会接着聊</p>
-  ${cache?.archivePending ? `<div class="thinking small" id="archPending"><div class="dots"><i></i><i></i><i></i></div><p>小忆正在整理这次的记忆……</p><small>整理好会自动刷新</small></div>` : ''}
-  ${a.lastTopic ? `<p class="hint">💭 上次聊到：${esc(a.lastTopic)}</p>` : ''}
-  ${sec('🧾 实体表（人 · 地 · 物）', cache?.entities, x => `<div class="ent"><span class="ty">${{ person: '👤 人', place: '📍 地', thing: '🎁 物' }[x.type] || x.type}</span><b>${esc(x.name)}</b>${x.relation ? ` · ${esc(FW.dimensions.relation.values[x.relation] || x.relation)}` : ''}${x.deceased ? ' · 已故' : ''}<br><small>来自：${x.sourceNodes.map(id => esc(P.nodeTitle(FW, id, p))).join('、')}${x.sourceTurns?.length ? ` · 出处句子 ${x.sourceTurns.map(esc).join('、')}` : ''}</small>${x.notes?.length ? `<br><small>${esc(x.notes.slice(-2).join('；'))}</small>` : ''}</div>`)}
-  ${sec('👥 人物', a.people, x => `<div class="chip"><b>${esc(x.name)}</b> · ${esc(x.relation)}<br><small>${esc(x.note)}</small></div>`)}
-  ${sec('📍 地点', a.places, x => `<div class="chip"><b>${esc(x.name)}</b><br><small>${esc(x.note)}</small></div>`)}
-  ${sec('✨ 事件', a.events, x => `<div class="chip"><b>${esc(x.title)}</b> <small>${esc(x.when)}</small><br><small>${esc(x.detail)}</small></div>`)}
-  ${sec('🕰 时间线', a.timeline, x => `<div class="tl"><b>${esc(x.when)}</b><span>${esc(x.what)}</span></div>`)}
-  ${a.conflicts?.filter(Boolean).length ? sec('🔀 前后说法（并列保留）', a.conflicts, x => `<p class="tip">${esc(x)}</p>`) : ''}
-  ${sec('🎙 访谈记录', ivs, i => `<details class="chip"><summary>${new Date(i.created).toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })} · ${esc(i.stage)} · ${i.turns.length} 句</summary>${i.turns.map(t => `<p class="cq">小忆：${esc(t.q)}</p>${t.audio ? `<audio controls preload="none" src="/api/audio/${t.audio}"></audio>` : ''}<p>整理：${esc(t.clean)}</p><p class="tip">原始：${esc(t.raw)}</p>`).join('')}</details>`)}
+  $app.innerHTML = `<main class="page archive"><h2>${esc(callNameOf(p))}的记忆档案</h2><p class="tip">每次聊完自动整理，小忆下次会接着聊</p>
+  ${cache?.archivePending ? `<div class="thinking small" id="archPending"><span class="wave live"><i></i><i></i><i></i><i></i><i></i></span><p>小忆正在整理这次的记忆……</p><small>整理好会自动刷新</small></div>` : ''}
+  ${a.lastTopic ? `<p class="hint">上次聊到：${esc(a.lastTopic)}</p>` : ''}
+  ${sec('人 · 地 · 物', cache?.entities, x => `<div class="ent"><span class="ty">${{ person: ic('user', 12) + '人', place: ic('place', 12) + '地', thing: ic('thing', 12) + '物' }[x.type] || x.type}</span><b>${esc(x.name)}</b>${x.relation ? ` · ${esc(FW.dimensions.relation.values[x.relation] || x.relation)}` : ''}<br><small>来自：${x.sourceNodes.map(id => esc(P.nodeTitle(FW, id, p))).join('、')}${x.sourceTurns?.length ? ` · 出处句子 ${x.sourceTurns.map(esc).join('、')}` : ''}</small>${x.notes?.length ? `<br><small>${esc(x.notes.slice(-2).join('；'))}</small>` : ''}</div>`)}
+  ${sec('人物', a.people, x => `<div class="chip"><b>${esc(x.name)}</b> · ${esc(alive(x.relation))}<br><small>${esc(x.note)}</small></div>`)}
+  ${sec('地点', a.places, x => `<div class="chip"><b>${esc(x.name)}</b><br><small>${esc(x.note)}</small></div>`)}
+  ${sec('事件', a.events, x => `<div class="chip"><b>${esc(x.title)}</b> <small>${esc(x.when)}</small><br><small>${esc(x.detail)}</small></div>`)}
+  ${sec('时间线', a.timeline, x => `<div class="tl"><b>${esc(x.when)}</b><span>${esc(x.what)}</span></div>`)}
+  ${a.conflicts?.filter(Boolean).length ? sec('前后说法（并列保留）', a.conflicts, x => `<p class="tip">${esc(x)}</p>`) : ''}
+  ${sec('访谈记录', ivs, i => `<details class="chip"><summary>${new Date(i.created).toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })} · ${esc(i.stage)} · ${i.turns.length} 句</summary>${i.turns.map(t => `<p class="cq">小忆：${esc(t.q)}</p>${t.audio ? `<audio controls preload="none" src="/api/audio/${t.audio}"></audio>` : ''}<p>整理：${esc(t.clean)}</p><p class="tip">原始：${esc(t.raw)}</p>`).join('')}</details>`)}
   ${back()}</main>`;
   if (cache?.archivePending) setTimeout(async () => { if (!location.hash.startsWith('#/archive')) return; await load(); archive(); }, 3000);
 }
-Shell.init({ $app, esc, go, FW, setReq, trigIcon: TRIG_ICON, get elderId() { return elderId; }, getProfile, getCache: () => cache, callNameOf });
+Shell.init({ $app, esc, go, FW, setReq, get elderId() { return elderId; }, getProfile, getCache: () => cache, callNameOf });
 document.addEventListener('pointerdown', unlockAudio, { once: true }); // 首次点击解锁音频（「开始聊天」也会再解锁一次）
 route();

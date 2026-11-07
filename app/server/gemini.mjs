@@ -1,5 +1,6 @@
 // Gemini 封装：key 只在后端读取（优先环境变量 GEMINI_API_KEY，本地开发可用 .env.local，不存在也不报错），绝不下发前端/打印
 import fs from 'fs'; import path from 'path'; import { fileURLToPath } from 'url';
+import { openaiEnabled, openaiChat } from './openai.mjs';
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 let KEY = process.env.GEMINI_API_KEY;
 try { KEY ||= fs.readFileSync(path.join(root, '.env.local'), 'utf8').match(/^GEMINI_API_KEY=(.*)$/m)?.[1]?.trim(); } catch {}
@@ -16,6 +17,8 @@ export const status = { ok: null, lastError: null, models: CHAINS, hasKey: !!KEY
 export async function gemini(parts, opts = {}) { // opts.tier: 'fast' | 'pro'
   const chain = CHAINS[opts.tier || 'fast']; let err;
   const o = { ...opts, timeout: opts.timeout || (opts.tier === 'pro' ? +(process.env.GEMINI_PRO_TIMEOUT_MS || 30000) : opts.tier === 'story' ? +(process.env.GEMINI_STORY_TIMEOUT_MS || 20000) : +(process.env.GEMINI_FAST_TIMEOUT_MS || 8000)) }; // 实时对话超时即回退更快的模型
+  if (openaiEnabled() && !parts.some(p => p.inlineData)) { try { return await openaiChat(parts, o); } // 纯文本先走 OpenAI 协议，失败回退下面的 Gemini 链；带音频的仍走 Gemini
+    catch (e) { err = e; console.warn('[openai] 失败', e.message.slice(0, 120), '→ 回退 Gemini'); } }
   for (const m of chain) { try { return await call(m, parts, o); }
     catch (e) { err = e; console.warn('[gemini]', m, '失败', redact(e.message).slice(0, 120), '→ 回退'); } }
   throw err;

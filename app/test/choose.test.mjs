@@ -5,18 +5,18 @@ const p = DEMO_PROFILE, base = { profile: p, states: {}, entities: [] };
 const bad = new Set([...FW.planning.needs_calm]);
 test('候选 3 个、维度错开、不重复', () => {
   const c = P.candidates(FW, base); assert.equal(c.length, 3); assert.equal(new Set(c.map(x => x.nodeId)).size, 3);
-  const T = c.map(x => P.nodeById(FW, x.nodeId).tags); assert.ok(new Set(T.map(t => t.domain)).size >= 2 || new Set(T.map(t => t.time)).size >= 2);
+  const T = c.map(x => P.nodeById(FW, x.nodeId).tags); assert.ok(new Set(T.map(t => t.domain)).size >= 2);
   assert.ok(c.some(x => x.kind === 'light'), '要有一个轻松触发物类');
   for (const x of c) { assert.ok(x.text && !/\{/.test(x.text)); }
 });
-test('有上次线索：一个顺藤、一个轻松、一个没聊过', () => {
-  const states = { 'youth-meet': { status: 'partial', depth: 2, sessions: ['s1'] } };
+test('有上次线索：一个顺藤，其余是轻松话题', () => {
+  const states = { 'youth-meet': { depth: 2, sessions: ['s1'] } };
   const entities = [{ name: '李建国', type: 'person', nodes: ['youth-meet'], mentions: 3, sessions: ['s1'] }];
   const c = P.candidates(FW, { profile: p, states, entities, lastSessionId: 's1' });
-  assert.deepEqual(c.map(x => x.kind).slice(0, 2), ['follow', 'light']); assert.equal(c[2].kind, 'fresh');
+  assert.equal(c[0].kind, 'follow'); assert.ok(c.slice(1).every(x => x.kind === 'light'), c.map(x => x.kind).join());
 });
 test('避开敏感 / 需平静节点', () => {
-  const states = { 'child-food': { status: 'not_started', depth: 0, sensitive: true } };
+  const states = { 'child-food': { depth: 0, sensitive: true } };
   for (let i = 0, ex = []; i < 5; i++) { const c = P.candidates(FW, { ...base, states, exclude: ex });
     for (const x of c) { assert.ok(!bad.has(x.nodeId), x.nodeId); assert.notEqual(x.nodeId, 'child-food'); } ex.push(...c.map(x => x.nodeId)); }
 });
@@ -41,8 +41,8 @@ test('念出候选、问候无残留变量', () => { const c = P.candidates(FW, 
 
 test('换卡多轮：今日话题不固定「…，还有妈妈」；轻松触发物优先', () => {
   const states = {
-    'youth-meet': { ...P.emptyState('youth-meet'), status: 'partial', depth: 2, turns: 2, updatedAt: 1 },
-    'youth-date': { ...P.emptyState('youth-date'), status: 'partial', depth: 3, turns: 3, updatedAt: 2 },
+    'youth-meet': { ...P.emptyState('youth-meet'), depth: 2, turns: 2, updatedAt: 1 },
+    'youth-date': { ...P.emptyState('youth-date'), depth: 3, turns: 3, updatedAt: 2 },
   };
   const seenTopics = [], motherAsSecond = [];
   let ex = [];
@@ -67,10 +67,10 @@ test('换卡多轮：今日话题不固定「…，还有妈妈」；轻松触�
   }
   assert.ok(new Set(seenTopics).size >= 3, '换卡后今日话题应随所选变化: ' + seenTopics.join(' | '));
   assert.ok(motherAsSecond.length <= 1, '第二候选不应几乎每次都是妈妈: rounds ' + motherAsSecond.join(','));
-  // 卡片 note 可有（家人调试），但覆盖文案不再「补一补」
+  // 卡片 note 不出现“还没聊过”这类补空白文案
   for (let i = 0, e = []; i < 3; i++) {
     const cards = P.candidates(FW, { profile: p, states, exclude: e });
-    for (const c of cards) assert.ok(!/补一补/.test(c.note || ''), c.note);
+    for (const c of cards) assert.ok(!/还没聊过|补一补/.test(c.note || ''), c.note);
     e.push(...cards.map(x => x.nodeId));
   }
 });

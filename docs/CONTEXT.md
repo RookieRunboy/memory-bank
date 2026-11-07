@@ -22,7 +22,7 @@
 | [decisions.md](decisions.md) | 所有决策，按时间追加 | 想知道"为什么这样" |
 | [interview.md](interview.md) | 主持人系统提示词、故事提示词（**程序直接读这个文件**） | 改小忆说话 |
 | [host-style.md](host-style.md) | 主持人风格层（**程序也直接读**） | 改小忆说话 |
-| [interview-framework.md](interview-framework.md) | 话题网：42 个节点 × 四层深度 | 改选题 |
+| [interview-framework.md](interview-framework.md) | 问题库：42 个话题 × 四层深度（不是人生清单） | 改选题 |
 | [ia-and-storage.md](ia-and-storage.md) | 页面结构、三层存储 | 改数据或页面 |
 | [../tasks.md](../tasks.md) | 任务清单 | 随时 |
 
@@ -58,8 +58,8 @@ app/
   src/
     main.js       前端路由和老人端、访谈、故事、记忆库等页面
     shell.js      “我的”区域框架：侧边栏、对话式首页、历史、资料、设置
-    planner.js    选题算法（话题网、候选卡片、变量替换）
-    framework.json 话题网数据
+    planner.js    选题算法（问题库、候选卡片、变量替换）
+    framework.json 问题库数据
     style.css     全部样式（记忆册风格）
   test/    node --test；fixtures/host-cases.json 是主持人评测用例
   screenshots/    各版本截图，最新是 v6/
@@ -101,7 +101,7 @@ app/
 
 ## 7. 现在做到哪
 
-已完成：建档、语音访谈（话题网选题、老人自己选话题、先接住再提问）、Gemini 转写和回复、流式 TTS、记忆故事、记忆档案、人生地图、打包导出、“我的”区域侧边栏框架、主持人风格层、两位演示老人（王女士、徐先生，可在“我的资料”页切换）。
+已完成：建档、语音访谈（问题库选题、老人自己选话题、先接住再提问）、Gemini 转写和回复、流式 TTS、记忆故事、记忆档案、打包导出、“我的”区域侧边栏框架、主持人风格层、两位演示老人（王女士、徐先生，可在“我的资料”页切换）。
 
 下一步（详见 requirements-tiers.md）：
 

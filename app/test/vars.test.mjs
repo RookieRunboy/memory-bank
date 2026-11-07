@@ -22,23 +22,23 @@ test('assertNoVars 遇到未替换变量会报错；speakable 去掉残留', () 
 test('选题：家人指定优先；敏感/需平静/缺前提的节点不选', () => {
   assert.equal(P.planSession(FW, { profile: DEMO_PROFILE, request: { nodeId: 'youth-meet' } }).nodes[0].nodeId, 'youth-meet');
   // 标记 sensitive 的节点不自动选；没填爱人/子女时跳过对应节点；needs_calm 不自动选
-  const sens = { 'child-mother': { ...P.emptyState('child-mother'), status: 'partial', depth: 1, sensitive: true, updatedAt: 1 } };
+  const sens = { 'child-mother': { ...P.emptyState('child-mother'), depth: 1, sensitive: true, updatedAt: 1 } };
   let states = { ...sens };
   for (let i = 0; i < 25; i++) { const pl = P.planSession(FW, { profile: { name: '张三' }, states });
     for (const x of pl.nodes) { const n = P.nodeById(FW, x.nodeId); if (x.reason === 'revisit') continue;
       assert.notEqual(x.nodeId, 'child-mother'); assert.ok(!['spouse', 'children'].includes(n.tags.relation), x.nodeId); assert.ok(!n.needs_calm && !FW.planning.needs_calm.includes(n.id), x.nodeId);
-      states[x.nodeId] = { ...P.emptyState(x.nodeId), status: 'done', depth: 4, turns: 3, updatedAt: i }; } } });
+      states[x.nodeId] = { ...P.emptyState(x.nodeId), enough: true, depth: 4, turns: 3, updatedAt: i }; } } });
 test('顺藤摸瓜：上次提到的人会被接着聊', () => {
   const ents = [{ id: 'e1', type: 'person', name: '李建国', relation: 'spouse', sourceNodes: ['youth-meet'], lastSessionId: 's1', notes: [] }];
-  const states = { 'youth-meet': { ...P.emptyState('youth-meet'), status: 'partial', depth: 2, turns: 2, updatedAt: 1 } };
+  const states = { 'youth-meet': { ...P.emptyState('youth-meet'), depth: 2, turns: 2, updatedAt: 1 } };
   const plan = P.planSession(FW, { profile: DEMO_PROFILE, states, entities: ents, lastSessionId: 's1', prevNodeId: 'youth-meet' });
   assert.equal(plan.nodes[0].reason, 'follow_entity'); assert.match(P.planVars(FW, plan, { profile: DEMO_PROFILE, states, entities: ents }).顺藤线索, /李建国/); });
 test('跑题归档到对应节点', () => {
   const r = P.applyAnswer(FW, {}, { nodeId: 'youth-date', depth: 2, note: '看电影', short: false, emotion: '开心' }, 's1');
-  assert.equal(r.states['youth-date'].depth, 2); assert.equal(r.states['youth-date'].status, 'partial'); });
+  assert.equal(r.states['youth-date'].depth, 2); });
 
 test('今日话题只写当前选中，不预告第二个「还有…」', () => {
-  const states = { 'youth-meet': { ...P.emptyState('youth-meet'), status: 'partial', depth: 2, turns: 2, updatedAt: 1 } };
+  const states = { 'youth-meet': { ...P.emptyState('youth-meet'), depth: 2, turns: 2, updatedAt: 1 } };
   const plan = P.planSession(FW, { profile: DEMO_PROFILE, states });
   assert.ok(plan.nodes.length >= 2, 'plan 内部仍可备两个节点');
   const v = P.planVars(FW, plan, { profile: DEMO_PROFILE, states });
@@ -46,10 +46,24 @@ test('今日话题只写当前选中，不预告第二个「还有…」', () =>
   assert.ok(!/，还有/.test(v.今天话题), v.今天话题);
   assert.equal(v.今天话题, v.当前话题);
 });
-test('coverage 理由不再写「补一补」', () => {
-  const x = { reason: 'coverage', dim: 'relation', value: 'parents', startDepth: 1 };
-  const t = P.reasonText(FW, x, [], DEMO_PROFILE);
-  assert.match(t, /还没聊过/);
-  assert.ok(!/补一补/.test(t), t);
-  assert.equal(P.reasonText(FW, { reason: 'coverage', startDepth: 1 }, [], DEMO_PROFILE), '还没聊过这边');
+test('没有线索可跟时只用轻松话题，不为补空白去推老人没提过的阶段', () => {
+  const light = new Set(FW.planning.fallback_safe_nodes);
+  const x = P.selectNode(FW, { profile: { name: '张三' }, states: {}, entities: [] });
+  assert.equal(x.reason, 'light'); assert.ok(light.has(x.nodeId), x.nodeId);
+  assert.equal(P.reasonText(FW, x, [], DEMO_PROFILE), '轻松话题');
+  assert.equal(P.coverage, undefined, '不再统计覆盖度');
+  assert.ok(!('time' in FW.dimensions), '年龄段不再是预设维度');
+  assert.ok(FW.nodes.every(n => !('time' in n.tags)));
+});
+test('结束语不预告下次话题', () => {
+  const plan = P.planSession(FW, { profile: DEMO_PROFILE });
+  const t = P.closingText(FW, plan, { profile: DEMO_PROFILE });
+  assert.ok(!('nextNodePreview' in plan)); assert.match(t, /下次想聊什么/); assert.ok(!/下次咱们聊聊/.test(t));
+});
+test('状态只记讲到哪：没有 status，旧数据 done 按聊够处理', () => {
+  const r = P.applyAnswer(FW, {}, { nodeId: 'youth-date', depth: 2, note: '看电影', short: false, emotion: '开心' }, 's1');
+  assert.ok(!('status' in r.states['youth-date'])); assert.equal(r.states['youth-date'].enough, false);
+  assert.equal(P.st({ a: { enough: true, depth: 4, notes: [] } }, 'a').enough, true);
+  const d = P.applyAnswer(FW, {}, { nodeId: 'youth-date', depth: 4, note: 'x', short: false, emotion: '开心' }, 's1');
+  assert.equal(d.states['youth-date'].enough, true);
 });

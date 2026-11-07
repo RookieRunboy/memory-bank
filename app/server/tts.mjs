@@ -1,8 +1,11 @@
 // 小忆语音：Gemini TTS（声音 Kore），按 模型+声音+语气前缀+文本 哈希缓存到 DATA_DIR/tts；失败/超时由前端退回浏览器朗读
 import fs from 'fs'; import path from 'path'; import crypto from 'crypto';
 import { ttsCall, ttsStream } from './gemini.mjs'; import { splitSentences } from '../src/split.js';
+import { dsEnabled, dsCall, dsStream, DS_DEFAULTS } from './dashscope.mjs';
+export const DS = dsEnabled(); // 配了阿里百炼 key 就用它（TTS_PROVIDER=gemini 可关），否则沿用 Gemini
 export { splitSentences };
-export const TTS = {
+export const TTS = DS ? { provider: 'dashscope', model: DS_DEFAULTS.model, fallback: '', voice: DS_DEFAULTS.voice, timeout: +(process.env.TTS_TIMEOUT_MS || 8000), prefix: '' } : {
+  provider: 'gemini',
   model: process.env.GEMINI_TTS_MODEL || 'gemini-2.5-flash-lite-preview-tts', // 实测 lite 比 flash 快约 1 秒
   fallback: process.env.GEMINI_TTS_FALLBACK ?? 'gemini-2.5-flash-tts',
   voice: process.env.GEMINI_TTS_VOICE || 'Kore',
@@ -24,7 +27,7 @@ export const is429 = e => /HTTP 429|RESOURCE_EXHAUSTED/.test(e?.message || '');
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 // 429 退避重试：delays 依次等待后重试
 export async function retry429(fn, delays = [600, 1500, 4000]) { for (let i = 0; ; i++) { try { return await fn(); } catch (e) { if (!is429(e) || i >= delays.length) throw e; await sleep(delays[i]); } } }
-export function makeTTS(dir, o = TTS, call = ttsCall, stream = ttsStream) {
+export function makeTTS(dir, o = TTS, call = DS ? dsCall : ttsCall, stream = DS ? dsStream : ttsStream) {
   fs.mkdirSync(dir, { recursive: true }); const inflight = new Map(); let live = 0, lastLive = 0;
   const busy = () => live > 0 || Date.now() - lastLive < 3000; // 有实时请求（及之后 3 秒）就暂停预热
   const track = async p => { live++; try { return await p; } finally { live--; lastLive = Date.now(); } };

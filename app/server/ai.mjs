@@ -2,6 +2,7 @@ import { parseStory as parse } from '../src/parseStory.js';
 // 访谈 Agent / 转写整理 / 故事 / 记忆档案。每个函数先走 Gemini，失败回退规则+演示数据。
 import fs from 'fs'; import path from 'path'; import { fileURLToPath } from 'url';
 import { gemini } from './gemini.mjs';
+import { asrViaOpenai, openaiTranscribe } from './openai.mjs';
 import { SCRIPT, DEMO_ANSWERS, fill } from '../src/questions.js';
 import * as P from '../src/planner.js';
 import { detectCallName } from '../src/callname.js';
@@ -50,7 +51,14 @@ export async function chooseTopic(p, cards, text, { after = false } = {}) {
 }
 export const closing = (p, c) => P.closingText(FW, c.plan, { ...c, profile: p });
 
-export async function transcribe(audio, mime, hint) { // Gemini 直接听音频
+// whisper 对静音/噪音偶尔会“幻觉”出固定字幕语，这类整句直接当没听清
+const HALLU = /^(请)?(不吝)?点赞|字幕(志愿者|由)|谢谢(大家)?(观看|收看)?[。.!！]?$|订阅|Amara|明镜/;
+export async function transcribe(audio, mime, hint) { // 优先 whisper（OpenAI 协议），失败回退 Gemini 听音频
+  if (audio?.length > 1000 && asrViaOpenai()) try {
+    const t = await openaiTranscribe(audio, mime);
+    if (!t || HALLU.test(t.replace(/\s/g, ''))) return { raw: '', clean: (hint || '').trim(), source: 'whisper-nospeech' };
+    return { raw: t, clean: t, source: 'whisper' };
+  } catch (e) { console.warn('[asr] whisper 失败', e.message.slice(0, 100), '→ 回退'); }
   if (audio?.length > 1000) try {
     const r = await gemini([{ inlineData: { mimeType: (mime || 'audio/webm').split(';')[0], data: audio.toString('base64') } },
       { text: '先判断：这段录音里是否有清晰可辨的人声在说中文？如果只有静音、噪音、蜂鸣/提示音或听不清，必须输出 {"speech":false,"raw":"","clean":""}，绝对不要猜测或编写任何内容。若有人声：这是一位中国老人讲述往事的录音（可能带方言）。输出 JSON：{"speech":true,...}，字段：{"raw":"逐字原始转写，保留嗯啊重复","clean":"整理后文本：去掉口头禅、重复和停顿，按意思分段（用\\n分隔），保留老人原话的味道和方言词，绝不编造或补充"}。听不清就 raw 和 clean 都给空字符串。' }], { json: true, temperature: 0 });
@@ -69,7 +77,7 @@ async function nextGemini(p, c, turns, audio) {
         : '当前话题聊够了（到了第4层，或老人连着几句没什么可说），不要自己开新话题：ask.nodeId 填 "switch"，say 只用一句话谢谢老人讲的这个故事、复述一个细节，不要提问，系统会接着念几个候选话题让老人自己选。\n') +
       `请按【说话方式】【必须遵守】【话题内引导】【过渡到下一个话题】决定下一句。已经聊了${turns.length}轮，满${MAX}轮或老人累了就按【结束】收尾。\n` +
       `同时分析老人刚才这一句：属于哪个节点（跑题就填它真正讲到的节点 id，找不到就填最接近的）、到达第几层（0 没有实质内容，1 事实，2 场景细节，3 感受，4 想对后辈说的话）、一句要点、提到的人地物。\n` +
-      `只输出 JSON：{${audio ? `"speech":true,"raw":"","clean":"",` : ""}"answer":{"nodeId":"","depth":0,"note":"","entities":[{"type":"person|place|thing","name":"","aliases":[],"relation":"parents|siblings|spouse|children|friends|teachers|colleagues|null","deceased":false,"trigger":"photo|song|food|object|festival|null","note":""}]},"emotion":"开心|平静|卡壳|难过|困惑|累了|烦躁","leave":null,"ask":{"nodeId":"下一句问的是哪个节点","depth":1},"action":"追问细节|给台阶|安抚|换话题|过渡|收尾","callName":null,"say":"要朗读的话","done":false}。leave 只在老人难过且安抚后仍未恢复时填 "upset"，累了填 "tired"。callName 只在老人刚才明确要求换个叫法时填新称呼（如老人说“叫我老王就行”就填 "老王"），并且 say 里当场用新称呼；否则填 null。${FIRST_RULE}${SHORT_RULE}` }, ...(audio ? [{ text: '【老人刚才这一句的录音】见下面的音频。' + '附带的录音是老人刚才这一句的回答（中国老人，可能带方言）。先听清它：没有清晰人声（静音、噪音、提示音）就输出 {"speech":false}，绝不猜测编写。有人声就在 JSON 里同时给出 "speech":true、"raw"（逐字原始转写，保留嗯啊重复）、"clean"（去掉口头禅重复停顿、按意思分段用\\n、保留原话味道和方言词、绝不编造），raw 和 clean 只能是录音里真的说出来的话，一个字也不能从上下文、档案或前面的对话里补；录音只有几个字，clean 就只有那几个字。然后把它当作老人这一句来分析和回复。\n' + '输出 JSON 时把 "speech"、"raw"、"clean" 放在最前面：先只凭音频写完转写，再写回复。' }, { inlineData: { mimeType: (audio.mime || 'audio/webm').split(';')[0], data: audio.buf.toString('base64') } }] : [])],
+      `只输出 JSON：{${audio ? `"speech":true,"raw":"","clean":"",` : ""}"answer":{"nodeId":"","depth":0,"note":"","entities":[{"type":"person|place|thing","name":"","aliases":[],"relation":"parents|siblings|spouse|children|friends|teachers|colleagues|null","deceased":false,"trigger":"photo|song|food|object|festival|null","note":""}]},"emotion":"兴致好|开心|平静|卡壳|难过|困惑|累了|烦躁","leave":null,"ask":{"nodeId":"下一句问的是哪个节点","depth":1},"action":"追问细节|留白|澄清|给台阶|安抚|换话题|过渡|收尾","callName":null,"say":"要朗读的话","done":false}。leave 只在老人难过且安抚后仍未恢复时填 "upset"，累了填 "tired"。emotion 填“兴致好”：老人话多、一句接一句、讲得投入；此时 action 填“留白”，say 只用【主持人风格】第3招的一两个字（“后来呢”“接着说”），不提问，不要连着两轮留白。老人只给结论或评价时按第6招请他讲一件具体的事；没听清或对不上时 action 填“澄清”。callName 只在老人刚才明确要求换个叫法时填新称呼（如老人说“叫我老王就行”就填 "老王"），并且 say 里当场用新称呼；否则填 null。${FIRST_RULE}${SHORT_RULE}` }, ...(audio ? [{ text: '【老人刚才这一句的录音】见下面的音频。' + '附带的录音是老人刚才这一句的回答（中国老人，可能带方言）。先听清它：没有清晰人声（静音、噪音、提示音）就输出 {"speech":false}，绝不猜测编写。有人声就在 JSON 里同时给出 "speech":true、"raw"（逐字原始转写，保留嗯啊重复）、"clean"（去掉口头禅重复停顿、按意思分段用\\n、保留原话味道和方言词、绝不编造），raw 和 clean 只能是录音里真的说出来的话，一个字也不能从上下文、档案或前面的对话里补；录音只有几个字，clean 就只有那几个字。然后把它当作老人这一句来分析和回复。\n' + '输出 JSON 时把 "speech"、"raw"、"clean" 放在最前面：先只凭音频写完转写，再写回复。' }, { inlineData: { mimeType: (audio.mime || 'audio/webm').split(';')[0], data: audio.buf.toString('base64') } }] : [])],
       { system: vars(HOST_PROMPT, p, v), json: true, ...(audio && { timeout: +(process.env.GEMINI_FUSED_TIMEOUT_MS || 10000) }) });
 }
 
@@ -80,7 +88,7 @@ export const FUSED_FAIL = 'fused-failed';
 // 合并调用偶尔会把上下文“补”进转写：按录音时长估一个字数上限（老人语速一般 ≤ 6 字/秒），超了就不信，回退两步
 export const plausible = (text, durMs) => !durMs || String(text || '').replace(/[\s，。,.！!？?…、；;：:"“”]/g, '').length <= durMs / 1000 * 6 + 6;
 const FIRST_RULE = '老人刚说完时前端已经播了一句“嗯，我听着呢 / 哦，是这样啊”之类的短回应，say 不要再重复这类意思（不要以“嗯”“哦”“我听着呢”“明白了”开头）。say 的第一句要很短（8–10 个字以内，用“。”或“，”断开），接得上那句短回应，比如“原来是筒子楼啊。”，然后再说其余的话。';
-const SHORT_RULE = '如果老人这一句很短（几个字，如“挺好的”“嗯”）或说记不清/忘了/不知道：只接住这一句本身（比如“挺好的，听着就踏实。”或“没关系，想不起来就不想了。”），不要重复上一轮已经说过的内容，不要跳到别的大问题，接着问一个同一场景里具体到一个画面或一样东西的小问题（比如“那时候家里用的是煤炉还是灶台？”“屋里最显眼的是什么家具呀？”）。绝对不要问“日子过得怎么样”“您觉得怎么样”“心里什么感受”这类泛泛的问题。say 里一次只问一个问题，也不要把老人刚刚回答过的意思再问一遍。【本次对话】里你上一轮问过的问题，以及系统给的“当前话题入场问题”，都不要原样照念，要顺着老人这一句用自己的话换个说法、换个具体角度问。';
+const SHORT_RULE = '如果老人这一句很短（几个字，如“挺好的”“嗯”）或说记不清/忘了/不知道：先看【当前节点状态】的连续简短次数，已有1次就按风格层“降难度”换提示物，已有2次就不再追问、按过渡处理；没有前科时：只接住这一句本身（比如“挺好的，听着就踏实。”或“没关系，想不起来就不想了。”），不要重复上一轮已经说过的内容，不要跳到别的大问题，接着问一个同一场景里具体到一个画面或一样东西的小问题（比如“那时候家里用的是煤炉还是灶台？”“屋里最显眼的是什么家具呀？”）。绝对不要问“日子过得怎么样”“您觉得怎么样”“心里什么感受”这类泛泛的问题。say 里一次只问一个问题，也不要把老人刚刚回答过的意思再问一遍。【本次对话】里你上一轮问过的问题，以及系统给的“当前话题入场问题”，都不要原样照念，要顺着老人这一句用自己的话换个说法、换个具体角度问。';
 export const FORGOT_RE = /记不(太)?清|想不起|忘了|不记得|不知道/;
 // 服务端兜底：一次只问一个问题（第二个问号之后全截掉）
 export const oneQuestion = t => { const m = String(t || '').match(/^[^？?]*[？?]/); return m ? m[0] : String(t || ''); };

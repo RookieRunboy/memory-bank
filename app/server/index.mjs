@@ -1,7 +1,7 @@
 import express from 'express'; import multer from 'multer'; import initSqlJs from 'sql.js';
 import fs from 'fs'; import path from 'path'; import { fileURLToPath } from 'url';
-import { status } from './gemini.mjs'; import * as ai from './ai.mjs'; import { withAutoCallName } from '../src/callname.js';
-import * as P from '../src/planner.js'; import { makeTTS, TTS } from './tts.mjs'; import { ACKS } from '../src/split.js'; import JSZip from 'jszip';
+import { status } from './gemini.mjs'; import { asrViaOpenai } from './openai.mjs'; import * as ai from './ai.mjs'; import { withAutoCallName } from '../src/callname.js';
+import * as P from '../src/planner.js'; import { makeTTS, TTS, DS } from './tts.mjs'; import { ACKS } from '../src/split.js'; import JSZip from 'jszip';
 const dir = path.dirname(fileURLToPath(import.meta.url)), DATA = path.resolve(process.env.DATA_DIR || path.join(dir, 'data')), AUDIO = path.join(DATA, 'audio'), DBF = path.join(DATA, 'mb.sqlite');
 fs.mkdirSync(AUDIO, { recursive: true });
 const SQL = await initSqlJs(); const db = fs.existsSync(DBF) ? new SQL.Database(fs.readFileSync(DBF)) : new SQL.Database();
@@ -21,7 +21,11 @@ const iv = id => { const r = one('select * from interviews where id=?', [id]); r
 
 // 空库自动灌入王女士演示数据（档案 + 一次访谈 + 故事 + 记忆档案/实体/话题状态），第二次访谈可直接接续开场
 if (!one('select count(*) n from elders').n) { const { seedDemo } = await import('./seed.mjs'); await seedDemo({ db, ai, P }); save(); console.log('[seed] 已灌入王女士演示数据（elder id: demo-wang）'); }
-if (!one('select 1 n from elders where id=?', ['demo-fugui'])) { const { seedFugui } = await import('./seed-fugui.mjs'); await seedFugui({ db, ai, P }); save(); console.log('[seed] 已灌入徐先生演示数据（elder id: demo-fugui，人物原型取自《活着》，内容为自编）'); }
+{ const { seedFugui, SEED_VERSION } = await import('./seed-fugui.mjs'), old = one('select archive from elders where id=?', ['demo-fugui']);
+  if (!old || J(old.archive)?.seedVersion !== SEED_VERSION) { // 缺失或内容版本过旧：只清掉并重灌 demo-fugui，其他老人不动
+    for (const t of ['interviews', 'stories', 'transcript_turns', 'edits', 'elder_state']) db.run(`delete from ${t} where elder_id=?`, ['demo-fugui']);
+    db.run('delete from elders where id=?', ['demo-fugui']);
+    await seedFugui({ db, ai, P }); save(); console.log('[seed] 已灌入徐先生演示数据（elder id: demo-fugui，人物原型取自《活着》，内容为自编）'); } }
 const app = express(); app.use(express.json({ limit: '2mb' }));
 const up = multer({ storage: multer.memoryStorage(), limits: { fileSize: 20e6 } });
 import { gemini } from './gemini.mjs';
@@ -42,12 +46,6 @@ const lastDone = id => { const r = one('select id,opening from interviews where 
 const makePlan = (e, request) => { const { states, entities } = getState(e.id), last = lastDone(e.id);
   const prevNodeId = last?.plan?.ask?.nodeId || last?.plan?.nodes?.[0]?.nodeId;
   return { states, entities, plan: { ...P.planSession(ai.FW, { profile: e.profile, states, entities, lastSessionId: last?.id, prevNodeId, request }), lastSessionId: last?.id || null, prevNodeId } }; };
-// 会话规划预览（家人页）：?nodeId= 或 ?trigger= 指定
-app.get('/api/elders/:id/plan', (req, res) => { const e = elder(req.params.id); if (!e) return res.status(404).json({});
-  const request = req.query.nodeId || req.query.trigger ? { nodeId: req.query.nodeId || null, trigger: req.query.trigger || null } : null;
-  const { plan, states, entities } = makePlan(e, request);
-  res.json({ plan, vars: P.planVars(ai.FW, plan, { profile: e.profile, states, entities }) }); });
-app.post('/api/elders/:id/nodes/:nid/reset', (req, res) => { const x = getState(req.params.id); delete x.states[req.params.nid]; setState(req.params.id, x); save(); res.json({ ok: true }); }); // 家人手动重置
 app.post('/api/interviews', async (req, res) => { const e = elder(req.body.elderId); if (!e) return res.status(404).json({});
   const p = withAutoCallName(e.profile);
   const isReturn = !!one('select id from interviews where elder_id=? and finished=1', [e.id]);
@@ -65,7 +63,7 @@ app.post('/api/interviews', async (req, res) => { const e = elder(req.body.elder
   Object.assign(o, { phase: 'choose', after: false, cards, shown: cards.map(c => c.nodeId), choices: [] });
   o.plan = plan; o.closing = ai.closing(p, { states, entities, plan });
   const topic = P.nodeTitle(ai.FW, plan.nodes[0].nodeId, p);
-  console.log(`[opening] ${id} ${o.source} ${Date.now() - t0}ms cards=${cards.map(c => c.nodeId + '/' + c.kind).join(',')} plan=${plan.nodes.map(x => x.nodeId + '/' + x.reason).join(',')} next=${plan.nextNodePreview.nodeId}`);
+  console.log(`[opening] ${id} ${o.source} ${Date.now() - t0}ms cards=${cards.map(c => c.nodeId + '/' + c.kind).join(',')} plan=${plan.nodes.map(x => x.nodeId + '/' + x.reason).join(',')}`);
   db.run('insert into interviews values(?,?,?,?,?,?,0)', [id, e.id, topic, Date.now(), '[]', JSON.stringify(o)]); save();
   res.json({ id, ...o, isReturn, topic }); });
 // 小忆语音：Gemini TTS 单句合成（缓存命中直接返回）；超时/失败回 504，前端退回浏览器朗读
@@ -80,7 +78,7 @@ app.get('/api/tts/stream', async (req, res) => { const t = String(req.query.t ||
   try { for await (const c of tts.streamPCM(t, { signal: ctl.signal })) { if (!first) { first = Date.now() - t0; res.set({ 'Content-Type': 'audio/L16;rate=24000', 'X-TTS-Cached': cached ? 1 : 0, 'X-TTS-First-Ms': first }); } res.write(c); }
     res.end(); if (!cached) console.log(`[tts] 流式 首块 ${first}ms 完成 ${Date.now() - t0}ms 「${t.slice(0, 12)}…」`); }
   catch (e) { console.warn(`[tts] 流式失败 ${Date.now() - t0}ms ${String(e.message).slice(0, 60)}`); if (!res.headersSent) res.status(504).json({ error: 'tts' }); else res.end(); } });
-app.get('/api/tts/config', (req, res) => res.json({ model: TTS.model, voice: TTS.voice, timeout: TTS.timeout, enabled: status.hasKey, stream: process.env.GEMINI_TTS_STREAM !== '0' }));
+app.get('/api/tts/config', (req, res) => res.json({ model: TTS.model, voice: TTS.voice, timeout: TTS.timeout, enabled: status.hasKey || DS, stream: process.env.GEMINI_TTS_STREAM !== '0' }));
 // 选话题：点卡片（index / action）或说出来（audio / manual 文本），Gemini 判断 + 本地规则兜底
 const chatted = o => o.plan.nodes.slice(0, o.plan.currentNodeIndex + 1).map(x => x.nodeId);
 app.post('/api/interviews/:id/choose', up.single('audio'), async (req, res) => { const v = iv(req.params.id); if (!v) return res.status(404).json({});
@@ -125,7 +123,7 @@ app.post('/api/interviews/:id/turn', up.single('audio'), async (req, res) => { c
   const t0 = Date.now();
   const wavMs = b => b.toString('ascii', 0, 4) === 'RIFF' && b.readUInt32LE(28) ? (b.length - 44) / b.readUInt32LE(28) * 1000 : 0;
   // 有录音：先试合并调用（听音频 + 出回复一次完成），失败再走 转写 → 生成 两步
-  const fused = !req.body.manual && req.file?.size > 1000 && process.env.GEMINI_FUSED !== '0';
+  const fused = !req.body.manual && req.file?.size > 1000 && process.env.GEMINI_FUSED !== '0' && !asrViaOpenai(); // 转写走 whisper 时不用 Gemini 合并调用
   let tr = req.body.manual ? { raw: req.body.manual, clean: req.body.manual, source: 'manual' } : fused ? { raw: '', clean: '', source: 'gemini-fused' } : await ai.transcribe(req.file?.buffer, req.file?.mimetype, req.body.browserText);
   const ask = o.plan.ask;
   const tid = `${v.id}-t${v.turns.length + 1}`;
@@ -226,7 +224,7 @@ if (fs.existsSync(DIST)) { app.use(express.static(DIST, { index: false, maxAge: 
 app.use('/api', (_, res) => res.status(404).json({ error: 'not found' }));
 const PORT = +(process.env.PORT || 8787), HOST = process.env.HOST || '0.0.0.0';
 // 启动后后台预热固定话术（不阻塞启动）：演示老人的候选念白、选题回应、收尾、通用回应
-function warmTTS() { if (!status.hasKey || process.env.GEMINI_TTS_WARM === '0') return;
+function warmTTS() { if (!(status.hasKey || DS) || process.env.GEMINI_TTS_WARM === '0') return;
   setTimeout(async () => { const t0 = Date.now(), texts = [...ACKS]; // 短回应最先预热
     try { for (const e of all('select id from elders').map(r => elder(r.id))) { const p = withAutoCallName(e.profile), { plan, states, entities } = makePlan(e, null);
         let ex = []; for (let k = 0; k < 2; k++) { const c = P.candidates(ai.FW, { profile: p, states, entities, lastSessionId: plan.lastSessionId, prevNodeId: plan.prevNodeId, exclude: ex }); ex.push(...c.map(x => x.nodeId));
