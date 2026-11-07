@@ -1,6 +1,6 @@
 {
-  "version": "3.0",
-  "updated": "2026-11-07",
+  "version": "4.0",
+  "updated": "2026-11-08",
   "variables": {
     "称呼": "profile.callName",
     "姓名": "profile.name",
@@ -29,7 +29,9 @@
         "family": "家庭生活",
         "craft": "兴趣手艺",
         "places": "住过的地方",
-        "times": "时代大事"
+        "times": "时代大事",
+        "community": "社区生活",
+        "self": "个人选择与心愿"
       }
     },
     "trigger": {
@@ -62,7 +64,7 @@
     {
       "depth": 4,
       "id": "legacy",
-      "label": "想对后辈说的话"
+      "label": "意义与寄语"
     }
   ],
   "nodes": [
@@ -88,37 +90,42 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "{称呼}，您小时候在{家乡}住的房子，是什么样子的呀？"
+          "question": "小时候，您家门口是什么样的？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "下雨天，屋里屋外是什么样的？"
+          "question": "从门口进去，先看见什么？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "一想起那个家，您心里是什么滋味？"
+          "question": "在那个家里，您喜欢待在哪儿？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "关于老家，您想让孙辈知道点什么？"
+          "label": "意义与寄语",
+          "question": "那个家的哪处地方，您最想留下来？"
         }
       ],
       "trigger_openers": {
-        "photo": "这张老照片上的房子，是您小时候的家吗？"
+        "photo": "照片里，哪处地方您想说说？"
       },
       "sensitive": [
         {
           "type": "H",
-          "note": "可能涉及贫困或饥荒年代。不追问挨饿受苦的细节，说那时候大家都不容易，您真了不起，再问一件开心的小事。"
+          "note": "涉及生活困难时，跟随本人愿意讲的日常，不预设受苦或强行赞扬。"
         }
       ],
-      "needs_calm": false
+      "needs_calm": false,
+      "gentle_question": "家门口有院子吗？",
+      "entry_condition": "老人主动选择老家或提到童年住处，不要求精确地址。",
+      "source_refs": [
+        "smithsonian-questions"
+      ]
     },
     {
       "id": "child-mother",
@@ -141,42 +148,47 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "您的妈妈，是个什么样的人呀？"
+          "question": "想起妈妈，您先想到哪件小事？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "妈妈平时在家，常在哪儿忙活？"
+          "question": "那次她对您说了什么？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "想起妈妈，您心里是什么感觉？"
+          "question": "那句话当时对您有什么影响？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "妈妈教您的道理，您想传给孩子们哪一句？"
+          "label": "意义与寄语",
+          "question": "如今，您怎样理解她那句话？"
         }
       ],
       "trigger_openers": {
-        "food": "这道菜，是不是有点像妈妈做的味道？"
+        "food": "说到妈妈，您想到哪样吃食？"
       },
       "sensitive": [
         {
           "type": "D",
-          "note": "可能涉及已故亲人或朋友。不问去世经过和年份，只问美好的小事。老人主动讲，就温柔地听，难过时说您一直记着他呢，再转到安全话题。"
+          "note": "可能涉及已故或疏远的人。允许本人表达复杂感受，不追问离世过程，不强迫积极回忆。"
         }
       ],
-      "needs_calm": false
+      "needs_calm": false,
+      "gentle_question": "妈妈平时忙家里多吗？",
+      "entry_condition": "本人提起妈妈或愿意谈母亲，不预设共同生活或关系亲密。",
+      "source_refs": [
+        "smithsonian-questions"
+      ]
     },
     {
       "id": "child-father-bike",
-      "title": "和父亲学骑车",
-      "card": "跟父亲学骑车",
+      "title": "和父亲学本事",
+      "card": "和父亲学过的本事",
       "tags": {
         "relation": "parents",
         "domain": "family",
@@ -194,37 +206,42 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "小时候，是谁教您骑车，或者教您第一样本事的？"
+          "question": "父亲教过您做什么？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "那天是在哪儿学的，旁边有什么？"
+          "question": "刚学的时候，您先做了哪一步？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "学会的那一刻，您心里怎么样？"
+          "question": "哪一步让您费了些心思？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "这件事，您想跟孙辈说点什么？"
+          "label": "意义与寄语",
+          "question": "后来，您还用过这个办法吗？"
         }
       ],
       "trigger_openers": {
-        "object": "看到这辆旧自行车，您想起谁了？"
+        "object": "这件东西，您想起父亲怎样用它？"
       },
       "sensitive": [
         {
           "type": "D",
-          "note": "可能涉及已故亲人或朋友。不问去世经过和年份，只问美好的小事。老人主动讲，就温柔地听，难过时说您一直记着他呢，再转到安全话题。"
+          "note": "可能涉及已故或疏远的人。允许本人表达复杂感受，不追问离世过程，不强迫积极回忆。"
         }
       ],
-      "needs_calm": false
+      "needs_calm": false,
+      "gentle_question": "那时您常跟父亲一起干活吗？",
+      "entry_condition": "本人愿意谈父亲和学本事；骑车只在本人提到时追问。",
+      "source_refs": [
+        "smithsonian-questions"
+      ]
     },
     {
       "id": "child-siblings",
@@ -248,37 +265,42 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "小时候，家里有几个兄弟姐妹呀？"
+          "question": "小时候，您常和哪位兄弟姐妹作伴？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "你们一起做过最好玩的一件事是什么？"
+          "question": "你们一起做过什么事？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "跟他们在一起，您觉得怎么样？"
+          "question": "意见不同时，您会怎么说？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "您想让孩子们怎么对待自家兄弟姐妹？"
+          "label": "意义与寄语",
+          "question": "现在，您怎样看那时的相处？"
         }
       ],
       "trigger_openers": {
-        "photo": "照片上这几个孩子，哪个是您呀？"
+        "photo": "照片里，您想先聊哪位亲人？"
       },
       "sensitive": [
         {
           "type": "D",
-          "note": "可能涉及已故亲人或朋友。不问去世经过和年份，只问美好的小事。老人主动讲，就温柔地听，难过时说您一直记着他呢，再转到安全话题。"
+          "note": "可能涉及已故或疏远的人。允许本人表达复杂感受，不追问离世过程，不强迫积极回忆。"
         }
       ],
-      "needs_calm": false
+      "needs_calm": false,
+      "gentle_question": "你们那时住在一起吗？",
+      "entry_condition": "已知有兄弟姐妹且愿意聊；意见不同时的追问只用于已提及的分歧。",
+      "source_refs": [
+        "smithsonian-questions"
+      ]
     },
     {
       "id": "child-play",
@@ -301,37 +323,42 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "小时候，您最常跟谁一起玩呀？"
+          "question": "小时候，您常和伙伴玩什么？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "你们常在哪儿玩，玩什么游戏？"
+          "question": "轮到您时，要怎么做？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "玩得最开心的时候，是什么感觉？"
+          "question": "您喜欢这个游戏的哪一点？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "您想跟现在的孩子说说，那时候怎么玩吗？"
+          "label": "意义与寄语",
+          "question": "现在还有人玩这个游戏吗？"
         }
       ],
       "trigger_openers": {
-        "object": "这个老玩意儿，您小时候玩过吗？"
+        "object": "这个玩意儿，当时怎么玩？"
       },
       "sensitive": [
         {
           "type": "N",
-          "note": "较少敏感，也可作为其他节点出现情绪时的退路。"
+          "note": "根据本人意愿继续，不用开心、幸福等词替他评价。"
         }
       ],
-      "needs_calm": false
+      "needs_calm": false,
+      "gentle_question": "那个游戏在屋外玩吗？",
+      "entry_condition": "本人选择玩伴或游戏，不预设童年快乐。",
+      "source_refs": [
+        "smithsonian-questions"
+      ]
     },
     {
       "id": "child-newyear",
@@ -356,37 +383,42 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "小时候在{家乡}过年，家里都怎么过呀？"
+          "question": "小时候过年，家里先忙什么？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "年三十那天，屋里屋外是什么样子？"
+          "question": "那件事通常由谁来做？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "穿上新衣服那会儿，您心里怎么样？"
+          "question": "过年时，您盼着什么？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "过年的老规矩，您想让孩子们记住哪一条？"
+          "label": "意义与寄语",
+          "question": "哪样过年习惯，您后来还留着？"
         }
       ],
       "trigger_openers": {
-        "festival": "快过年了，您小时候过年最盼着什么呀？"
+        "festival": "说到过年，您想先讲哪件事？"
       },
       "sensitive": [
         {
           "type": "H",
-          "note": "可能涉及贫困或饥荒年代。不追问挨饿受苦的细节，说那时候大家都不容易，您真了不起，再问一件开心的小事。"
+          "note": "涉及生活困难时，跟随本人愿意讲的日常，不预设受苦或强行赞扬。"
         }
       ],
-      "needs_calm": false
+      "needs_calm": false,
+      "gentle_question": "过年家里会做特别的吃食吗？",
+      "entry_condition": "本人选择过年，不预设新衣、丰盛饭菜或家人团聚。",
+      "source_refs": [
+        "smithsonian-questions"
+      ]
     },
     {
       "id": "child-food",
@@ -409,37 +441,42 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "小时候，您最爱吃的东西是什么呀？"
+          "question": "小时候，哪样吃的让您记得清楚？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "那是谁做给您吃的？"
+          "question": "那样吃的，通常从哪儿来？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "吃到嘴里，是什么滋味？"
+          "question": "您喜欢它的什么味道？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "这个味道，您想留给孩子们吗？"
+          "label": "意义与寄语",
+          "question": "现在再吃它，有什么不同？"
         }
       ],
       "trigger_openers": {
-        "food": "尝尝这个，您小时候吃过这样的吗？"
+        "food": "这个味道，让您想起哪样吃的？"
       },
       "sensitive": [
         {
           "type": "H",
-          "note": "可能涉及贫困或饥荒年代。不追问挨饿受苦的细节，说那时候大家都不容易，您真了不起，再问一件开心的小事。"
+          "note": "涉及生活困难时，跟随本人愿意讲的日常，不预设受苦或强行赞扬。"
         }
       ],
-      "needs_calm": false
+      "needs_calm": false,
+      "gentle_question": "那样吃的是甜的吗？",
+      "entry_condition": "本人愿意聊食物，不预设由母亲制作；现在再吃仅在提到吃过时问。",
+      "source_refs": [
+        "smithsonian-questions"
+      ]
     },
     {
       "id": "child-river",
@@ -463,37 +500,42 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "您老家附近，有没有一条河，或者一棵大树呀？"
+          "question": "老家附近，您常去哪个地方？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "站在那儿，能听到什么声音？"
+          "question": "去那儿要经过什么？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "想起那个地方，您心里怎么样？"
+          "question": "到了那里，您喜欢做什么？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "您想带孙辈去看看那儿吗？"
+          "label": "意义与寄语",
+          "question": "那地方后来有过什么变化？"
         }
       ],
       "trigger_openers": {
-        "song": "听着这首歌，您想起家乡哪个地方了？"
+        "song": "这首歌，让您想起家乡哪里？"
       },
       "sensitive": [
         {
           "type": "N",
-          "note": "较少敏感，也可作为其他节点出现情绪时的退路。"
+          "note": "根据本人意愿继续，不用开心、幸福等词替他评价。"
         }
       ],
-      "needs_calm": false
+      "needs_calm": false,
+      "gentle_question": "那个地方离家近吗？",
+      "entry_condition": "本人讲到熟悉地点，不预设有河、大树或仍能回去。",
+      "source_refs": [
+        "smithsonian-questions"
+      ]
     },
     {
       "id": "teen-school",
@@ -517,37 +559,42 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "{称呼}，您上学的学校，是什么样子的呀？"
+          "question": "您想讲讲哪段上学的事？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "每天上学的路上，能看到什么？"
+          "question": "那间教室里，您坐在哪儿？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "那时候上学，您心里高兴吗？"
+          "question": "那时候，您对什么课感兴趣？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "关于读书，您想对孙辈说点什么？"
+          "label": "意义与寄语",
+          "question": "在学校学到的，后来用上过什么？"
         }
       ],
       "trigger_openers": {
-        "photo": "这是您上学时候的照片吗？"
+        "photo": "这张照片，让您想起哪段上学的事？"
       },
       "sensitive": [
         {
           "type": "S",
-          "note": "部分老人没机会上学或中途辍学。老人说没上过学，绝不追问原因或惋惜，转到帮家里干活。"
+          "note": "没有上学经历时，可听本人讲其他学习经历，不考试、不追问失学原因。"
         }
       ],
-      "needs_calm": false
+      "needs_calm": false,
+      "gentle_question": "上学的地方离家近吗？",
+      "entry_condition": "本人提到上学经历；没有上学经历时不追问原因，跟随其他学习经历。",
+      "source_refs": [
+        "storycorps-questions"
+      ]
     },
     {
       "id": "teen-teacher",
@@ -568,35 +615,40 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "上学的时候，有没有哪位老师，您一直记得？"
+          "question": "哪位老师让您一直记着？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "他上课的时候，是什么样子？"
+          "question": "他做过什么让您记住的事？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "被他夸的时候，您心里怎么样？"
+          "question": "那件事当时怎样影响了您？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "这位老师的话，您想传给孩子们吗？"
+          "label": "意义与寄语",
+          "question": "后来，您对那件事有过新想法吗？"
         }
       ],
       "trigger_openers": {},
       "sensitive": [
         {
           "type": "T",
-          "note": "可能触及动乱、运动、家庭成分等时代创伤。主持人绝不主动点名任何政治运动或灾荒；老人主动讲就听，不评价、不追问；出现害怕或难过，立刻安抚并转到安全话题。"
+          "note": "只听本人主动愿意展开的时代经历。出现不适时暂停，不点名引导创伤事件。"
         }
       ],
-      "needs_calm": false
+      "needs_calm": false,
+      "gentle_question": "这位老师教过您吗？",
+      "entry_condition": "已知上学或学习经历，不预设老师曾夸奖或善待本人。",
+      "source_refs": [
+        "storycorps-questions"
+      ]
     },
     {
       "id": "teen-chores",
@@ -620,37 +672,42 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "十几岁的时候，您在家帮着干些什么活呀？"
+          "question": "小时候，您常帮着做什么活？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "干活的地方，是什么样子的？"
+          "question": "做这件活，要先准备什么？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "干完活，您觉得累不累？"
+          "question": "哪一步最需要您留神？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "从干活里学到的，您想告诉后辈什么？"
+          "label": "意义与寄语",
+          "question": "这个经验，后来还用得上吗？"
         }
       ],
       "trigger_openers": {
-        "object": "这个老农具，您用过吗？"
+        "object": "这个工具，当时怎么用？"
       },
       "sensitive": [
         {
           "type": "H",
-          "note": "可能涉及贫困或饥荒年代。不追问挨饿受苦的细节，说那时候大家都不容易，您真了不起，再问一件开心的小事。"
+          "note": "涉及生活困难时，跟随本人愿意讲的日常，不预设受苦或强行赞扬。"
         }
       ],
-      "needs_calm": false
+      "needs_calm": false,
+      "gentle_question": "那件活是在屋外做的吗？",
+      "entry_condition": "本人提到帮忙或劳动，不预设吃苦必有收获。",
+      "source_refs": [
+        "smithsonian-questions"
+      ]
     },
     {
       "id": "teen-friend",
@@ -671,35 +728,40 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "十几岁的时候，您最要好的朋友是谁呀？"
+          "question": "那时候，您常和哪个朋友作伴？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "你们最常去哪儿？"
+          "question": "你们见面后，通常先做什么？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "跟他在一起，您心里怎么样？"
+          "question": "有什么事，您愿意跟他商量？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "交朋友这件事，您想跟孩子们说点什么？"
+          "label": "意义与寄语",
+          "question": "现在，您怎样看这段交情？"
         }
       ],
       "trigger_openers": {},
       "sensitive": [
         {
           "type": "D",
-          "note": "可能涉及已故亲人或朋友。不问去世经过和年份，只问美好的小事。老人主动讲，就温柔地听，难过时说您一直记着他呢，再转到安全话题。"
+          "note": "可能涉及已故或疏远的人。允许本人表达复杂感受，不追问离世过程，不强迫积极回忆。"
         }
       ],
-      "needs_calm": false
+      "needs_calm": false,
+      "gentle_question": "那位朋友住得近吗？",
+      "entry_condition": "本人提到朋友或主动选择，不预设仍保持联系。",
+      "source_refs": [
+        "storycorps-questions"
+      ]
     },
     {
       "id": "teen-song",
@@ -722,37 +784,42 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "十几岁的时候，大家都爱唱什么歌呀？"
+          "question": "年轻时，您常听到什么歌？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "那时候都在什么地方唱？"
+          "question": "一般在哪儿能听见它？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "一唱起来，您心里是什么感觉？"
+          "question": "听到它，您会想起哪件事？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "这首歌，您想唱给孙辈听吗？"
+          "label": "意义与寄语",
+          "question": "这首歌对您的意义变过吗？"
         }
       ],
       "trigger_openers": {
-        "song": "这首歌，您年轻时候听过吗？"
+        "song": "这首歌，您通常在哪儿听？"
       },
       "sensitive": [
         {
           "type": "N",
-          "note": "较少敏感，也可作为其他节点出现情绪时的退路。"
+          "note": "根据本人意愿继续，不用开心、幸福等词替他评价。"
         }
       ],
-      "needs_calm": false
+      "needs_calm": false,
+      "gentle_question": "那首歌是从广播里听来的吗？",
+      "entry_condition": "本人主动提起歌曲，广播只作可否认的低负担提示。",
+      "source_refs": [
+        "smithsonian-questions"
+      ]
     },
     {
       "id": "teen-times",
@@ -773,35 +840,40 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "您十几岁那几年，村里或者家里，有没有什么热闹的大事？"
+          "question": "您刚说的那件大事，怎么发生的？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "那时候，您看到了什么？"
+          "question": "这件事，您当时是怎么知道的？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "那会儿您心里是怎么想的？"
+          "question": "那之后，您每天的生活有什么变化？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "那段日子，您想让孩子们知道些什么？"
+          "label": "意义与寄语",
+          "question": "那段经历，您想留下哪一部分？"
         }
       ],
       "trigger_openers": {},
       "sensitive": [
         {
           "type": "T",
-          "note": "可能触及动乱、运动、家庭成分等时代创伤。主持人绝不主动点名任何政治运动或灾荒；老人主动讲就听，不评价、不追问；出现害怕或难过，立刻安抚并转到安全话题。"
+          "note": "只听本人主动愿意展开的时代经历。出现不适时暂停，不点名引导创伤事件。"
         }
       ],
-      "needs_calm": true
+      "needs_calm": true,
+      "gentle_question": "那时您是在家乡吗？",
+      "entry_condition": "只接本人主动提到且愿意展开的事件，分清亲历和转述。",
+      "source_refs": [
+        "smithsonian-questions"
+      ]
     },
     {
       "id": "teen-dream",
@@ -822,35 +894,40 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "十几岁的时候，您心里最想做的一件事是什么呀？"
+          "question": "年轻时，您想做什么事情？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "这个想法，是从哪儿生出来的？"
+          "question": "您是从什么时候动这个念头的？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "现在想起来，是什么心情？"
+          "question": "为了这件事，您试过什么？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "您想对有心愿的孙辈说什么？"
+          "label": "意义与寄语",
+          "question": "现在，您还想做些什么？"
         }
       ],
       "trigger_openers": {},
       "sensitive": [
         {
           "type": "N",
-          "note": "较少敏感，也可作为其他节点出现情绪时的退路。"
+          "note": "根据本人意愿继续，不用开心、幸福等词替他评价。"
         }
       ],
-      "needs_calm": false
+      "needs_calm": false,
+      "gentle_question": "这个念头跟工作有关吗？",
+      "entry_condition": "本人愿意谈心愿，不预设实现或失败。",
+      "source_refs": [
+        "storycorps-questions"
+      ]
     },
     {
       "id": "youth-firstjob",
@@ -875,37 +952,42 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "您的第一份工作，是做什么的呀？"
+          "question": "您怎么找到第一份工作的？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "第一天上班，那地方是什么样子？"
+          "question": "头一天去，您先做了什么？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "第一次领工资，您心里什么滋味？"
+          "question": "刚开始，哪件事让您最费心？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "关于工作，您想跟孩子们说点什么？"
+          "label": "意义与寄语",
+          "question": "这份工作给后来留下了什么？"
         }
       ],
       "trigger_openers": {
-        "object": "这个老物件，是您上班时用过的吗？"
+        "object": "这件东西在那份活里怎么用？"
       },
       "sensitive": [
         {
           "type": "W",
-          "note": "可能涉及下岗、失业、工伤。只肯定老人的辛苦和本事，不追问经过。"
+          "note": "包括正式与非正式劳动，不预设体面职业；失业、工伤等只听本人愿意说的部分。"
         }
       ],
-      "needs_calm": false
+      "needs_calm": false,
+      "gentle_question": "那份工作离家远吗？",
+      "entry_condition": "已知有工作经历，包括务农、学徒、自营，不预设工厂或工资形式。",
+      "source_refs": [
+        "alplm-family"
+      ]
     },
     {
       "id": "youth-master",
@@ -926,35 +1008,40 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "刚工作的时候，是谁带您入门的呀？"
+          "question": "刚做这行时，谁带过您？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "他手把手教您的时候，是什么样子？"
+          "question": "他当时是怎么教您的？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "学成那天，您心里怎么样？"
+          "question": "哪句话让您一直记着？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "师傅教您的，您想传下去哪一句？"
+          "label": "意义与寄语",
+          "question": "后来带新人时，您会怎么教？"
         }
       ],
       "trigger_openers": {},
       "sensitive": [
         {
           "type": "D",
-          "note": "可能涉及已故亲人或朋友。不问去世经过和年份，只问美好的小事。老人主动讲，就温柔地听，难过时说您一直记着他呢，再转到安全话题。"
+          "note": "可能涉及已故或疏远的人。允许本人表达复杂感受，不追问离世过程，不强迫积极回忆。"
         }
       ],
-      "needs_calm": false
+      "needs_calm": false,
+      "gentle_question": "他会在旁边看您做吗？",
+      "entry_condition": "本人提到带路人；带新人只在确有相关经历时问。",
+      "source_refs": [
+        "smithsonian-questions"
+      ]
     },
     {
       "id": "youth-meet",
@@ -977,37 +1064,42 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "您和{重要人物}，是怎么认识的呀？"
+          "question": "您和{重要人物}是怎么认识的？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "第一次见面，他穿的什么？"
+          "question": "头一回见面，谁先开的口？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "那时候，您心里是怎么想的？"
+          "question": "后来，您怎么决定继续来往的？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "关于找对象，您想对孙辈说什么？"
+          "label": "意义与寄语",
+          "question": "现在看，那次相识带来了什么？"
         }
       ],
       "trigger_openers": {
-        "photo": "照片上站在您旁边的，是{重要人物}吗？"
+        "photo": "照片里，您想先讲哪段相识的事？"
       },
       "sensitive": [
         {
           "type": "M",
-          "note": "爱人可能已故，或婚姻不幸、离异、再婚。档案未填爱人时不进入此节点；爱人已故只聊相识和美好细节；老人不愿谈，立刻换节点，不问原因。"
+          "note": "关系可能复杂。使用本人称呼，尊重不愿谈的部分，不把婚姻写成幸福模板。"
         }
       ],
-      "needs_calm": false
+      "needs_calm": false,
+      "gentle_question": "初次见面是在熟人家吗？",
+      "entry_condition": "本人选择伴侣话题或已讲到相识，不预设恋爱方式或婚姻幸福。",
+      "source_refs": [
+        "storycorps-questions"
+      ]
     },
     {
       "id": "youth-date",
@@ -1031,37 +1123,42 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "那时候谈对象，你们都去哪儿呀？"
+          "question": "那时见面，你们常去哪里？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "那地方，能听到什么声音？"
+          "question": "那次见面，你们做了什么？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "跟他在一块儿，您心里什么滋味？"
+          "question": "对方哪件小事让您记住了？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "您想跟孩子们说说，那时候怎么谈对象吗？"
+          "label": "意义与寄语",
+          "question": "现在想起，哪一刻您还想讲讲？"
         }
       ],
       "trigger_openers": {
-        "song": "这首歌，你们那时候一起听过吗？"
+        "song": "这首歌，让您想到哪次见面？"
       },
       "sensitive": [
         {
           "type": "M",
-          "note": "爱人可能已故，或婚姻不幸、离异、再婚。档案未填爱人时不进入此节点；爱人已故只聊相识和美好细节；老人不愿谈，立刻换节点，不问原因。"
+          "note": "关系可能复杂。使用本人称呼，尊重不愿谈的部分，不把婚姻写成幸福模板。"
         }
       ],
-      "needs_calm": false
+      "needs_calm": false,
+      "gentle_question": "那地方走路就能到吗？",
+      "entry_condition": "已提到交往经历，不预设看电影、骑车等情节。",
+      "source_refs": [
+        "storycorps-questions"
+      ]
     },
     {
       "id": "youth-wedding",
@@ -1086,37 +1183,42 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "结婚那天，是什么样子的呀？"
+          "question": "结婚那天，您先想到哪个场面？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "那天桌上都摆了些什么菜？"
+          "question": "那个场面里，您在做什么？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "那天您心里是什么滋味？"
+          "question": "那天有什么事让您放在心上？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "关于成家过日子，您想对孙辈说点什么？"
+          "label": "意义与寄语",
+          "question": "那次经历，对您意味着什么？"
         }
       ],
       "trigger_openers": {
-        "photo": "这是您结婚时候的照片吗？"
+        "photo": "这张照片里，您想先聊哪个场面？"
       },
       "sensitive": [
         {
           "type": "M",
-          "note": "爱人可能已故，或婚姻不幸、离异、再婚。档案未填爱人时不进入此节点；爱人已故只聊相识和美好细节；老人不愿谈，立刻换节点，不问原因。"
+          "note": "关系可能复杂。使用本人称呼，尊重不愿谈的部分，不把婚姻写成幸福模板。"
         }
       ],
-      "needs_calm": false
+      "needs_calm": false,
+      "gentle_question": "那天身边有熟人吗？",
+      "entry_condition": "本人愿意讲婚礼或结婚经历，不预设仪式、酒席或喜悦。",
+      "source_refs": [
+        "storycorps-questions"
+      ]
     },
     {
       "id": "youth-newhome",
@@ -1140,42 +1242,47 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "刚成家的时候，你们住在哪儿呀？"
+          "question": "刚成家时，你们住在哪里？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "家里添的第一件大东西是什么？"
+          "question": "搬进去后，先安顿了什么？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "那时候，您觉得日子过得怎么样？"
+          "question": "您当时最想把哪件事安排好？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "您想让孩子们知道，那时候的家是什么样吗？"
+          "label": "意义与寄语",
+          "question": "那个家，有什么让您一直记着？"
         }
       ],
       "trigger_openers": {
-        "object": "这个老物件，是您成家时置办的吗？"
+        "object": "这件东西，当时放在家里哪里？"
       },
       "sensitive": [
         {
           "type": "H",
-          "note": "可能涉及贫困或饥荒年代。不追问挨饿受苦的细节，说那时候大家都不容易，您真了不起，再问一件开心的小事。"
+          "note": "涉及生活困难时，跟随本人愿意讲的日常，不预设受苦或强行赞扬。"
         }
       ],
-      "needs_calm": false
+      "needs_calm": false,
+      "gentle_question": "那时住的地方宽敞吗？",
+      "entry_condition": "本人已提到成家住处，不预设买房或添置大件。",
+      "source_refs": [
+        "unc-life-history"
+      ]
     },
     {
       "id": "youth-firstchild",
-      "title": "第一个孩子出生",
-      "card": "第一个孩子出生",
+      "title": "刚开始照顾孩子",
+      "card": "刚开始照顾孩子",
       "tags": {
         "relation": "children",
         "domain": "family",
@@ -1192,35 +1299,40 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "您的第一个孩子出生那天，是什么情形呀？"
+          "question": "刚开始照顾孩子时，您先忙什么？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "那天，是谁陪着您？"
+          "question": "有一次手忙脚乱，是怎么回事？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "第一次抱孩子，您心里怎么样？"
+          "question": "那时候，什么支持对您有帮助？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "您想对这个孩子说一句什么话？"
+          "label": "意义与寄语",
+          "question": "这段经历改变了您的什么想法？"
         }
       ],
       "trigger_openers": {},
       "sensitive": [
         {
           "type": "C",
-          "note": "可能涉及难产、孩子夭折或与子女关系紧张。只聊老人主动提到的孩子，不比较孩子，不问矛盾；没有子女的老人不进入此节点。"
+          "note": "不预设生育经历、孩子健在或亲子亲密，不比较孩子。"
         }
       ],
-      "needs_calm": false
+      "needs_calm": false,
+      "gentle_question": "当时有人搭把手吗？",
+      "entry_condition": "本人愿意谈育儿；手忙脚乱只在本人提到困难时追问，不预设亲生或分娩经历。",
+      "source_refs": [
+        "storycorps-questions"
+      ]
     },
     {
       "id": "youth-coworkers",
@@ -1243,37 +1355,42 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "年轻时上班，您跟谁最合得来呀？"
+          "question": "一起干活的人里，您想先聊谁？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "你们一起干活的时候，是什么样子？"
+          "question": "你们一起做过哪件事？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "跟他们在一起，您觉得怎么样？"
+          "question": "那件事上，您怎样和他配合？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "跟人共事，您想教孩子们什么？"
+          "label": "意义与寄语",
+          "question": "后来，您从这段共事里带走什么？"
         }
       ],
       "trigger_openers": {
-        "photo": "照片上这些人，是您的工友吗？"
+        "photo": "照片里的同伴，您想先说谁？"
       },
       "sensitive": [
         {
           "type": "D",
-          "note": "可能涉及已故亲人或朋友。不问去世经过和年份，只问美好的小事。老人主动讲，就温柔地听，难过时说您一直记着他呢，再转到安全话题。"
+          "note": "可能涉及已故或疏远的人。允许本人表达复杂感受，不追问离世过程，不强迫积极回忆。"
         }
       ],
-      "needs_calm": false
+      "needs_calm": false,
+      "gentle_question": "你们平时在同一处干活吗？",
+      "entry_condition": "本人讲到同事或合作伙伴，不预设关系和睦。",
+      "source_refs": [
+        "storycorps-questions"
+      ]
     },
     {
       "id": "youth-pride",
@@ -1294,35 +1411,40 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "年轻的时候，您最得意的一件事是什么呀？"
+          "question": "有什么事，您做完觉得挺满意？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "那件事，是怎么办成的？"
+          "question": "当时您是怎么把它做成的？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "那时候，您心里美不美？"
+          "question": "做到哪一步，您觉得有把握了？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "这件事，您想讲给孙辈听吗？"
+          "label": "意义与寄语",
+          "question": "这件事，您看重的是什么？"
         }
       ],
       "trigger_openers": {},
       "sensitive": [
         {
           "type": "N",
-          "note": "较少敏感，也可作为其他节点出现情绪时的退路。"
+          "note": "根据本人意愿继续，不用开心、幸福等词替他评价。"
         }
       ],
-      "needs_calm": false
+      "needs_calm": false,
+      "gentle_question": "那件事是您自己动手做的吗？",
+      "entry_condition": "本人愿意聊成就，允许普通小事，不要求奖项或最高成就。",
+      "source_refs": [
+        "alplm-family"
+      ]
     },
     {
       "id": "youth-times",
@@ -1343,35 +1465,40 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "您二三十岁那些年，身边发生过什么大事吗？"
+          "question": "您说的那次变化，从哪里开始？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "那时候，您看到了什么？"
+          "question": "那天您在什么地方？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "那会儿，您心里是怎么想的？"
+          "question": "它怎样影响了您的打算？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "那段日子，您想让孩子们记住什么？"
+          "label": "意义与寄语",
+          "question": "现在，您怎样理解那次变化？"
         }
       ],
       "trigger_openers": {},
       "sensitive": [
         {
           "type": "T",
-          "note": "可能触及动乱、运动、家庭成分等时代创伤。主持人绝不主动点名任何政治运动或灾荒；老人主动讲就听，不评价、不追问；出现害怕或难过，立刻安抚并转到安全话题。"
+          "note": "只听本人主动愿意展开的时代经历。出现不适时暂停，不点名引导创伤事件。"
         }
       ],
-      "needs_calm": true
+      "needs_calm": true,
+      "gentle_question": "那时身边有人陪着您吗？",
+      "entry_condition": "只聊本人主动提到的社会事件，不引入未提及的灾难或政治运动。",
+      "source_refs": [
+        "smithsonian-questions"
+      ]
     },
     {
       "id": "midlife-kids",
@@ -1395,42 +1522,47 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "孩子们小时候，您常给他们做什么吃的呀？"
+          "question": "照顾孩子那几年，您每天忙什么？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "一家人围着桌子吃饭，是什么样子？"
+          "question": "挑一天说说，早上先做什么？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "看着孩子长大，您心里怎么样？"
+          "question": "哪件小事让您觉得值得？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "您最想对孩子们说的一句话是什么？"
+          "label": "意义与寄语",
+          "question": "后来，您对照顾孩子有什么新想法？"
         }
       ],
       "trigger_openers": {
-        "food": "这道菜，您以前常给孩子们做吗？"
+        "food": "这道吃的，让您想起孩子的哪件事？"
       },
       "sensitive": [
         {
           "type": "C",
-          "note": "可能涉及难产、孩子夭折或与子女关系紧张。只聊老人主动提到的孩子，不比较孩子，不问矛盾；没有子女的老人不进入此节点。"
+          "note": "不预设生育经历、孩子健在或亲子亲密，不比较孩子。"
         }
       ],
-      "needs_calm": false
+      "needs_calm": false,
+      "gentle_question": "那时常要给孩子做饭吗？",
+      "entry_condition": "已提到照顾孩子，不预设性别分工、血缘或家庭和睦。",
+      "source_refs": [
+        "storycorps-questions"
+      ]
     },
     {
       "id": "midlife-naughty",
-      "title": "孩子的调皮事",
-      "card": "孩子小时候的调皮事",
+      "title": "孩子小时候的小事",
+      "card": "孩子小时候的小事",
       "tags": {
         "relation": "children",
         "domain": "family",
@@ -1445,35 +1577,40 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "孩子小时候，最调皮的一件事是什么呀？"
+          "question": "孩子小时候，有哪件小事让您记着？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "那天后来怎么样了？"
+          "question": "那次您是怎么回应他的？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "现在想起来，您是什么心情？"
+          "question": "您当时在意的是什么？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "您想把这件事讲给孙辈听吗？"
+          "label": "意义与寄语",
+          "question": "今天再看，您会怎样理解那件事？"
         }
       ],
       "trigger_openers": {},
       "sensitive": [
         {
           "type": "C",
-          "note": "可能涉及难产、孩子夭折或与子女关系紧张。只聊老人主动提到的孩子，不比较孩子，不问矛盾；没有子女的老人不进入此节点。"
+          "note": "不预设生育经历、孩子健在或亲子亲密，不比较孩子。"
         }
       ],
-      "needs_calm": false
+      "needs_calm": false,
+      "gentle_question": "那件事是在家里发生的吗？",
+      "entry_condition": "本人愿意讲孩子的具体故事，不先贴调皮或闯祸标签。",
+      "source_refs": [
+        "storycorps-questions"
+      ]
     },
     {
       "id": "midlife-work",
@@ -1496,37 +1633,42 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "那些年上班，您每天都忙些什么呀？"
+          "question": "那时候上工，您先做什么？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "您干活的地方，是什么样子的？"
+          "question": "哪一步最要紧？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "最忙的时候，您是怎么撑过来的？"
+          "question": "做这份活，您最看重什么？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "关于吃苦和坚持，您想对后辈说什么？"
+          "label": "意义与寄语",
+          "question": "这行后来有哪些变化？"
         }
       ],
       "trigger_openers": {
-        "object": "这个工具，您以前天天用吧？"
+        "object": "干那份活时，这个工具怎么用？"
       },
       "sensitive": [
         {
           "type": "W",
-          "note": "可能涉及下岗、失业、工伤。只肯定老人的辛苦和本事，不追问经过。"
+          "note": "包括正式与非正式劳动，不预设体面职业；失业、工伤等只听本人愿意说的部分。"
         }
       ],
-      "needs_calm": false
+      "needs_calm": false,
+      "gentle_question": "干活时要用工具吗？",
+      "entry_condition": "已知本人工作经历；使用本人说的工作名称，不预设加班或艰苦。",
+      "source_refs": [
+        "unc-life-history"
+      ]
     },
     {
       "id": "midlife-craft",
@@ -1551,37 +1693,42 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "您有什么拿手的手艺吗？"
+          "question": "您想讲讲哪样拿手的本事？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "做这个的时候，您是怎么一步一步做的？"
+          "question": "做它的第一步是什么？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "做好了别人夸您，您心里怎么样？"
+          "question": "做到什么样，您自己才满意？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "这门手艺，您想教给哪个孩子？"
+          "label": "意义与寄语",
+          "question": "您希望这门本事怎样传下去？"
         }
       ],
       "trigger_openers": {
-        "object": "这个，是您亲手做的吗？"
+        "object": "用这件工具，第一步做什么？"
       },
       "sensitive": [
         {
           "type": "N",
-          "note": "较少敏感，也可作为其他节点出现情绪时的退路。"
+          "note": "根据本人意愿继续，不用开心、幸福等词替他评价。"
         }
       ],
-      "needs_calm": false
+      "needs_calm": false,
+      "gentle_question": "做这件活要用手工工具吗？",
+      "entry_condition": "本人认可的本事都可以，反思传承由本人选择，不假定有子女接手。",
+      "source_refs": [
+        "smithsonian-questions"
+      ]
     },
     {
       "id": "midlife-siblings",
@@ -1604,37 +1751,42 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "成家以后，您跟兄弟姐妹还常走动吗？"
+          "question": "后来，您和兄弟姐妹怎么来往？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "你们聚在一块儿，都做些什么？"
+          "question": "挑一次见面说说，做了什么？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "有兄弟姐妹在，您觉得怎么样？"
+          "question": "哪次相处让您有了新的感受？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "您想让孩子们怎么跟亲戚相处？"
+          "label": "意义与寄语",
+          "question": "您希望这份联系往后怎样？"
         }
       ],
       "trigger_openers": {
-        "festival": "过节的时候，兄弟姐妹会聚到一块儿吗？"
+        "festival": "说到过节，您想讲哪次见面？"
       },
       "sensitive": [
         {
           "type": "D",
-          "note": "可能涉及已故亲人或朋友。不问去世经过和年份，只问美好的小事。老人主动讲，就温柔地听，难过时说您一直记着他呢，再转到安全话题。"
+          "note": "可能涉及已故或疏远的人。允许本人表达复杂感受，不追问离世过程，不强迫积极回忆。"
         }
       ],
-      "needs_calm": false
+      "needs_calm": false,
+      "gentle_question": "那时见一面方便吗？",
+      "entry_condition": "本人已讲到兄弟姐妹，不预设都成家、常团聚或关系亲近。",
+      "source_refs": [
+        "smithsonian-questions"
+      ]
     },
     {
       "id": "midlife-move",
@@ -1657,37 +1809,42 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "这辈子，您搬过几次家呀？"
+          "question": "搬过的地方里，您想先聊哪一处？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "住得最久的那个地方，是什么样子？"
+          "question": "刚搬进去，先安顿了什么？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "离开那儿的时候，您心里怎么样？"
+          "question": "那次搬家，您最挂心什么？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "您想让孩子们记住哪个家？"
+          "label": "意义与寄语",
+          "question": "住在那里，改变了您的什么习惯？"
         }
       ],
       "trigger_openers": {
-        "photo": "这张照片，是在哪儿拍的呀？"
+        "photo": "照片里的住处，您想先讲哪里？"
       },
       "sensitive": [
         {
           "type": "H",
-          "note": "可能涉及贫困或饥荒年代。不追问挨饿受苦的细节，说那时候大家都不容易，您真了不起，再问一件开心的小事。"
+          "note": "涉及生活困难时，跟随本人愿意讲的日常，不预设受苦或强行赞扬。"
         }
       ],
-      "needs_calm": false
+      "needs_calm": false,
+      "gentle_question": "搬过去时带了不少东西吗？",
+      "entry_condition": "本人提到迁居；原因和损失只跟随其自愿讲述。",
+      "source_refs": [
+        "smithsonian-questions"
+      ]
     },
     {
       "id": "midlife-hard",
@@ -1708,39 +1865,44 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "这辈子，有没有哪段日子特别不容易，后来挺过来了？"
+          "question": "您说那段日子难，想从哪件事讲起？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "那时候，是谁帮了您？"
+          "question": "那一天，您先做了什么？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "现在回头看，您是什么心情？"
+          "question": "那时候，您最需要什么？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "关于挺过难关，您想对后辈说什么？"
+          "label": "意义与寄语",
+          "question": "这段经历，您愿意留下什么？"
         }
       ],
       "trigger_openers": {},
       "sensitive": [
         {
           "type": "T",
-          "note": "可能触及动乱、运动、家庭成分等时代创伤。主持人绝不主动点名任何政治运动或灾荒；老人主动讲就听，不评价、不追问；出现害怕或难过，立刻安抚并转到安全话题。"
+          "note": "只听本人主动愿意展开的时代经历。出现不适时暂停，不点名引导创伤事件。"
         },
         {
           "type": "I",
-          "note": "可能涉及病痛与照护。不谈病情细节，不给医疗建议，重点放在陪伴和温暖。"
+          "note": "关心当下是否愿意继续，不追问病情、伤痛细节或给医疗建议。"
         }
       ],
-      "needs_calm": true
+      "needs_calm": true,
+      "gentle_question": "咱们先歇一会儿好吗？",
+      "entry_condition": "只在本人主动提起且愿意继续时使用，不要求积极结局或追问创伤细节。",
+      "source_refs": [
+        "alplm-family"
+      ]
     },
     {
       "id": "midlife-travel",
@@ -1764,37 +1926,42 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "这辈子，您去过最远的地方是哪儿呀？"
+          "question": "出过的远门里，您想先讲哪一次？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "到了那儿，看到了什么？"
+          "question": "刚到那里，您先看到了什么？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "第一次到那儿，您觉得怎么样？"
+          "question": "哪件事跟您出发前想的不一样？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "您想让孙辈也去那儿看看吗？"
+          "label": "意义与寄语",
+          "question": "回来以后，您有什么新想法？"
         }
       ],
       "trigger_openers": {
-        "photo": "这是您出远门时拍的吗？"
+        "photo": "这张照片，是在哪趟出门时拍的？"
       },
       "sensitive": [
         {
           "type": "N",
-          "note": "较少敏感，也可作为其他节点出现情绪时的退路。"
+          "note": "根据本人意愿继续，不用开心、幸福等词替他评价。"
         }
       ],
-      "needs_calm": false
+      "needs_calm": false,
+      "gentle_question": "那次是坐车去的吗？",
+      "entry_condition": "本人愿意谈出行，不要求最远、最好等排序。",
+      "source_refs": [
+        "alplm-family"
+      ]
     },
     {
       "id": "midlife-parents-old",
@@ -1815,39 +1982,44 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "父母上了年纪以后，您常陪他们做些什么呀？"
+          "question": "那阵子，您常陪父母做什么？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "陪他们的时候，常在哪儿？"
+          "question": "有哪次相处让您记得清楚？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "想起那段日子，您心里怎么样？"
+          "question": "当时您有什么想说的话？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "关于孝顺老人，您想对孩子们说什么？"
+          "label": "意义与寄语",
+          "question": "如今，您怎样看那段相处？"
         }
       ],
       "trigger_openers": {},
       "sensitive": [
         {
           "type": "D",
-          "note": "可能涉及已故亲人或朋友。不问去世经过和年份，只问美好的小事。老人主动讲，就温柔地听，难过时说您一直记着他呢，再转到安全话题。"
+          "note": "可能涉及已故或疏远的人。允许本人表达复杂感受，不追问离世过程，不强迫积极回忆。"
         },
         {
           "type": "I",
-          "note": "可能涉及病痛与照护。不谈病情细节，不给医疗建议，重点放在陪伴和温暖。"
+          "note": "关心当下是否愿意继续，不追问病情、伤痛细节或给医疗建议。"
         }
       ],
-      "needs_calm": true
+      "needs_calm": true,
+      "gentle_question": "那时见父母方便吗？",
+      "entry_condition": "本人主动提到父母晚年或照料，不预设尽孝、亏欠或共同居住。",
+      "source_refs": [
+        "unc-life-history"
+      ]
     },
     {
       "id": "elder-grandkids",
@@ -1870,37 +2042,42 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "您第一次抱孙子孙女，是什么情形呀？"
+          "question": "和孙辈在一起，您常做什么？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "您常带他们去哪儿玩？"
+          "question": "有哪次相处让您想讲讲？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "跟孩子们在一起，您心里怎么样？"
+          "question": "那件事里，您最在意什么？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "您最想对孙辈说的一句话是什么？"
+          "label": "意义与寄语",
+          "question": "有什么话，您愿意说给他们听？"
         }
       ],
       "trigger_openers": {
-        "photo": "照片上这个小娃娃，是您的孙辈吗？"
+        "photo": "照片里的孩子，您想说哪件事？"
       },
       "sensitive": [
         {
           "type": "N",
-          "note": "较少敏感，也可作为其他节点出现情绪时的退路。"
+          "note": "根据本人意愿继续，不用开心、幸福等词替他评价。"
         }
       ],
-      "needs_calm": false
+      "needs_calm": false,
+      "gentle_question": "您和他们常见面吗？",
+      "entry_condition": "本人已提到孙辈且愿意聊，不用子女存在推定有孙辈。",
+      "source_refs": [
+        "storycorps-questions"
+      ]
     },
     {
       "id": "elder-hometown-food",
@@ -1923,37 +2100,42 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "要说{家乡}最好吃的东西，您第一个想到什么？"
+          "question": "说起{家乡}的吃食，您先想到什么？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "它闻起来，是什么香味？"
+          "question": "做这道吃的，先准备什么？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "一想到这个味道，您心里什么滋味？"
+          "question": "您喜欢它的什么味道？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "这个味道，您想教孩子们怎么做吗？"
+          "label": "意义与寄语",
+          "question": "家里的做法，后来有什么变化？"
         }
       ],
       "trigger_openers": {
-        "food": "这是{家乡}的味道，您尝尝，像不像以前的？"
+        "food": "说到这道吃的，您想到哪件事？"
       },
       "sensitive": [
         {
           "type": "N",
-          "note": "较少敏感，也可作为其他节点出现情绪时的退路。"
+          "note": "根据本人意愿继续，不用开心、幸福等词替他评价。"
         }
       ],
-      "needs_calm": false
+      "needs_calm": false,
+      "gentle_question": "这道吃的是热着吃的吗？",
+      "entry_condition": "本人选食物话题；制作问题仅在本人知道做法时问。",
+      "source_refs": [
+        "smithsonian-questions"
+      ]
     },
     {
       "id": "elder-festivals",
@@ -1978,37 +2160,42 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "{家乡}过端午、中秋，家里都怎么过呀？"
+          "question": "家里过什么节，您想讲讲？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "过节那天，桌上都有什么？"
+          "question": "那天，您通常负责哪件事？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "过节的时候，您最喜欢哪一刻？"
+          "question": "您喜欢过节的哪个时刻？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "哪个老规矩，您想让孩子们传下去？"
+          "label": "意义与寄语",
+          "question": "哪样习惯，您还想继续留着？"
         }
       ],
       "trigger_openers": {
-        "festival": "快到中秋了，您以前中秋怎么过呀？"
+        "festival": "这个节日，家里有什么习惯？"
       },
       "sensitive": [
         {
           "type": "F",
-          "note": "清明、中元等祭祀节日会引出已故亲人，不主动选这类节日。"
+          "note": "由本人定义习俗及意义，不预设宗教与地域做法。"
         }
       ],
-      "needs_calm": false
+      "needs_calm": false,
+      "gentle_question": "过那个节，会做特别的吃食吗？",
+      "entry_condition": "节日由本人选择，不预设宗教、地域习俗或共同庆祝。",
+      "source_refs": [
+        "smithsonian-questions"
+      ]
     },
     {
       "id": "elder-songs",
@@ -2033,37 +2220,42 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "您最爱听的一首歌，或者一出戏，是什么呀？"
+          "question": "您想聊哪首歌或哪出戏？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "第一次听到它，是在什么地方？"
+          "question": "您通常在哪儿听它？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "一听到它，您心里是什么感觉？"
+          "question": "它让您想起什么人或事？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "您想把这首歌唱给孙辈听吗？"
+          "label": "意义与寄语",
+          "question": "您愿意留下其中哪一句？"
         }
       ],
       "trigger_openers": {
-        "song": "这段曲子，您听着耳熟吗？"
+        "song": "这首歌里，您喜欢哪一段？"
       },
       "sensitive": [
         {
           "type": "N",
-          "note": "较少敏感，也可作为其他节点出现情绪时的退路。"
+          "note": "根据本人意愿继续，不用开心、幸福等词替他评价。"
         }
       ],
-      "needs_calm": false
+      "needs_calm": false,
+      "gentle_question": "您喜欢听唱的那一段吗？",
+      "entry_condition": "只用本人选择的歌戏，允许说几字或不唱，不考歌词。",
+      "source_refs": [
+        "smithsonian-questions"
+      ]
     },
     {
       "id": "elder-friends",
@@ -2086,37 +2278,42 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "这些年，您跟哪位老朋友走得最近呀？"
+          "question": "老朋友里，您想先说说谁？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "你们见面的时候，常在哪儿？"
+          "question": "你们见面通常做什么？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "有这样的老朋友，您心里怎么样？"
+          "question": "哪次相处让您觉得合得来？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "关于朋友，您想对孩子们说点什么？"
+          "label": "意义与寄语",
+          "question": "这段交情，对您有什么意义？"
         }
       ],
       "trigger_openers": {
-        "photo": "照片上这位，是您的老朋友吗？"
+        "photo": "照片中的朋友，您想先聊谁？"
       },
       "sensitive": [
         {
           "type": "D",
-          "note": "可能涉及已故亲人或朋友。不问去世经过和年份，只问美好的小事。老人主动讲，就温柔地听，难过时说您一直记着他呢，再转到安全话题。"
+          "note": "可能涉及已故或疏远的人。允许本人表达复杂感受，不追问离世过程，不强迫积极回忆。"
         }
       ],
-      "needs_calm": false
+      "needs_calm": false,
+      "gentle_question": "那位朋友以前住得近吗？",
+      "entry_condition": "本人愿意谈朋友；合得来只在本人表达亲近后问，不预设仍健在。",
+      "source_refs": [
+        "storycorps-questions"
+      ]
     },
     {
       "id": "elder-hobby",
@@ -2140,35 +2337,40 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "这些年，您最喜欢做点什么呀？"
+          "question": "闲下来，您喜欢做点什么？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "做这件事的时候，您常在哪儿？"
+          "question": "做这件事，您通常先准备什么？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "做这件事，您心里觉得怎么样？"
+          "question": "哪一部分最让您投入？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "您想让孩子们也试试吗？"
+          "label": "意义与寄语",
+          "question": "往后，您还想尝试什么？"
         }
       ],
       "trigger_openers": {},
       "sensitive": [
         {
           "type": "R",
-          "note": "近期记忆最容易卡住。不问最近的具体日期和刚发生的事，答不上来马上给台阶。"
+          "note": "问熟悉的习惯与喜好，不考近期事件或精确日期。"
         }
       ],
-      "needs_calm": false
+      "needs_calm": false,
+      "gentle_question": "这件事在家就能做吗？",
+      "entry_condition": "关注兴趣与本人意愿，不追考昨天或具体日期。",
+      "source_refs": [
+        "storycorps-questions"
+      ]
     },
     {
       "id": "elder-oldthing",
@@ -2193,44 +2395,49 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "家里有没有一件老东西，您一直留着呀？"
+          "question": "有什么东西，您一直舍不得丢？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "这东西是怎么到您手里的？"
+          "question": "它是怎么到您手里的？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "看到它，您心里是什么滋味？"
+          "question": "哪段经历让它变得特别？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "这件东西，您想留给谁？"
+          "label": "意义与寄语",
+          "question": "您想为它留下怎样的说明？"
         }
       ],
       "trigger_openers": {
-        "object": "这件老东西，是怎么来的呀？"
+        "object": "这件东西是怎么到您手里的？"
       },
       "sensitive": [
         {
           "type": "D",
-          "note": "可能涉及已故亲人或朋友。不问去世经过和年份，只问美好的小事。老人主动讲，就温柔地听，难过时说您一直记着他呢，再转到安全话题。"
+          "note": "可能涉及已故或疏远的人。允许本人表达复杂感受，不追问离世过程，不强迫积极回忆。"
         }
       ],
-      "needs_calm": false
+      "needs_calm": false,
+      "gentle_question": "它平时放在家里吗？",
+      "entry_condition": "本人主动提到物件，不预设送礼人、购买经历或身后分配。",
+      "source_refs": [
+        "smithsonian-questions"
+      ]
     },
     {
       "id": "elder-wishes",
       "title": "想对家人说的话",
       "card": "想对家人说的话",
       "tags": {
-        "relation": "children",
+        "relation": null,
         "domain": "family",
         "trigger": []
       },
@@ -2243,35 +2450,590 @@
           "depth": 1,
           "id": "fact",
           "label": "事实",
-          "question": "您这辈子，最想对家人说的一句话是什么呀？"
+          "question": "有什么话，您想说给在意的人听？"
         },
         {
           "depth": 2,
           "id": "scene",
           "label": "场景细节",
-          "question": "这句话，是从哪件事里明白的？"
+          "question": "想到这句话，您会想起哪件事？"
         },
         {
           "depth": 3,
           "id": "feeling",
           "label": "感受",
-          "question": "说起这些，您心里是什么滋味？"
+          "question": "这件事对您有什么意义？"
         },
         {
           "depth": 4,
           "id": "legacy",
-          "label": "想对后辈说的话",
-          "question": "您想把这句话，说给哪个孩子听？"
+          "label": "意义与寄语",
+          "question": "您愿意把这句话说给谁听？"
         }
       ],
       "trigger_openers": {},
       "sensitive": [
         {
           "type": "E",
-          "note": "可能引出对身后事的谈论。平静接住，说孩子们都会记着您的话，不深谈。"
+          "note": "由本人选择说给谁听，不代答家人想法，不暗示最后告别或承诺分享。"
         }
       ],
-      "needs_calm": false
+      "needs_calm": false,
+      "gentle_question": "这句话是想说给家里人的吗？",
+      "entry_condition": "本人愿意表达寄语，不预设有子孙，不把谈话当作最后告别。",
+      "source_refs": [
+        "storycorps-questions"
+      ]
+    },
+    {
+      "id": "life-name",
+      "title": "名字和称呼",
+      "card": "以前的名字和称呼",
+      "tags": {
+        "relation": null,
+        "domain": "self",
+        "trigger": []
+      },
+      "entity_hints": [
+        "名字",
+        "姓名",
+        "小名",
+        "外号"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "以前家里都怎么叫您？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "这个叫法是怎么来的？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "您喜欢别人怎么叫您？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "意义与寄语",
+          "question": "这个名字，您想留下什么故事？"
+        }
+      ],
+      "trigger_openers": {},
+      "sensitive": [
+        {
+          "type": "N",
+          "note": "根据本人意愿继续，不用开心、幸福等词替他评价。"
+        }
+      ],
+      "needs_calm": false,
+      "gentle_question": "以前有人叫过您小名吗？",
+      "entry_condition": "本人愿意聊名字或称呼；只谈故事不自动修改当前称呼。",
+      "source_refs": [
+        "smithsonian-questions"
+      ]
+    },
+    {
+      "id": "life-family-stories",
+      "title": "家里传下来的故事",
+      "card": "家里传下来的故事",
+      "tags": {
+        "relation": null,
+        "domain": "family",
+        "trigger": []
+      },
+      "entity_hints": [
+        "家史",
+        "祖辈",
+        "祖父",
+        "祖母",
+        "家族"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "家里传下来的故事，您想讲哪一段？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "您当初是听谁讲的？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "哪一处让您一直记着？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "意义与寄语",
+          "question": "这段故事里，您最想留住什么？"
+        }
+      ],
+      "trigger_openers": {},
+      "sensitive": [
+        {
+          "type": "N",
+          "note": "根据本人意愿继续，不用开心、幸福等词替他评价。"
+        }
+      ],
+      "needs_calm": false,
+      "gentle_question": "那段故事是长辈讲的吗？",
+      "entry_condition": "区分亲历与听来的家史，不追考世系或要求证实传说。",
+      "source_refs": [
+        "smithsonian-questions"
+      ]
+    },
+    {
+      "id": "life-routine",
+      "title": "普通的一天",
+      "card": "以前普通的一天",
+      "tags": {
+        "relation": null,
+        "domain": "family",
+        "trigger": []
+      },
+      "entity_hints": [
+        "日常",
+        "起床",
+        "一天",
+        "作息"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "那时候，早上起来先忙什么？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "忙完以后，接着做什么？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "一天里，哪个时段您能歇一会儿？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "意义与寄语",
+          "question": "那种日子，有什么让您惦记？"
+        }
+      ],
+      "trigger_openers": {},
+      "sensitive": [
+        {
+          "type": "N",
+          "note": "根据本人意愿继续，不用开心、幸福等词替他评价。"
+        }
+      ],
+      "needs_calm": false,
+      "gentle_question": "那时早上要自己做饭吗？",
+      "entry_condition": "先由本人确定某段日常，使用他熟悉的一天，不要求完整作息表。",
+      "source_refs": [
+        "unc-life-history"
+      ]
+    },
+    {
+      "id": "life-decision",
+      "title": "自己做过的决定",
+      "card": "自己做过的决定",
+      "tags": {
+        "relation": null,
+        "domain": "self",
+        "trigger": []
+      },
+      "entity_hints": [
+        "决定",
+        "选择",
+        "转行",
+        "拿定主意"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "那次您是怎么拿定主意的？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "决定之前，您做过什么准备？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "当时，您最看重哪一点？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "意义与寄语",
+          "question": "后来，您对这个决定有过新想法吗？"
+        }
+      ],
+      "trigger_openers": {},
+      "sensitive": [
+        {
+          "type": "N",
+          "note": "根据本人意愿继续，不用开心、幸福等词替他评价。"
+        }
+      ],
+      "needs_calm": true,
+      "gentle_question": "那件事您跟别人商量过吗？",
+      "entry_condition": "只接本人提到的具体决定，不要求挑出一生最大的选择。",
+      "source_refs": [
+        "alplm-family"
+      ]
+    },
+    {
+      "id": "life-household-money",
+      "title": "一家人的开销",
+      "card": "以前怎样安排开销",
+      "tags": {
+        "relation": null,
+        "domain": "family",
+        "trigger": []
+      },
+      "entity_hints": [
+        "开销",
+        "攒钱",
+        "收支",
+        "买菜钱"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "那时候，家里的钱通常先用在哪儿？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "有没有一样东西，攒了钱才买？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "那次您怎样决定先买它？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "意义与寄语",
+          "question": "后来，您安排开销的想法变过吗？"
+        }
+      ],
+      "trigger_openers": {},
+      "sensitive": [
+        {
+          "type": "N",
+          "note": "根据本人意愿继续，不用开心、幸福等词替他评价。"
+        }
+      ],
+      "needs_calm": true,
+      "gentle_question": "那时常要留些钱买菜吗？",
+      "entry_condition": "本人愿意谈生活安排，不问账户、金额或给理财建议；购买追问须有事实前提。",
+      "source_refs": [
+        "unc-life-history"
+      ]
+    },
+    {
+      "id": "life-community",
+      "title": "街坊与社区生活",
+      "card": "以前的街坊生活",
+      "tags": {
+        "relation": null,
+        "domain": "community",
+        "trigger": []
+      },
+      "entity_hints": [
+        "街坊",
+        "社区",
+        "邻里",
+        "集市"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "以前街坊常在哪里碰面？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "碰面以后，大家通常做什么？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "您在那儿参与过什么事？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "意义与寄语",
+          "question": "那个地方后来有过什么变化？"
+        }
+      ],
+      "trigger_openers": {},
+      "sensitive": [
+        {
+          "type": "N",
+          "note": "根据本人意愿继续，不用开心、幸福等词替他评价。"
+        }
+      ],
+      "needs_calm": false,
+      "gentle_question": "街坊之间常串门吗？",
+      "entry_condition": "本人愿意谈邻里和公共生活，不预设参加组织或担任职务。",
+      "source_refs": [
+        "smithsonian-questions"
+      ]
+    },
+    {
+      "id": "life-belief",
+      "title": "一直看重的事",
+      "card": "一直看重的事",
+      "tags": {
+        "relation": null,
+        "domain": "self",
+        "trigger": []
+      },
+      "entity_hints": [
+        "信念",
+        "信仰",
+        "原则",
+        "做人"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "有什么事，您一直觉得值得坚持？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "您是哪次经历后这样想的？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "遇到难办的事，您会怎样取舍？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "意义与寄语",
+          "question": "这份想法，后来改变过吗？"
+        }
+      ],
+      "trigger_openers": {},
+      "sensitive": [
+        {
+          "type": "N",
+          "note": "根据本人意愿继续，不用开心、幸福等词替他评价。"
+        }
+      ],
+      "needs_calm": true,
+      "gentle_question": "您愿意讲一件相关的小事吗？",
+      "entry_condition": "本人主动谈价值观、信仰或做人做事，不推定宗教或评价对错。",
+      "source_refs": [
+        "storycorps-questions"
+      ]
+    },
+    {
+      "id": "life-retirement",
+      "title": "退休后的生活",
+      "card": "退休后的日常",
+      "tags": {
+        "relation": null,
+        "domain": "work",
+        "trigger": []
+      },
+      "entity_hints": [
+        "退休",
+        "离休",
+        "退下来"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "不再天天上班后，您先做了什么？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "那时的一天，您怎样安排？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "生活里，哪件事最需要重新适应？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "意义与寄语",
+          "question": "往后，您想把时间花在哪里？"
+        }
+      ],
+      "trigger_openers": {},
+      "sensitive": [
+        {
+          "type": "N",
+          "note": "根据本人意愿继续，不用开心、幸福等词替他评价。"
+        }
+      ],
+      "needs_calm": false,
+      "gentle_question": "那以后，您早上还起得早吗？",
+      "entry_condition": "本人提到退休或停下固定工作，不把年龄当作退休事实。",
+      "source_refs": [
+        "unc-life-history"
+      ]
+    },
+    {
+      "id": "life-technology",
+      "title": "改变生活的新东西",
+      "card": "用过的新东西",
+      "tags": {
+        "relation": null,
+        "domain": "family",
+        "trigger": []
+      },
+      "entity_hints": [
+        "电灯",
+        "电视机",
+        "电话",
+        "洗衣机",
+        "手机"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "用上它后，生活有什么变化？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "刚开始，您是怎么学会用的？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "哪种用法最合您的习惯？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "意义与寄语",
+          "question": "现在，您还保留着哪些老办法？"
+        }
+      ],
+      "trigger_openers": {},
+      "sensitive": [
+        {
+          "type": "N",
+          "note": "根据本人意愿继续，不用开心、幸福等词替他评价。"
+        }
+      ],
+      "needs_calm": false,
+      "gentle_question": "那件东西需要用电吗？",
+      "entry_condition": "先确认本人提到的具体工具或技术，不预设会用手机或通电经历。",
+      "source_refs": [
+        "unc-life-history"
+      ]
+    },
+    {
+      "id": "life-unasked",
+      "title": "自己还想讲的事",
+      "card": "自己还想讲的事",
+      "tags": {
+        "relation": null,
+        "domain": "self",
+        "trigger": []
+      },
+      "entity_hints": [
+        "还想讲",
+        "没问到",
+        "另一个故事"
+      ],
+      "layers": [
+        {
+          "depth": 1,
+          "id": "fact",
+          "label": "事实",
+          "question": "还有哪件事，是您想讲的？"
+        },
+        {
+          "depth": 2,
+          "id": "scene",
+          "label": "场景细节",
+          "question": "这件事，您想从哪里说起？"
+        },
+        {
+          "depth": 3,
+          "id": "feeling",
+          "label": "感受",
+          "question": "这段故事，您最想讲清楚什么？"
+        },
+        {
+          "depth": 4,
+          "id": "legacy",
+          "label": "意义与寄语",
+          "question": "往后的日子，您还想做点什么？"
+        }
+      ],
+      "trigger_openers": {},
+      "sensitive": [
+        {
+          "type": "N",
+          "note": "根据本人意愿继续，不用开心、幸福等词替他评价。"
+        }
+      ],
+      "needs_calm": false,
+      "gentle_question": "咱们接着聊您刚才说的事好吗？",
+      "entry_condition": "作为自主选题或未结束时的补充入口；说累了、想停时直接结束。",
+      "source_refs": [
+        "storycorps-questions"
+      ]
     }
   ],
   "state": {
@@ -2357,7 +3119,7 @@
       "type": "person、place、thing 三选一",
       "relation": "人物与老人的关系，取 dimensions.relation 的值",
       "trigger": "物品可对应的触发物类型，可选",
-      "deceased": "是否已故，已故人物只走美好回忆",
+      "deceased": "是否已故，提问跟随本人意愿，不主动追问离世经过",
       "sourceNodes": "在哪些节点里提到过",
       "lastSessionId": "最近一次提到的访谈"
     },
@@ -2373,7 +3135,7 @@
     "selection_algorithm": [
       "第一步，指定：老人从首页点了触发物（老照片、老歌、家乡菜等），或选了某个话题，就用它。只给触发物时用对应的 trigger_openers 开场",
       "第二步，顺藤摸瓜：取上次访谈里提到的人、地、物，找相关且老人还没讲过的话题",
-      "第三步，加深：老人讲过一些、还没聊够的话题，选最近的，从下一层接着问",
+      "第三步，回访已讲过且愿意继续的话题。现有规则用 depth 提供参考问题，模型结合当前回答自主挑选问法。",
       "第四步，没有线索可跟：只用轻松的话题（吃食、老歌、节日）起头，不去补哪个年龄段、哪类关系还空着。老人没提过的人生阶段，就不提",
       "每一步都先排除：sensitive 的话题；需要情绪平稳的话题；档案缺少前提的话题（没填爱人跳过 spouse，没有子女跳过 children）",
       "有多个候选时，优先选和上一个话题关系、领域都不同的",
@@ -2383,7 +3145,10 @@
       "teen-times",
       "youth-times",
       "midlife-hard",
-      "midlife-parents-old"
+      "midlife-parents-old",
+      "life-decision",
+      "life-household-money",
+      "life-belief"
     ],
     "fallback_safe_nodes": [
       "elder-hometown-food",
@@ -2393,5 +3158,73 @@
     ],
     "off_topic": "老人讲到别的节点时，主持人顺着聊，不拉回。后台把这几轮归到最匹配的节点下，并抽取实体。老人讲完后，主持人用一句过渡回到当前节点，或者顺势把那个节点当作今天第二个节点",
     "candidates": "开场不强制指定话题：小忆问候后念 3 个候选，屏幕同时显示大卡片。候选尽量来自不同方面：一个顺着上次线索或加深，其余是轻松话题（吃食、老歌、节日）。避开敏感与需平静的话题。老人点卡片或用语音选，可“换几个”或“想聊什么都行”自由聊（按内容归档）。一个话题聊够后同样给候选，并可“继续聊这个”或“今天先到这”。"
+  },
+  "sources": [
+    {
+      "id": "smithsonian-questions",
+      "title": "Smithsonian · Some Possible Questions",
+      "url": "https://folklife.si.edu/the-smithsonian-folklife-and-oral-history-interviewing-guide/some-possible-questions/smithsonian",
+      "supports": "家族来历、姓名、习俗、社区、物件与手艺主题。参见 Family Folklore、Local History and Community Life、Cultural Traditions/Occupational Skills。",
+      "accessed": "2026-11-08"
+    },
+    {
+      "id": "smithsonian-interview",
+      "title": "Smithsonian · The Interview",
+      "url": "https://folklife.si.edu/the-smithsonian-folklife-and-oral-history-interviewing-guide/the-interview/smithsonian",
+      "supports": "简洁起问、具体故事、跟随回答追问、留出思考时间。",
+      "accessed": "2026-11-08"
+    },
+    {
+      "id": "oha-practices",
+      "title": "Oral History Association · Oral History Best Practices",
+      "url": "https://oralhistory.org/best-practices/",
+      "supports": "开放提纲、澄清与反思、受访者自主选择主题及拒绝讨论的权利。",
+      "accessed": "2026-11-08"
+    },
+    {
+      "id": "storycorps-questions",
+      "title": "StoryCorps · Great Questions",
+      "url": "https://storycorps.org/participate/great-questions/",
+      "supports": "成长、关系、学习、工作、个人信念与未来愿望等主题。",
+      "accessed": "2026-11-08"
+    },
+    {
+      "id": "alplm-family",
+      "title": "Abraham Lincoln Presidential Library and Museum · Interview Outline — Family Memories",
+      "url": "https://presidentlincoln.illinois.gov/research/research-divisions/oral-history/volunteer-resources/interview-outline-family-memories/",
+      "supports": "生涯选择、家庭生活、重要决定、观点变化和回顾。",
+      "accessed": "2026-11-08"
+    },
+    {
+      "id": "unc-life-history",
+      "title": "UNC Southern Oral History Program · Life History Interviews: Sample Questions",
+      "url": "https://sohp.org/wp-content/uploads/2022/12/Life-History-Questions.pdf",
+      "supports": "家庭日常与分工、收支、技术变化、退休和社区生活。重点参见 PDF 第3、4、6、8页。",
+      "accessed": "2026-11-08"
+    },
+    {
+      "id": "alzheimers-communication",
+      "title": "Alzheimer’s Society · How to communicate with a person with dementia",
+      "url": "https://www.alzheimers.org.uk/about-dementia/stages-and-symptoms/dementia-symptoms/how-to-communicate-dementia",
+      "supports": "认知沟通困难时简短表达、减少复杂提问、熟悉物件提示、给回应时间。按个人状态适配。",
+      "accessed": "2026-11-08"
+    }
+  ],
+  "research": {
+    "basis": "机构访谈指南与沟通建议。中文题目由本项目自主编写，来源支持主题和方法，具体选题、低负担改写与使用前提属于项目适配，尚未经长者用户研究或临床验证。",
+    "method_source_refs": [
+      "smithsonian-interview",
+      "oha-practices",
+      "alzheimers-communication"
+    ],
+    "use": [
+      "一次只选一个问题，优先跟进刚才的人、行动、原话和转折。",
+      "起问、场景、体验、意义提供不同方向，不要求逐项问完。",
+      "反思问题只在受访者愿意且能从容回答时使用。",
+      "答得短或想不起来时，改用 gentle_question 并按已知细节改写；允许不知道、没有和跳过。",
+      "entry_condition 是主持人的使用提示，关系和敏感话题另受现有选题规则约束。",
+      "照片、物件等触发问法只在本人提供或主动提到该提示物时使用。",
+      "高龄本身不等于认知障碍，依据当下回应调整开放程度。"
+    ]
   }
 }

@@ -1,8 +1,8 @@
-// 人生访谈框架 v2 的运行逻辑（前后端共用，纯函数）。数据：src/framework.json；规则：docs/interview-framework.md
+// 访谈问题库的运行逻辑（前后端共用，纯函数）。数据：src/framework.json；规则：docs/interview-framework.md
 // FW 由调用方传入：前端 import JSON，后端 fs 读取。
 import { fill } from './questions.js';
 
-export const LAYER_LABEL = { 1: '事实', 2: '场景细节', 3: '感受', 4: '想对后辈说的话' };
+export const LAYER_LABEL = { 1: '事实', 2: '场景细节', 3: '感受', 4: '意义与寄语' };
 export const emptyState = id => ({ nodeId: id, enough: false, depth: 0, turns: 0, notes: [], sensitive: false, shortRun: 0, lastSessionId: null, updatedAt: 0 });
 // 只记老人讲到哪：depth 0 = 没讲过；enough = 这个话题聊够了。不再有“未聊/聊完”的完成度（旧数据里的 status:'done' 按聊够处理）
 export const st = (states, id) => { const s = states?.[id]; return s ? { ...s, enough: s.enough ?? s.status === 'done' } : emptyState(id); };
@@ -90,6 +90,17 @@ export function questionFor(FW, nodeId, depth, p, trigger) {
   const L = n.layers.find(l => l.depth === Math.max(1, Math.min(4, depth))) || n.layers[0];
   return fill(L.question, p);
 }
+// 每轮只取当前话题的参考问题，来源目录保留在问题库中供核查。
+export function questionGuide(FW, nodeId, profile) {
+  const node = nodeById(FW, nodeId);
+  if (!node) return null;
+  return {
+    entryCondition: node.entry_condition || '',
+    questions: node.layers.map(layer => fillAll(layer.question, profile)),
+    gentleQuestion: fillAll(node.gentle_question || node.layers[0].question, profile),
+    precautions: (node.sensitive || []).map(item => item.note),
+  };
+}
 // 新变量 {今天话题}{当前话题}{当前层次}{当前话题入场问题}{顺藤线索}{已聊要点}{上一个话题}
 export function planVars(FW, plan, { profile: p = {}, states = {}, entities = [], recentNote = '' } = {}) {
   if (!plan) return {};
@@ -118,24 +129,16 @@ export const speakable = t => String(t).replace(VAR_RE, '').replace(/讲讲[，�
 
 // 兜底话术（文案取自 docs/interview.md【开场】【结束】）
 export function openingText(FW, plan, ctx, isReturn) {
-  const v = planVars(FW, plan, ctx), p = ctx.profile;
-  const head = isReturn && (v.顺藤线索 || v.已聊要点)
-    ? `{称呼}，您好呀，我是小忆。上次您说到${(v.顺藤线索 || v.已聊要点.split('；')[0]).replace(/[。.！!]+$/, '')}，我一直记着呢。今天想听您讲讲{今天话题}。`
-    : '{称呼}，您好呀。我是记忆银行的小忆。今天想听您讲讲{今天话题}。咱们慢慢聊，想到哪儿说到哪儿。';
-  return assertNoVars(fillAll(head, p, v) + v.当前话题入场问题, '开场');
+  const v = planVars(FW, plan, ctx);
+  return assertNoVars(greetText(FW, plan, ctx, isReturn) + v.当前话题入场问题, '开场');
 }
-// 只问候（老人自己选话题时用）：老访谈提上次一个细节；接着由 choiceText 念候选
+// 一句问候，接着由 choiceText 念候选
 export function greetText(FW, plan, ctx, isReturn) {
-  const v = planVars(FW, plan, ctx), p = ctx.profile;
-  const head = isReturn && (v.顺藤线索 || v.已聊要点)
-    ? `{称呼}，您好呀，我是小忆。上次您说到${(v.顺藤线索 || v.已聊要点.split('；')[0]).replace(/[。.！!]+$/, '')}，我一直记着呢。`
-    : '{称呼}，您好呀。我是记忆银行的小忆。咱们慢慢聊，想到哪儿说到哪儿。';
-  return assertNoVars(fillAll(head, p, v), '问候');
+  const head = isReturn ? '{称呼}，您好，咱们接着聊。' : '{称呼}，您好，我是小忆。';
+  return assertNoVars(fillAll(head, ctx.profile), '问候');
 }
 export function closingText(FW, plan, ctx) {
-  const v = planVars(FW, plan, ctx);
-  const t = '{称呼}，今天听您讲了这么多，真开心。这些故事我都好好收起来了，会留给您的家人听。您歇一歇，下次想聊什么，咱们再接着聊，好吗？';
-  return assertNoVars(fillAll(t, ctx.profile, v), '结束');
+  return '好，今天先聊到这儿，您歇一歇。';
 }
 
 // 节点状态更新（只前进不后退）。r: { nodeId, depth, note, emotion, short }

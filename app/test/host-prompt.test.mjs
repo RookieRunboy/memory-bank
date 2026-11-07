@@ -1,14 +1,63 @@
 import test from 'node:test'; import assert from 'node:assert/strict'; import fs from 'node:fs';
 import * as P from '../src/planner.js'; import { DEMO_PROFILE } from '../src/questions.js';
+import { HOST_PROMPT, nextTurn } from '../server/ai.mjs';
 const FW = JSON.parse(fs.readFileSync(new URL('../src/framework.json', import.meta.url)));
 const md = fs.readFileSync(new URL('../../docs/interview.md', import.meta.url), 'utf8');
 const styleMd = fs.readFileSync(new URL('../../docs/host-style.md', import.meta.url), 'utf8');
 const style = styleMd.match(/```\n([\s\S]*?)```/)?.[1];
 const cases = JSON.parse(fs.readFileSync(new URL('./fixtures/host-cases.json', import.meta.url)));
 
-test('风格层可从 host-style.md 读出，含六招、谈遗忘和越界红线', () => {
+test('实际访谈调用带上当前题组、低负担问法和使用前提', async t => {
+  const environment = { OPENAI_API_KEY: 'unit-test-key', OPENAI_BASE_URL: 'https://test.invalid/v1', LLM_PROVIDER: 'openai' };
+  const previous = Object.fromEntries(Object.keys(environment).map(key => [key, process.env[key]]));
+  Object.assign(process.env, environment);
+  t.after(() => {
+    for (const [key, value] of Object.entries(previous)) {
+      if (value === undefined) delete process.env[key];
+      else process.env[key] = value;
+    }
+  });
+  const nodeId = 'life-decision';
+  const node = P.nodeById(FW, nodeId);
+  const plan = P.planSession(FW, { profile: DEMO_PROFILE, request: { nodeId } });
+  let requestText = '';
+  const reply = {
+    answer: { nodeId, depth: 2, note: '决定搬家', entities: [] },
+    ask: { nodeId, depth: 2 }, emotion: '平静', action: '追问细节',
+    say: '那次搬家先打包了什么？', done: false,
+  };
+  t.mock.method(globalThis, 'fetch', async (url, options) => {
+    const body = JSON.parse(options.body);
+    requestText = body.messages?.map(m => m.content).join('\n') || body.contents[0].parts.map(p => p.text || '').join('\n');
+    return Response.json(body.messages
+      ? { choices: [{ message: { content: JSON.stringify(reply) } }] }
+      : { candidates: [{ content: { parts: [{ text: JSON.stringify(reply) }] } }] });
+  });
+  await nextTurn(DEMO_PROFILE, { plan, states: {}, entities: [], archive: {} },
+    [{ q: '那次您是怎么拿定主意的？', clean: '我先跟家里商量了几次，后来决定搬家。' }], 'test-guide');
+  assert.ok(requestText.includes(node.entry_condition));
+  assert.ok(requestText.includes(node.gentle_question));
+  for (const layer of node.layers) assert.ok(requestText.includes(layer.question));
+});
+
+test('实际系统提示词读入两份文档，保持精简', () => {
   assert.ok(style, '没有找到代码块');
-  for (const k of ['接住细节', '时代引子', '留白', '适时引导', '不让话掉在地上', '概括就请讲一件具体的事', '听不清或对不上时', '先降难度，再放弃', '当老人谈起遗忘', '不讲你自己的经历', '不替老人说感受']) assert.ok(style.includes(k), k);
+  assert.equal(HOST_PROMPT, md.match(/```\n([\s\S]*?)```/)[1] + '\n' + style);
+  assert.ok(HOST_PROMPT.length <= 2200, `系统提示词过长：${HOST_PROMPT.length} 字符`);
+});
+test('首次和再次问候都只有一句，结束语简短且不再提问', () => {
+  const p = DEMO_PROFILE, plan = P.planSession(FW, { profile: p });
+  const ctx = { profile: p, archive: { lastTopic: '骑车去瘦西湖，买桂花糕'.repeat(20) } };
+  for (const isReturn of [false, true]) {
+    const greeting = P.greetText(FW, plan, ctx, isReturn);
+    assert.ok(greeting.includes(p.callName));
+    assert.ok(greeting.length <= 25, greeting);
+    assert.equal((greeting.match(/[。！？!?]/g) || []).length, 1, greeting);
+    assert.ok(!/[？?]/.test(greeting));
+  }
+  const closing = P.closingText(FW, plan, ctx);
+  assert.ok(closing.length <= 30, closing);
+  assert.ok(!/[？?]/.test(closing), closing);
 });
 test('风格层不含花括号变量，拼到主持人提示词后无残留变量', () => {
   assert.deepEqual(P.leftoverVars(style), []);

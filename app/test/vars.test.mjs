@@ -58,7 +58,7 @@ test('没有线索可跟时只用轻松话题，不为补空白去推老人没�
 test('结束语不预告下次话题', () => {
   const plan = P.planSession(FW, { profile: DEMO_PROFILE });
   const t = P.closingText(FW, plan, { profile: DEMO_PROFILE });
-  assert.ok(!('nextNodePreview' in plan)); assert.match(t, /下次想聊什么/); assert.ok(!/下次咱们聊聊/.test(t));
+  assert.ok(!('nextNodePreview' in plan)); assert.ok(!/下次咱们聊聊|[？?]/.test(t));
 });
 test('状态只记讲到哪：没有 status，旧数据 done 按聊够处理', () => {
   const r = P.applyAnswer(FW, {}, { nodeId: 'youth-date', depth: 2, note: '看电影', short: false, emotion: '开心' }, 's1');
