@@ -1,5 +1,5 @@
 // “我的”区域框架：侧边栏 + 对话式首页 + 历史/资料/设置。使用者是老人本人，没有登录。
-// 老人首屏（#/）和访谈页不经过这里。亲友绑定（邀请码）是后续单独模块，见 docs/requirements-tiers.md。
+// 访谈页不经过这里。没有单独的首页，根路径直接进入这里的对话页。亲友绑定（邀请码）是后续单独模块，见 docs/requirements-tiers.md。
 let D = null; // 依赖，由 main.js 注入
 const get = (k, d = null) => { try { return JSON.parse(localStorage.getItem(k) ?? 'null') ?? d; } catch { return d; } };
 const put = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
@@ -36,8 +36,7 @@ function renderSide(name) {
   <nav>${nav.map(([k, t, h, i]) => `<a href="${h}" class="${name === k || (k === 'library' && name === 'story') ? 'on' : ''}"><i>${i}</i>${t}</a>`).join('')}</nav>
   ${done.length ? `<p class="grp">最近</p><div class="recent">${done.map(i => { const s = storyOf(c, i.id); return `<a href="${s ? '#/story/' + s.id : '#/history'}" title="${esc(s?.title || i.stage || '')}">${esc(s?.title || i.stage || '一次聊天')}<small>${when(i.created)}</small></a>`; }).join('')}</div>` : ''}
   <div class="foot"><a href="#/account" class="who ${name === 'account' ? 'on' : ''}"><span class="av">${esc(me.slice(0, 1))}</span><span>${esc(me)}<small>我的资料</small></span></a>
-    <a href="#/settings" class="gear ${name === 'settings' ? 'on' : ''}" aria-label="设置">⚙</a></div>
-  <a class="homelink" href="#/">‹ 回到首页</a>`; }
+    <a href="#/settings" class="gear ${name === 'settings' ? 'on' : ''}" aria-label="设置">⚙</a></div>`; }
 
 // —— 页面 ——
 export function chatHome() {

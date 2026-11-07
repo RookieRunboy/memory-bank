@@ -76,22 +76,14 @@ async function speak(text) { text = P.speakable(text || ''); stopSpeak(); const 
   for (let i = 0; i < parts.length && g === speakGen; i++) { const b = await jobs[i]; if (g !== speakGen) break;
     if (!(b && await playBlob(b))) await browserSay(parts[i]); }
   if (g === speakGen) setSpeaking(false); }
-const routes = { '': home, me: Shell.chatHome, history: Shell.history, account: Shell.account, settings: Shell.settings, profile, stage: stagePick, interview, story, library, archive, map: lifeMap };
-const route = async () => { const [p, id] = location.hash.slice(2).split('/'); await load(); const name = routes[p || ''] ? (p || '') : '';
+const routes = { me: Shell.chatHome, history: Shell.history, account: Shell.account, settings: Shell.settings, profile, stage: stagePick, interview, story, library, archive, map: lifeMap };
+const route = async () => { const [p, id] = location.hash.slice(2).split('/'); await load(); const name = routes[p] ? p : 'me'; // 没有首页：根路径和未知路径都进“我的”
+  if (!getProfile() && name !== 'profile') return go('#/profile');
   Shell.mount(name); window.scrollTo(0, 0); routes[name](id); };
 window.addEventListener('hashchange', route);
 const go = h => location.hash = h;
 const back = (h = '#/me', t = '← 返回') => `<button class="link" onclick="location.hash='${h}'">${t}</button>`;
 
-// 老人首屏：只有「开始聊天」；角落低调入口进入“我的”区域（故事、历史、资料、设置）
-function home() {
-  const p = getProfile(); if (!p) return go('#/profile'); // 第一次用：先写资料
-  const radio = `<svg class="mic-ico" viewBox="0 0 48 48" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="14" y="8" width="20" height="14" rx="2"/><circle cx="24" cy="15" r="3.5"/><path d="M18 22v6h12v-6M16 34h16M24 28v6"/></svg>`;
-  $app.innerHTML = `<main class="page home elder"><a class="corner" id="more" href="#/me">看看我的故事</a>
-  <p class="hello big2">${esc(callNameOf(p))}，<br>今天想聊聊吗？</p>
-  <button class="huge" id="start">${radio}开始聊天</button><p class="slogan">爱比遗忘更强大</p></main>`;
-  document.getElementById('start').onclick = () => { unlockAudio(); setReq(null); go('#/interview'); };
-}
 function profile() {
   const p = getProfile() || {};
   $app.innerHTML = `<main class="page"><h2>我的资料</h2><p class="tip">您自己写，或者请身边的人帮着写都行。小忆会按这些称呼您、从合适的地方聊起</p>

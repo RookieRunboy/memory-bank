@@ -118,4 +118,3 @@ body{--s-bg:#efdfbd;--s-ink:#4a3424;--s-on:#fffaf0;--s-line:#d8bf95;--accent:var
 .settings section{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}.settings h3{margin:0;color:var(--brown);font-size:20px}
 .seg{display:flex;gap:6px}.seg button{flex:1;background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:10px;font-size:18px;color:var(--ink);min-height:44px}.seg button.on{background:var(--accent);border-color:var(--accent);color:#fff}
 .btn{display:block;text-align:center;text-decoration:none}
-.side .homelink{margin-top:6px;font-size:16px;color:#8a7458;justify-content:center}
