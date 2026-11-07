@@ -7,4 +7,5 @@
 - 发起者：子女（下载、建档、陪老人一起用）
 - 收听者：孙辈及其他亲属
 
+- **新加入开发先读**：[docs/CONTEXT.md](docs/CONTEXT.md)
 - 产品理念与根本定义：[docs/vision.md](docs/vision.md)
