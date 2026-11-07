@@ -5,6 +5,7 @@ import FW from './framework.json';
 import * as P from './planner.js';
 import { generateStory } from './story.js'; import { splitSentences, firstShort, ACKS, pickAck } from './split.js';
 import { saveStory, listStories, getStory } from './db.js';
+import * as Shell from './shell.js';
 const $app = document.getElementById('app');
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -75,33 +76,23 @@ async function speak(text) { text = P.speakable(text || ''); stopSpeak(); const 
   for (let i = 0; i < parts.length && g === speakGen; i++) { const b = await jobs[i]; if (g !== speakGen) break;
     if (!(b && await playBlob(b))) await browserSay(parts[i]); }
   if (g === speakGen) setSpeaking(false); }
-const routes = { '': home, family, profile, stage: stagePick, interview, story, library, archive, map: lifeMap };
-const route = async () => { const [p, id] = location.hash.slice(2).split('/'); await load(); (routes[p || ''] || home)(id); };
+const routes = { '': home, family: Shell.chatHome, login: Shell.login, history: Shell.history, account: Shell.account, settings: Shell.settings, profile, stage: stagePick, interview, story, library, archive, map: lifeMap };
+const route = async () => { const [p, id] = location.hash.slice(2).split('/'); await load(); const name = routes[p || ''] ? (p || '') : '';
+  if (Shell.FAMILY_ROUTES.has(name) && name !== 'story' && !Shell.canEnter()) return go('#/login'); // 家人端要先登录；老人从首页角落进来视为已通过
+  Shell.mount(name); window.scrollTo(0, 0); routes[name](id); };
 window.addEventListener('hashchange', route);
 const go = h => location.hash = h;
 const back = (h = '#/family', t = '← 返回') => `<button class="link" onclick="location.hash='${h}'">${t}</button>`;
 
 // 老人端首屏：只有「开始聊天」；角落低调入口进入与家人同视角的完整内容（不剥夺老人操作权限）
 function home() {
-  const p = getProfile(); if (!p) return family();
+  const p = getProfile(); if (!p) return go('#/family');
   const radio = `<svg class="mic-ico" viewBox="0 0 48 48" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="14" y="8" width="20" height="14" rx="2"/><circle cx="24" cy="15" r="3.5"/><path d="M18 22v6h12v-6M16 34h16M24 28v6"/></svg>`;
   $app.innerHTML = `<main class="page home elder"><a class="corner" id="more" href="#/family">看看我的故事</a>
   <p class="hello big2">${esc(callNameOf(p))}，<br>今天想聊聊吗？</p>
   <button class="huge" id="start">${radio}开始聊天</button><p class="slogan">爱比遗忘更强大</p></main>`;
   document.getElementById('start').onclick = () => { unlockAudio(); setReq(null); go('#/interview'); };
-}
-function family() {
-  const p = getProfile(), n = cache?.interviews?.filter(i => i.finished).length || 0;
-  const cov = p ? FW.nodes.filter(x => P.st(cache?.states || {}, x.id).status !== 'not_started').length : 0;
-  $app.innerHTML = `<main class="page home"><p class="poem">趁我还记得，<br>请听我慢慢说。</p><h1 class="logo">记忆银行</h1><p class="sub">陪伴阿尔茨海默病患者</p>
-  <div class="illus">📻 📖 🧸</div>
-  ${p ? `<p class="hello">${esc(callNameOf(p))}，今天想聊聊吗？${n ? `<br><small>已经聊过 ${n} 次啦</small>` : ''}</p><button class="big" id="start">🎙 开始今天的聊天</button>` : `<button class="big" id="start">开始建档</button>`}
-  ${p && cache?.stories?.[0] ? `<a class="card" href="#/story/${cache.stories[0].id}"><b>最近的故事：${esc(cache.stories[0].title)}</b><span>${new Date(cache.stories[0].created).toLocaleDateString('zh-CN')}</span></a>` : ''}
-  <div class="row"><button class="ghost" onclick="location.hash='#/library'">📚 记忆库</button>${p ? `<button class="ghost" onclick="location.hash='#/archive'">🗂 记忆档案</button>` : ''}</div>
-  ${p ? `<button class="ghost wide" onclick="location.hash='#/map'">🗺 人生地图 · 已聊 ${cov}/${FW.nodes.length} 个话题</button>` : ''}
-  ${p && elderId ? `<a class="ghost wide btn" id="zip" href="/api/elders/${elderId}/export.zip" download>📦 一键打包下载（原声+访谈稿+故事+档案）</a>` : ''}
-  ${p ? back('#/profile', '修改档案') : ''}${p ? back('#/', '← 回到老人首页') : ''}<p class="badge">${aiMode}</p></main>`;
-  document.getElementById('start').onclick = () => go(p ? '#/stage' : '#/profile');
+  document.getElementById('more').onclick = Shell.elderPass; // 老人从角落进入完整内容，不必登录
 }
 function profile() {
   const p = getProfile() || {};
@@ -327,5 +318,6 @@ function archive() {
   ${back()}</main>`;
   if (cache?.archivePending) setTimeout(async () => { if (!location.hash.startsWith('#/archive')) return; await load(); archive(); }, 3000);
 }
+Shell.init({ $app, esc, go, FW, setReq, trigIcon: TRIG_ICON, get elderId() { return elderId; }, getProfile, getCache: () => cache, callNameOf });
 document.addEventListener('pointerdown', unlockAudio, { once: true }); // 首次点击解锁音频（「开始聊天」也会再解锁一次）
 route();
