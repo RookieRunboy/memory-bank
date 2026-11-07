@@ -9,7 +9,8 @@ const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 export const FW = JSON.parse(fs.readFileSync(path.join(root, 'src/framework.json'), 'utf8')); // 人生访谈框架 v2
 const md = fs.readFileSync(path.join(root, '../docs/interview.md'), 'utf8');
 const blocks = [...md.matchAll(/```\n([\s\S]*?)```/g)].map(m => m[1]);
-export const HOST_PROMPT = blocks[0], STORY_PROMPT = blocks[1]; // interview.md 主持人提示词全文 / 故事提示词全文
+const style = fs.readFileSync(path.join(root, '../docs/host-style.md'), 'utf8').match(/```\n([\s\S]*?)```/)?.[1] || ''; // 主持人风格层（docs/host-style.md）
+export const HOST_PROMPT = blocks[0] + '\n' + style, STORY_PROMPT = blocks[1]; // interview.md 主持人提示词全文 + 风格层 / 故事提示词全文
 // 系统提示词：{重要人物} 给完整人物列表，其余档案变量 + 会话规划变量全部替换，并校验没有残留花括号变量
 const vars = (t, p, v = {}) => P.assertNoVars(P.fillAll(t.replace(/\{重要人物\}/g, p.people || ''), p, v), '提示词');
 const say = t => P.assertNoVars(P.speakable(t), '朗读');
