@@ -6,7 +6,7 @@ import * as P from './planner.js';
 import { generateStory } from './story.js'; import { splitSentences, firstShort, ACKS, pickAck } from './split.js';
 import { saveStory, listStories, getStory } from './db.js';
 import * as Shell from './shell.js';
-import { ic, wave, loader, alive } from './ui.js';
+import { ic, loader, alive } from './ui.js';
 const $app = document.getElementById('app');
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -127,7 +127,7 @@ function topicLabel(s) {
 function renderTurn() {
   const s = session, text = s.say, n = s.n, choosing = s.phase === 'choose';
   $app.innerHTML = choosing ? `<main class="page interview choose"><p class="stage stg">${s.after ? '接下来想聊什么' : (s.isReturn ? '接着上次，想聊哪个？' : '今天想聊哪个？')}</p>
-  <div class="bubble"><span class="who">${ic('mic', 14)}小忆</span>${esc(text)}</div>
+  <div class="bubble"><span class="who">小忆说</span>${esc(text)}</div>
   <p class="speaking-ind hidden" id="speakInd">小忆在说话…</p><button class="link" id="replay">${ic('play', 14)}再听一遍</button>
   <div class="cards">${(s.cards || []).map((c, i) => `<button class="tcard" data-i="${i}"><b>${['一', '二', '三'][i]}</b><span>${esc(c.text)}</span></button>`).join('')}</div>
   ${s.after ? `<div class="row choose-more"><button class="ghost" data-a="stay">继续聊这个</button><button class="ghost" data-a="end">今天先到这</button></div>` : ''}
@@ -135,15 +135,15 @@ function renderTurn() {
   <div class="row choose-more"><button class="ghost" data-a="more">换几个</button><button class="ghost" data-a="free">您想聊什么都行</button></div></details>
   <button class="mic small" id="mic"><span id="micl">也可以直接说</span></button>
   <p class="live" id="live" data-after="点卡片，或者说出来都行">小忆说完，您点卡片或直接说</p>
-  <div class="thinking hidden" id="thinking"><span class="wave live"><i></i><i></i><i></i><i></i><i></i></span><p id="thinkt">小忆在听您想聊哪个……</p></div>
+  <div class="thinking hidden" id="thinking"><span class="wave"><i></i><i></i><i></i><i></i><i></i></span><p id="thinkt">小忆在听您想聊哪个……</p></div>
   <textarea id="manual" placeholder="（也可以在这里打字）" class="hidden"></textarea></main>`
   : `<main class="page interview"><p class="stage stg">${esc(topicLabel(s))}</p>
   ${s.log.slice(-1).map(l => `<p class="said">您刚才说：“${esc(l)}”</p>`).join('')}
-  <div class="bubble"><span class="who">${ic('mic', 14)}小忆</span>${esc(text)}</div>
+  <div class="bubble"><span class="who">小忆说</span>${esc(text)}</div>
   <p class="speaking-ind hidden" id="speakInd">小忆在说话…</p><button class="link" id="replay">${ic('play', 14)}再听一遍</button>
   <button class="mic" id="mic"><span id="micl">点一下，开始说</span></button>
   <p class="live" id="live" data-after="该您说了，点一下">慢慢说，不着急，说错了也没关系</p>
-  <div class="thinking hidden" id="thinking"><span class="wave live"><i></i><i></i><i></i><i></i><i></i></span><p id="thinkt">小忆在认真听……</p><small>不着急，您喝口水歇一歇</small></div>
+  <div class="thinking hidden" id="thinking"><span class="wave"><i></i><i></i><i></i><i></i><i></i></span><p id="thinkt">小忆在认真听……</p><small>不着急，您喝口水歇一歇</small></div>
   <textarea id="manual" placeholder="（也可以在这里补写文字）" class="hidden"></textarea>
   <div class="row"><button class="ghost" id="end">今天先聊到这</button></div></main>`;
   const live = document.getElementById('live'), manual = document.getElementById('manual'), micl = document.getElementById('micl'), mic = document.getElementById('mic');
@@ -230,7 +230,7 @@ async function story(id) {
   const paras = s.paras || (s.body || '').split(/\n+/).map(text => ({ text, refs: [] }));
   const au = a => a ? (a.startsWith('blob:') ? a : '/api/audio/' + a) : null;
   $app.innerHTML = `<main class="page story"><p class="stage stg">${new Date(s.created).toLocaleDateString('zh-CN')} · ${esc(s.elder.name)} 讲述 ${s.stage ? '· ' + esc(s.stage) : ''}</p>
-  <h1 class="title">${esc(s.title)}</h1><div class="signal">${ic('mic', 18)}${wave(s.id || id, 48)}<small>${(s.transcript || s.clips || []).length} 段原声</small></div><article>${paras.map((x, k) => `<div class="para"><p>${esc(x.text)}</p>${x.refs.length ? `<button class="play" data-k="${k}" aria-label="听原声">${ic('play', 12)}原声</button>` : ''}</div>`).join('')}</article>
+  <h1 class="title">${esc(s.title)}</h1><p class="signal">共 ${(s.transcript || s.clips || []).length} 段原声</p><article>${paras.map((x, k) => `<div class="para"><p>${esc(x.text)}</p>${x.refs.length ? `<button class="play" data-k="${k}" aria-label="听这一段的原声">${ic('play', 16)}听原声</button>` : ''}</div>`).join('')}</article>
   ${s.quotes ? `<blockquote>${esc(s.quotes)}</blockquote>` : ''}${s.people ? `<p class="tip">关键人物：${esc(s.people)}</p>` : ''}${s.timePlace ? `<p class="tip">时间地点：${esc(s.timePlace)}</p>` : ''}
   ${s.fullAudio ? `<h3>整场录音</h3><audio controls preload="none" src="${au(s.fullAudio)}"></audio>` : ''}
   <details class="transcript" id="tx"><summary>查看完整访谈稿（${(s.transcript || s.clips || []).length} 轮，原话不改动）</summary>
@@ -258,7 +258,7 @@ async function library() {
   for (const s of list) (groups[Shell.dayLabel(s.created)] ||= []).push(s);
   const row = s => s.chatOnly
     ? `<a class="card hrow" href="#/archive"><b>一次聊天</b><span>${Shell.when(s.created)} · ${esc(s.stage || '')} · ${s.n} 句</span></a>`
-    : `<a class="card hrow" href="#/story/${s.id}"><b>${esc(s.title)}</b><span>${Shell.when(s.created)} · ${esc(s.stage || '')} · ${(s.clips || s.answers || []).length} 段原声${s.local ? ' · 本机' : ''}</span>${wave(s.id, 40)}</a>`;
+    : `<a class="card hrow" href="#/story/${s.id}"><b>${esc(s.title)}</b><span>${Shell.when(s.created)} · ${esc(s.stage || '')} · ${(s.clips || s.answers || []).length} 段原声${s.local ? ' · 本机' : ''}</span></a>`;
   $app.innerHTML = `<main class="page history"><h2>我的故事</h2><p class="tip">每次聊天都在这里，点开回看故事和原声，都是留给孩子们的宝藏</p>
   ${list.length ? ['今天', '昨天', '本周', '更早'].filter(k => groups[k]).map(k => `<h3>${k}</h3>${groups[k].map(row).join('')}`).join('') : '<p class="empty">还没有故事。<br>咱们聊第一次吧。</p>'}
   <button class="big" onclick="location.hash='#/interview'">${ic('mic', 18)}再聊一次</button>${back('#/me', '返回')}</main>`;
@@ -267,7 +267,7 @@ function archive() {
   const a = cache?.archive || {}, p = getProfile() || {}, ivs = (cache?.interviews || []).filter(i => i.finished);
   const sec = (t, arr, f) => `<h3>${t}</h3>${arr?.length ? arr.map(f).join('') : '<p class="tip">还没有记录</p>'}`;
   $app.innerHTML = `<main class="page archive"><h2>${esc(callNameOf(p))}的记忆档案</h2><p class="tip">每次聊完自动整理，小忆下次会接着聊</p>
-  ${cache?.archivePending ? `<div class="thinking small" id="archPending"><span class="wave live"><i></i><i></i><i></i><i></i><i></i></span><p>小忆正在整理这次的记忆……</p><small>整理好会自动刷新</small></div>` : ''}
+  ${cache?.archivePending ? `<div class="thinking small" id="archPending"><span class="wave"><i></i><i></i><i></i><i></i><i></i></span><p>小忆正在整理这次的记忆……</p><small>整理好会自动刷新</small></div>` : ''}
   ${a.lastTopic ? `<p class="hint">上次聊到：${esc(a.lastTopic)}</p>` : ''}
   ${sec('人 · 地 · 物', cache?.entities, x => `<div class="ent"><span class="ty">${{ person: ic('user', 12) + '人', place: ic('place', 12) + '地', thing: ic('thing', 12) + '物' }[x.type] || x.type}</span><b>${esc(x.name)}</b>${x.relation ? ` · ${esc(FW.dimensions.relation.values[x.relation] || x.relation)}` : ''}<br><small>来自：${x.sourceNodes.map(id => esc(P.nodeTitle(FW, id, p))).join('、')}${x.sourceTurns?.length ? ` · 出处句子 ${x.sourceTurns.map(esc).join('、')}` : ''}</small>${x.notes?.length ? `<br><small>${esc(x.notes.slice(-2).join('；'))}</small>` : ''}</div>`)}
   ${sec('人物', a.people, x => `<div class="chip"><b>${esc(x.name)}</b> · ${esc(alive(x.relation))}<br><small>${esc(x.note)}</small></div>`)}

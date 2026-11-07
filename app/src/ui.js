@@ -1,4 +1,4 @@
-// 视觉层公共件：线性图标 + 声波条。纯展示，不含业务逻辑。
+// 视觉层公共件：线性图标 + 印章 + 加载态。纯展示，不含业务逻辑。
 const P = {
   mic: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
   chat: '<path d="M4 5h16v11H9l-5 4z"/>',
@@ -26,13 +26,9 @@ const P = {
 };
 export const ic = (n, s = 20) => `<svg class="ic" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n] || ''}</svg>`;
 
-// 声波条：同一个 seed 永远画出同一条波形，故事卡和故事页可以认出彼此
-const hash = s => { let h = 2166136261; for (const c of String(s)) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return h >>> 0; };
-export const wave = (seed = '', n = 32) => { let h = hash(seed) || 7;
-  const bars = Array.from({ length: n }, (_, i) => { h = Math.imul(h ^ (h >>> 15), 2246822507) >>> 0; const env = Math.sin((i + 1) / (n + 1) * Math.PI); return Math.round(18 + (h % 60) * (0.35 + 0.65 * env)); });
-  return `<span class="wave" aria-hidden="true">${bars.map(b => `<i style="--h:${b}%"></i>`).join('')}</span>`; };
-export const brandMark = () => `<span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>`;
-export const loader = (text, sub = '') => `<div class="thinking"><span class="wave live" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><p>${text}</p>${sub ? `<small>${sub}</small>` : ''}</div>`;
+// 品牌印章：朱砂红方框里一个“忆”字，是整个界面唯一的招牌图形
+export const brandMark = () => `<span class="seal" aria-hidden="true">忆</span>`;
+export const loader = (text, sub = '') => `<div class="thinking"><span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><p>${text}</p>${sub ? `<small>${sub}</small>` : ''}</div>`;
 
 // 展示层去掉“已故”标注（数据里仍保留，供 AI 判断人物是否在世）
 export const alive = s => String(s ?? '').replace(/[（(]\s*已故\s*[）)]/g, '');
