@@ -1,0 +1,449 @@
+{
+  "sources": [
+    {
+      "kind": "local",
+      "from": "/Users/runbo/life/dream/memory-bank/app",
+      "at": "2026-11-07T19:32:13.162Z",
+      "files": [
+        {
+          "kind": "screen",
+          "file": "materials/local-app/4-story3-transcript.png",
+          "from": "screenshots/v7/4-story3-transcript.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/5-archive.png",
+          "from": "screenshots/v7/5-archive.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/14-archive-after2.png",
+          "from": "screenshots/v2/14-archive-after2.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/3-story3.png",
+          "from": "screenshots/v7/3-story3.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/06-story1.png",
+          "from": "screenshots/v2/06-story1.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/_06-story1.png",
+          "from": "screenshots/v3/06-story1.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/12-story2.png",
+          "from": "screenshots/v2/12-story2.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/04-story-transcript-expanded.png",
+          "from": "screenshots/v4/04-story-transcript-expanded.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/13-archive-entities-after2.png",
+          "from": "screenshots/v3/13-archive-entities-after2.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/_12-story2.png",
+          "from": "screenshots/v3/12-story2.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/05-story-edited-trace.png",
+          "from": "screenshots/v4/05-story-edited-trace.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/06-story.png",
+          "from": "screenshots/06-story.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/03-story-paras-play.png",
+          "from": "screenshots/v4/03-story-paras-play.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/14-lifemap-after2.png",
+          "from": "screenshots/v3/14-lifemap-after2.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/02-lifemap-empty.png",
+          "from": "screenshots/v3/02-lifemap-empty.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/08-lifemap-after1.png",
+          "from": "screenshots/v3/08-lifemap-after1.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/07-archive-entities.png",
+          "from": "screenshots/v3/07-archive-entities.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/07-archive-entities-sources.png",
+          "from": "screenshots/v4/07-archive-entities-sources.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/07-archive.png",
+          "from": "screenshots/v2/07-archive.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/04-next-topic-cards.png",
+          "from": "screenshots/v5/04-next-topic-cards.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/01-topic-cards.png",
+          "from": "screenshots/v5/01-topic-cards.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/05-switched.png",
+          "from": "screenshots/v5/05-switched.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/04-interview.png",
+          "from": "screenshots/04-interview.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/03-picked-chat.png",
+          "from": "screenshots/v5/03-picked-chat.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/05-recording.png",
+          "from": "screenshots/05-recording.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/06-family-home-from-corner.png",
+          "from": "screenshots/v4/06-family-home-from-corner.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/02-more-cards.png",
+          "from": "screenshots/v5/02-more-cards.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/05-interview1-turn2.png",
+          "from": "screenshots/v3/05-interview1-turn2.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/09-plan-session2-follow.png",
+          "from": "screenshots/v3/09-plan-session2-follow.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/11-interview2-turn2.png",
+          "from": "screenshots/v2/11-interview2-turn2.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/_05-interview1-turn2.png",
+          "from": "screenshots/v2/05-interview1-turn2.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/04-interview1-opening.png",
+          "from": "screenshots/v3/04-interview1-opening.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/10-interview2-continue-opening.png",
+          "from": "screenshots/v2/10-interview2-continue-opening.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/_10-interview2-continue-opening.png",
+          "from": "screenshots/v3/10-interview2-continue-opening.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/_04-interview1-opening.png",
+          "from": "screenshots/v2/04-interview1-opening.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/02-interview-opening.png",
+          "from": "screenshots/v4/02-interview-opening.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/_11-interview2-turn2.png",
+          "from": "screenshots/v3/11-interview2-turn2.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/15-thinking.png",
+          "from": "screenshots/v2/15-thinking.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/08-home-returning.png",
+          "from": "screenshots/v2/08-home-returning.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/03-plan-family-pick.png",
+          "from": "screenshots/v3/03-plan-family-pick.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/01-plan-auto.png",
+          "from": "screenshots/v3/01-plan-auto.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/_08-home-returning.png",
+          "from": "screenshots/08-home-returning.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/01-elder-home.png",
+          "from": "screenshots/v4/01-elder-home.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/a-d-1-home.png",
+          "from": "screenshots/v6/a-d-1-home.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/00-home.png",
+          "from": "screenshots/v5/00-home.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/01-home.png",
+          "from": "screenshots/v2/01-home.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/_01-home.png",
+          "from": "screenshots/01-home.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/desktop-transcript.png",
+          "from": "screenshots/fancheng-demo/desktop-transcript.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/02-profile.png",
+          "from": "screenshots/02-profile.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/_02-profile.png",
+          "from": "screenshots/v2/02-profile.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/13-library.png",
+          "from": "screenshots/v2/13-library.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/07-library.png",
+          "from": "screenshots/07-library.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/a-m-1-home.png",
+          "from": "screenshots/v6/a-m-1-home.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/09-stage-lasttopic.png",
+          "from": "screenshots/v2/09-stage-lasttopic.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/fugui-1-home.png",
+          "from": "screenshots/v6/fugui-1-home.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/16-story-thinking.png",
+          "from": "screenshots/v2/16-story-thinking.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/03-stage.png",
+          "from": "screenshots/03-stage.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/_03-stage.png",
+          "from": "screenshots/v2/03-stage.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/8-root-is-me.png",
+          "from": "screenshots/v7/8-root-is-me.png",
+          "note": ""
+        },
+        {
+          "kind": "screen",
+          "file": "materials/local-app/3-me.png",
+          "from": "screenshots/v7/3-me.png",
+          "note": ""
+        }
+      ],
+      "colours": [
+        {
+          "role": "css --bg",
+          "hex": "#f6f0e2"
+        },
+        {
+          "role": "css --bg-2",
+          "hex": "#efe6d0"
+        },
+        {
+          "role": "css --ink",
+          "hex": "#2b2118"
+        },
+        {
+          "role": "css --ink-2",
+          "hex": "#4a3d30"
+        },
+        {
+          "role": "css --mute",
+          "hex": "#65584a"
+        },
+        {
+          "role": "css --line",
+          "hex": "#d6cab0"
+        },
+        {
+          "role": "css --line-2",
+          "hex": "#b9ab8c"
+        },
+        {
+          "role": "css --accent",
+          "hex": "#a33a2a"
+        },
+        {
+          "role": "css --accent-d",
+          "hex": "#862e20"
+        },
+        {
+          "role": "css --accent-l",
+          "hex": "#f1dcd3"
+        },
+        {
+          "role": "used 6×",
+          "hex": "#fffaf0"
+        },
+        {
+          "role": "used 2×",
+          "hex": "#f6f0e2"
+        },
+        {
+          "role": "used 1×",
+          "hex": "#efe6d0"
+        },
+        {
+          "role": "used 1×",
+          "hex": "#2b2118"
+        },
+        {
+          "role": "used 1×",
+          "hex": "#4a3d30"
+        },
+        {
+          "role": "used 1×",
+          "hex": "#65584a"
+        },
+        {
+          "role": "used 1×",
+          "hex": "#d6cab0"
+        },
+        {
+          "role": "used 1×",
+          "hex": "#b9ab8c"
+        }
+      ],
+      "fonts": [],
+      "missing": [
+        "no logo or icon file found — look in the app bundle, the site (om grab <url>) or ask the user"
+      ]
+    }
+  ]
+}

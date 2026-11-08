@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="zh-CN" data-composition-variables='[
+  {"id":"brand","type":"string","label":"产品名","default":"记忆银行"},
+  {"id":"endLine","type":"string","label":"结尾主张","default":"爱比遗忘更强大"},
+  {"id":"tagline","type":"string","label":"收尾句","default":"趁我还记得，请听我慢慢说。"},
+  {"id":"accent","type":"color","label":"强调色（印章红）","default":"#a33a2a"},
+  {"id":"paper","type":"color","label":"纸色","default":"#f6f0e2"},
+  {"id":"ink","type":"color","label":"墨色","default":"#2b2118"},
+  {"id":"endHold","type":"number","label":"结尾停留（秒）","default":3.9,"min":0,"max":10,"step":0.1,"group":"节奏"}
+]'>
+<head>
+<meta charset="utf-8">
+<title>记忆银行 · 宣传片</title>
+<script src="vendor/gsap.min.js"></script>
+<script src="vendor/om.js"></script>
+<style id="om-fonts">
+@font-face { font-family: "Noto Sans SC"; src: url("assets/fonts/NotoSansSC-500.woff") format("woff"); font-weight: 500; font-style: normal; }
+@font-face { font-family: "Noto Sans SC"; src: url("assets/fonts/NotoSansSC-700.woff") format("woff"); font-weight: 700; font-style: normal; }
+@font-face { font-family: "Noto Sans SC"; src: url("assets/fonts/NotoSansSC-900.woff") format("woff"); font-weight: 900; font-style: normal; }
+</style>
+<style>
+  :root { --paper:#f6f0e2; --ink:#2b2118; --accent:#a33a2a; --mute:#65584a; --cream:#fffaf0; --bubble:#ede4cd; --serif:"Songti SC","STSong",serif; --sans:"Noto Sans SC",sans-serif; }
+  html, body { margin:0; width:100%; height:100%; overflow:hidden; }
+  #film { position:relative; width:100%; height:100%; overflow:hidden; background:var(--ink); color:var(--paper); font-family:var(--sans); font-weight:500; }
+  #film > section, #film > div { position:absolute; }
+  .abs { position:absolute; }
+  .center { left:0; width:1920px; text-align:center; }
+  .seal { display:inline-grid; place-items:center; width:64px; height:64px; border:3px solid var(--accent); border-radius:6px; color:var(--accent); font:700 38px/1 var(--serif); transform:rotate(-5deg); }
+  .mask { display:inline-block; overflow:hidden; vertical-align:top; padding-bottom:.22em; }
+  .ch { display:inline-block; }
+
+  /* forget */
+  #s-forget { inset:0; }
+  .para { left:300px; top:340px; width:1320px; font:700 62px/2 var(--serif); color:var(--paper); }
+  .para .c { display:inline-block; }
+  .askk { top:150px; font-size:38px; letter-spacing:6px; opacity:0; color:#d6cab0; }
+  .askq { top:700px; font:700 68px/1.3 var(--serif); opacity:0; color:var(--paper); }
+  #dot { left:910px; top:810px; width:100px; height:100px; border-radius:50%; background:var(--paper); box-shadow:0 0 60px 20px #f6f0e266; opacity:0; }
+
+  /* bank */
+  #s-bank { inset:0; }
+  .kick { left:160px; top:240px; display:flex; align-items:center; gap:22px; font-size:32px; letter-spacing:8px; color:var(--accent); opacity:0; }
+  .title { left:150px; top:300px; margin:0; font:700 200px/1.12 var(--serif); color:var(--ink); letter-spacing:6px; }
+  .L1 { left:160px; top:570px; font:700 54px/1.4 var(--serif); color:var(--ink); opacity:0; }
+  .L2 { left:160px; top:665px; font-size:40px; line-height:1.6; color:var(--mute); opacity:0; width:900px; }
+  .sk { left:160px; top:200px; display:flex; align-items:center; gap:22px; font-size:32px; letter-spacing:8px; color:var(--accent); opacity:0; }
+  .it { left:160px; top:330px; width:1000px; opacity:0; }
+  .it .n { font-size:30px; letter-spacing:6px; color:var(--accent); margin-bottom:22px; }
+  .it .t { font:700 96px/1.25 var(--serif); color:var(--ink); white-space:nowrap; }
+  .it .s { margin-top:38px; font-size:42px; line-height:1.7; color:var(--mute); }
+  .chat.ck { opacity:0; }
+  .pimg { position:absolute; left:0; top:0; width:390px; opacity:0; }
+  .hl { position:absolute; border:3px solid var(--accent); border-radius:8px; background:rgba(163,58,42,.09); opacity:0; }
+
+  .phone { left:1205px; top:118px; width:390px; height:844px; border-radius:40px; overflow:hidden; background:var(--paper); box-shadow:0 0 0 10px #2b2118, 0 50px 90px rgba(43,33,24,.4); opacity:0; color:var(--ink); }
+  .phone .bar { position:absolute; left:0; right:0; top:0; height:62px; border-bottom:1px solid #d6cab0; text-align:center; }
+  .phone .bar b { display:block; margin-top:9px; font:700 19px/1.3 var(--serif); }
+  .phone .bar small { display:block; font-size:12px; color:var(--mute); }
+  .phone .bar i { position:absolute; left:20px; top:20px; font-style:normal; font-size:22px; color:var(--mute); }
+  .phone .bar u { position:absolute; right:20px; top:20px; text-decoration:none; font-size:18px; color:var(--accent); }
+  .chat { position:absolute; left:16px; right:16px; top:82px; }
+  .bub { max-width:292px; padding:12px 18px; margin-bottom:16px; font-size:18px; line-height:1.7; border-radius:20px 20px 20px 4px; background:var(--cream); opacity:0; }
+  .bub.me { margin-left:auto; border-radius:20px 20px 4px 20px; background:var(--bubble); }
+  .ctl { position:absolute; left:0; right:0; bottom:0; height:150px; border-top:1px solid #d6cab0; }
+  .ctl .who { position:absolute; left:24px; top:18px; display:flex; align-items:center; gap:14px; font:700 17px var(--serif); }
+  .ctl .av { width:30px; height:30px; border-radius:50%; background:radial-gradient(circle at 40% 35%, #8a7560, #4a3d30); }
+  .ctl .wv { display:flex; gap:3px; align-items:center; height:24px; }
+  .ctl .wv i { display:block; width:3px; height:22px; border-radius:2px; background:var(--accent); transform-origin:50% 50%; }
+  .btns { position:absolute; left:16px; right:16px; top:66px; display:flex; gap:8px; }
+  .btns span { flex:1; text-align:center; font-size:14px; line-height:50px; border-radius:6px; border:1.5px solid #b9ab8c; background:var(--cream); }
+  .btns span:last-child { background:#f1dcd3; border-color:#f1dcd3; color:var(--accent); font-weight:700; }
+  .storyimg { position:absolute; left:0; top:0; width:390px; opacity:0; }
+  .chatlayer { position:absolute; inset:0; }
+
+  /* entrust */
+  #s-trust { inset:0; overflow:hidden; opacity:0; }
+  .pwrap { position:absolute; inset:0; overflow:hidden; }
+  .pwrap img { position:absolute; left:0; top:-1204px; width:1920px; height:2560px; }
+  .shade { position:absolute; inset:0; background:linear-gradient(90deg, rgba(34,25,18,.93) 0%, rgba(34,25,18,.82) 38%, rgba(34,25,18,0) 72%); }
+  .T { left:120px; font:700 72px/1.4 var(--serif); color:var(--paper); opacity:0; width:900px; }
+  .T b { font-weight:700; color:#f1c9b8; }
+
+  /* end */
+  #s-end { inset:0; background:var(--paper); opacity:0; }
+  .endwrap { position:absolute; inset:0; }
+  .endline { top:320px; font:700 172px/1.2 var(--serif); color:var(--ink); letter-spacing:8px; }
+  .erule { left:700px; top:575px; width:520px; height:8px; background:var(--accent); transform-origin:0 50%; }
+  .brandrow { top:650px; display:flex; justify-content:center; align-items:center; gap:26px; font:700 78px/1 var(--serif); color:var(--ink); letter-spacing:10px; opacity:0; }
+  .brandrow .seal { width:84px; height:84px; font-size:50px; }
+  .tag { top:800px; font:500 48px/1.4 var(--serif); color:var(--mute); letter-spacing:4px; opacity:0; }
+
+  .vig { inset:0; background:radial-gradient(1400px 900px at 50% 50%, transparent 55%, rgba(0,0,0,.28)); pointer-events:none; }
+</style>
+</head>
+<body>
+<div id="film" data-composition-id="film" data-width="1920" data-height="1080">
+  <audio id="om-sound" src="assets/sound.wav" data-start="0" data-duration="61.043" data-track-index="8" data-volume="1"></audio>
+
+  <section id="s-forget">
+    <div class="para abs" data-om-id="memory-text"></div>
+    <div class="askk center abs" data-om-id="ask-kicker">确诊阿尔茨海默症的人，都在想同一件事</div>
+    <div class="askq center abs" data-layout-allow-occlusion data-om-id="ask-question">失去全部记忆之后，我还是我吗？</div>
+  </section>
+  <div id="dot" data-om-id="light"></div>
+
+  <section id="s-bank">
+    <div class="kick abs" data-om-id="kicker"><span class="seal">忆</span><span>老人开口讲　小忆慢慢问</span></div>
+    <h1 class="title abs" data-om-id="title" data-om-var="brand"></h1>
+    <div class="L1 abs" data-om-id="line-1">像聊一场天，把一生说出来。</div>
+    <div class="L2 abs" data-om-id="line-2">小忆循序渐进地问，<br>问到您从来没说过的事。</div>
+    <div class="sk skA abs" data-om-id="craft-kicker"><span class="seal">忆</span><span>访谈里的小巧思</span></div>
+    <div class="it ci abs" id="ci1" data-om-id="ci-item-1"><div class="n">小巧思 01</div><div class="t">开场只问一句</div><div class="s">「这次打算存点什么？」<br>不念选项，不讲规则，话题由老人自己定。</div></div>
+    <div class="it ci abs" id="ci2" data-om-id="ci-item-2"><div class="n">小巧思 02</div><div class="t">顺着您刚说的问</div><div class="s">抓住上一句里的一个细节，<br>每次只问一件事，一两句就够。</div></div>
+    <div class="it ci abs" id="ci3" data-om-id="ci-item-3"><div class="n">小巧思 03</div><div class="t">想不起来，没关系</div><div class="s">记不清的就跳过，<br>不纠正，不考记忆，换个线索再聊。</div></div>
+    <div class="it ci abs" id="ci4" data-om-id="ci-item-4"><div class="n">小巧思 04</div><div class="t">累了，就停一停</div><div class="s">不催，不逼，不追问。<br>下次打开，小忆接着上次聊到的地方。</div></div>
+    <div class="sk skB abs" data-om-id="organize-kicker"><span class="seal">忆</span><span>整理成家人读得到的记忆</span></div>
+    <div class="it oi abs" id="oi1" data-om-id="oi-item-1"><div class="n">聊完之后 01</div><div class="t">聊完，自动成文</div><div class="s">第一人称，保留老人自己的说法。<br>只写说过的，不编造。</div></div>
+    <div class="it oi abs" id="oi2" data-om-id="oi-item-2"><div class="n">聊完之后 02</div><div class="t">每段都有出处</div><div class="s">点开「查看出处」，<br>看到这段话来自哪几句原话。</div></div>
+    <div class="it oi abs" id="oi3" data-om-id="oi-item-3"><div class="n">聊完之后 03</div><div class="t">原话一字不改</div><div class="s">整理稿旁边，原始转写和录音都留着，<br>随时可以回头对照。</div></div>
+    <div class="it oi abs" id="oi4" data-om-id="oi-item-4"><div class="n">聊完之后 04</div><div class="t">人、地、物归档</div><div class="s">谈到的人、走过的地方、留下的物件，<br>自动记进记忆档案，下次接着聊。</div></div>
+
+    <div class="phone abs" data-om-id="phone">
+      <div class="chatlayer">
+        <div class="bar"><i>‹</i><b>和小忆聊聊</b><small>想起什么，就聊什么</small><u>◁))</u></div>
+        <div class="chat c0">
+          <div class="bub b1" data-om-id="bubble-1">结婚那天晚上，屋里是什么样的？</div>
+          <div class="bub me b2" data-om-id="bubble-2">就一床被子，两只搪瓷缸。半夜里怕我冻着，他爬起来给炉子添煤。</div>
+          <div class="bub b3" data-om-id="bubble-3">第二天早上呢？</div>
+          <div class="bub me b4" data-om-id="bubble-4">他端来一碗热粥，红着脸说，往后我给你做饭。</div>
+        </div>
+        <div class="chat ck c1"><div class="bub q" data-om-id="c1-q">王女士，这次打算往记忆银行里边存点什么？</div><div class="bub me a" data-om-id="c1-a">我想聊聊刚结婚那会儿。</div></div>
+        <div class="chat ck c2"><div class="bub me a" data-om-id="c2-a">他修机器的，第一次见面脸都红了。</div><div class="bub q" data-om-id="c2-q">那天谁先开的口？</div></div>
+        <div class="chat ck c3"><div class="bub me a" data-om-id="c3-a">就记得屋里有个煤炉，别的忘了。</div><div class="bub q" data-om-id="c3-q">没关系。那个煤炉平时谁来生火？</div></div>
+        <div class="chat ck c4"><div class="bub me a" data-om-id="c4-a">我有点累了。</div><div class="bub q" data-om-id="c4-q">好，今天先聊到这儿，您歇一歇。</div></div>
+        <div class="ctl">
+          <div class="who"><span class="av"></span><span class="wv" id="wv"></span><span id="who">小忆在说</span></div>
+          <div class="btns"><span>暂停收音</span><span>再听一遍</span><span>结束聊天</span></div>
+        </div>
+      </div>
+      <img class="storyimg" src="assets/story.png" alt="" data-om-id="story-screen">
+      <img class="pimg" id="img-tr" src="assets/transcript.png" alt="" data-om-id="transcript-screen">
+      <img class="pimg" id="img-ar" src="assets/archive.png" alt="" data-om-id="archive-screen">
+      <div class="hl" id="hl1" style="left:20px;top:586px;width:108px;height:32px"></div>
+      <div class="hl" id="hl2" style="left:14px;top:96px;width:362px;height:98px"></div>
+      <div class="hl" id="hl3" style="left:16px;top:226px;width:358px;height:126px"></div>
+      <div class="hl" id="hl4" style="left:16px;top:436px;width:358px;height:388px"></div>
+    </div>
+  </section>
+
+  <section id="s-trust">
+    <div class="pwrap" data-om-id="poster"><img src="assets/poster.png" alt=""></div>
+    <div class="shade"></div>
+    <div class="T t1 abs" style="top:150px" data-om-id="trust-1">一个人不只活在<br>自己的脑子里，</div>
+    <div class="T t2 abs" style="top:420px" data-om-id="trust-2">也活在<b>爱他的人</b><br>的记忆里。</div>
+    <div class="T t3 abs" style="top:730px; font-size:64px" data-om-id="trust-3">趁还记得，<br>把「我是谁」托付出去。</div>
+  </section>
+
+  <section id="s-end">
+    <div class="endwrap">
+      <div class="endline center abs" data-om-id="end-line" data-om-var="endLine"></div>
+      <div class="erule abs"></div>
+      <div class="brandrow center abs" data-om-id="end-brand"><span class="seal">忆</span><span data-var-text="brand">记忆银行</span></div>
+      <div class="tag center abs" data-om-id="tagline" data-var-text="tagline">趁我还记得，请听我慢慢说。</div>
+    </div>
+  </section>
+
+  <div class="vig abs"></div>
+</div>
+
+<script type="text/vnd.abc" id="om-score">
+X:1
+T:记忆银行 · 托付
+M:4/4
+L:1/8
+Q:1/4=84
+K:G
+V:MEL inst=piano role=melody gain=0.95
+!p! z4 G2 A2 | d4 z4 | z4 G2 z2 | z8 |
+Z17 |
+V:ARP inst=piano gain=0.7
+Z4 |
+!mp! G,B,DG B,DGB | E,G,B,E G,B,EG | C,G,CE G,CEG | !mf! G,B,DG B,DGB | E,G,B,E G,B,EG | C,G,CE G,CEG | D,A,D^F A,D^FA | G,B,DG B,DGB | E,G,B,E G,B,EG | C,G,CE G,CEG | D,A,D^F A,D^FA | !f! G,B,DG B,DGB | E,G,B,E G,B,EG | C,G,CE G,CEG | !f! G,B,DG B,DGB | C,G,CE G,CEG | !fermata![G,,D,G,B,D]8 |
+V:LH inst=piano gain=0.85
+!pp! G,,8 | G,,4 D,4 | E,,8 | D,,6 z2 |
+Z17 |
+V:VLN inst=violin role=melody gain=0.9
+Z4 |
+!mf! G2 A2 d4 | B2 A2 G4 | c2 B2 A2 G2 | A2 B2 d4 | G2 A2 d4 | B2 A2 G4 | c2 B2 A2 G2 | A2 B2 d4 |
+!crescendo(! G2 A2 d4 | e2 d2 B4 | c2 d2 e2 g2 | a4 g2 d2 !crescendo)! |
+!f! g4 d4 | e2 d2 B4 | c2 d2 e2 d2 | g4 d4 | c2 d2 e2 d2 | !rit(! G2 A2 d2 !fermata!G2 !rit)! |
+V:STR inst=strings gain=0.8
+Z4 |
+!p! [G,B,D]8 | [E,G,B,]8 | [C,E,G,]8 | !mp! [G,B,D]8 | [E,G,B,]8 | [C,E,G,]8 | [D,^F,A,]8 | !mf! !crescendo(! [G,B,D]8 | [E,G,B,]8 | [C,E,G,]8 | [D,^F,A,]8 !crescendo)! | !f! [G,B,D]8 | [E,G,B,]8 | [C,E,G,]8 | [G,B,D]8 | [C,E,G,]4 [D,^F,A,]4 | !fermata![G,,D,G,B,D]8 |
+V:BAS inst=bass gain=0.85
+Z4 |
+G,,8 | E,,8 | C,,8 | G,,8 | E,,8 | C,,8 | D,,8 | G,,8 | E,,8 | C,,8 | D,,8 | G,,8 | E,,8 | C,,8 | G,,8 | C,,4 D,,4 | !fermata!G,,,8 |
+V:DR inst=drums kit=folk gain=0.55
+!mark:forget! Z3 | !mark:ask! z8 |
+!mark:bank! !hit! !mf! C,,4 C,,4 | C,,4 C,,4 | C,,4 C,,4 |
+!mark:craft! C,,4 C,,4 | C,,4 C,,4 | C,,4 C,,4 | C,,4 C,,4 |
+!mark:organize! C,,4 C,,4 | C,,4 C,,4 | C,,4 C,,4 | C,,4 C,,4 |
+!mark:entrust! C,,4 C,,4 | C,,4 C,,4 | !rise(! C,,4 C,,2 C,,C,, !rise)! |
+!mark:end! !hit! !f! C,,4 C,,4 | C,,4 C,,4 | C,,2 z6 |
+</script>
+
+<script>
+  const V = OM.vars();
+  OM.music({ bpm: 84 });
+  const esc = (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' })[c] || c;
+  const $ = (s) => document.querySelector(s);
+  const maskChars = (el, text) => { el.innerHTML = [...text].map((c) => `<span class="mask"><span class="ch">${esc(c)}</span></span>`).join(''); };
+  maskChars($('.title'), V.brand);
+  maskChars($('.endline'), V.endLine);
+  document.documentElement.style.setProperty('--accent', V.accent);
+  document.documentElement.style.setProperty('--paper', V.paper);
+  document.documentElement.style.setProperty('--ink', V.ink);
+
+  // listening waveform in the phone
+  const wv = $('#wv');
+  wv.innerHTML = Array.from({ length: 9 }, () => '<i></i>').join('');
+
+  // ---- the memory text, one character at a time
+  const FT = '结婚那天，屋里就一床被子，两只搪瓷缸。半夜里怕我冻着，他爬起来给炉子添煤。天亮他端来一碗热粥，红着脸说，往后我给你做饭。';
+  const para = $('.para');
+  para.innerHTML = [...FT].map((c) => `<span class="c">${esc(c)}</span>`).join('');
+  const chars = [...para.querySelectorAll('.c')];
+  const keep = FT.indexOf('我');
+
+  // keep-character target: where it ends up, in film coordinates
+  const filmEl = $('#film');
+  const fr = filmEl.getBoundingClientRect();
+  const sc = fr.width / 1920;
+  const kr = chars[keep].getBoundingClientRect();
+  const dx = 960 - ((kr.left + kr.width / 2 - fr.left) / sc);
+  const dy = 410 - ((kr.top + kr.height / 2 - fr.top) / sc);
+
+  // deterministic shuffle
+  let seed = 20261108;
+  const rnd = () => (seed = (seed * 1664525 + 1013904223) % 4294967296) / 4294967296;
+  const order = chars.map((_, i) => i).filter((i) => i !== keep);
+  for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; }
+
+  const tl = gsap.timeline({ paused: true, defaults: { ease: 'power3.out' } });
+
+  // ===== forget 0 – 8.57
+  tl.addLabel('scene:forget', 0);
+  order.forEach((ci, rank) => {
+    const r = rank / (order.length - 1);
+    const at = 0.7 + 6.6 * Math.pow(r, 1.8);
+    tl.to(chars[ci], { opacity: 0, y: 14 + rnd() * 18, duration: 0.55, ease: 'power1.in' }, at);
+  });
+  [1.4, 3.0, 4.4, 5.4, 6.2, 6.9].forEach((t, i) => OM.sfx('tick', t, { gain: 0.25 + i * 0.05 }));
+
+  tl.fromTo('.para', { scale: 1.0, transformOrigin: '50% 50%' }, { scale: 1.12, duration: 7.4, ease: 'sine.in' }, 0);
+  tl.fromTo('.para', { x: 0 }, { x: -18, duration: 7.4, ease: 'none' }, 0);
+
+  // ===== ask 8.57 – 11.43
+  tl.addLabel('scene:ask', 8.571)
+    .to(chars[keep], { x: dx, y: dy, scale: 5.2, duration: 1.1, ease: 'power3.inOut' }, 7.9)
+    .fromTo('.askk', { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.8 }, 8.7)
+    .fromTo('.askq', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 1.0 }, 9.4)
+    .fromTo('#dot', { opacity: 0, scale: 0.2 }, { opacity: 1, scale: 0.2, duration: 0.01 }, 10.55)
+    .to('#dot', { scale: 0.3, duration: 0.2, ease: 'sine.inOut', yoyo: true, repeat: 1 }, 10.56);
+  OM.sfx('pop', 10.55, { gain: 0.5 });
+
+  // ===== bank 11.43 – 20.0 : the light comes up and becomes the paper
+  tl.addLabel('scene:bank', 11.429)
+    .fromTo('#dot', { scale: 0.2 }, { scale: 30, duration: 0.95, ease: 'expo.in', immediateRender: false }, 11.0)
+    .set('#s-forget', { opacity: 0 }, 12.2)
+    .set('#dot', { opacity: 0 }, 12.3);
+  OM.sfx('riser', 10.55, { dur: 0.9 });
+  OM.sfx('subdrop', 11.429, { dur: 1.2 });
+
+  // the film's paper ground for the bank scene
+  const bankBg = document.createElement('div');
+  bankBg.style.cssText = 'position:absolute;inset:0;background:var(--paper);opacity:0';
+  bankBg.id = 'bankbg';
+  filmEl.insertBefore(bankBg, $('#s-bank'));
+  tl.set('#bankbg', { opacity: 1 }, 11.95);
+
+  tl.fromTo('.kick', { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.6 }, 12.0)
+    .fromTo('.title .ch', { yPercent: 140 }, { yPercent: 0, duration: 0.9, stagger: 0.09, ease: 'expo.out' }, 12.14)
+    .fromTo('.L1', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.8 }, 13.0)
+    .fromTo('.L2', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.8 }, 16.0)
+    .fromTo('.phone', { opacity: 0, y: 150, scale: 1.0 }, { opacity: 1, y: 0, scale: 1.08, duration: 1.1, ease: 'expo.out' }, 12.3);
+  OM.sfx('impact', 12.14, { gain: 0.55 });
+  OM.sfx('whoosh', 12.3, { gain: 0.4 });
+
+  tl.to('.phone', { y: -22, scale: 1.12, duration: 7.4, ease: 'sine.inOut' }, 13.4);
+  tl.to('.title', { x: 26, duration: 7, ease: 'none' }, 13.0);
+  // chat bubbles
+  const bubble = (sel, at, me) => {
+    tl.fromTo(sel, { opacity: 0, y: 24, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.55, ease: 'back.out(1.6)' }, at);
+    OM.sfx('pop', at, { gain: 0.45, note: me ? 5 : 1 });
+  };
+  bubble('.b1', 13.6, false);
+  bubble('.b2', 14.9, true);
+  bubble('.b3', 17.0, false);
+  bubble('.b4', 18.0, true);
+  // listening waveform pulses while the elder speaks
+  const bars = [...wv.children];
+  bars.forEach((b, i) => {
+    tl.fromTo(b, { scaleY: 0.2 }, { scaleY: 1, duration: 0.3 + (i % 3) * 0.08, ease: 'sine.inOut', yoyo: true, repeat: Math.floor(18 / (0.3 + (i % 3) * 0.08)) }, 12.5 + i * 0.05);
+  });
+  tl.to('.L1, .L2, .title, .kick', { opacity: 0, y: -20, duration: 0.45, ease: 'power2.in' }, 19.45);
+  tl.to('.c0', { opacity: 0, duration: 0.3 }, 19.85);
+
+  // ===== craft 20.0 – 31.43 : the host's small touches, each against a real chat
+  tl.addLabel('scene:craft', 20.0);
+  tl.fromTo('.phone', { y: -22, scale: 1.12 }, { y: -30, scale: 1.14, duration: 22, ease: 'none', immediateRender: false }, 20.8);
+  const item = (sel, at, len) => {
+    const el = $(sel), t = el.querySelector('.t');
+    maskChars(t, t.textContent);
+    tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.01 }, at)
+      .fromTo(t.querySelectorAll('.ch'), { yPercent: 140 }, { yPercent: 0, duration: 0.7, stagger: 0.05, ease: 'expo.out' }, at)
+      .fromTo(el.querySelector('.n'), { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5 }, at)
+      .fromTo(el.querySelector('.s'), { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.6 }, at + 0.35)
+      .to(el, { opacity: 0, x: -30, duration: 0.3, ease: 'power2.in' }, at + len - 0.3);
+    OM.sfx('tick', at, { gain: 0.4 });
+  };
+  const chatSet = (cls, at, len, meFirst) => {
+    tl.fromTo(cls, { opacity: 0 }, { opacity: 1, duration: 0.25 }, at)
+      .to(cls, { opacity: 0, duration: 0.25 }, at + len - 0.25);
+    bubble(`${cls} ${meFirst ? '.a' : '.q'}`, at + 0.4, meFirst);
+    bubble(`${cls} ${meFirst ? '.q' : '.a'}`, at + 1.4, !meFirst);
+  };
+  tl.fromTo('.skA', { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.6 }, 19.95)
+    .to('.skA', { opacity: 0, duration: 0.3 }, 31.1);
+  const CT = [20.2, 22.9, 25.6, 28.3];
+  CT.forEach((t, i) => {
+    item(`#ci${i + 1}`, t, 2.7);
+    chatSet(`.c${i + 1}`, t, 2.7, i > 0);
+  });
+
+  // ===== organize 31.43 – 42.86 : the same chat becomes a story, an archive
+  tl.addLabel('scene:organize', 31.429)
+    .to('#bankbg', { backgroundColor: '#ece1c8', duration: 0.8, ease: 'power2.inOut' }, 31.429)
+    .fromTo('.storyimg', { opacity: 0 }, { opacity: 1, duration: 0.45, ease: 'power2.inOut' }, 31.429)
+    .set('.chatlayer', { opacity: 0 }, 31.9)
+    .fromTo('.skB', { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.6 }, 31.5)
+    .to('.skB', { opacity: 0, duration: 0.3 }, 42.6);
+  OM.sfx('paper', 31.43, { gain: 0.5 });
+  item('#oi1', 31.7, 2.6);
+  item('#oi2', 34.3, 2.6);
+  item('#oi3', 36.9, 2.6);
+  item('#oi4', 39.5, 3.1);
+  const hl = (id, at, out) => {
+    tl.fromTo(id, { opacity: 0, scale: 0.94 }, { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(1.6)' }, at);
+    if (out) tl.to(id, { opacity: 0, duration: 0.3 }, out);
+    OM.sfx('ding', at, { gain: 0.3 });
+  };
+  hl('#hl1', 34.9, 36.7);
+  tl.fromTo('#img-tr', { opacity: 0 }, { opacity: 1, duration: 0.45, ease: 'power2.inOut' }, 36.9);
+  OM.sfx('paper', 36.9, { gain: 0.4 });
+  hl('#hl2', 37.6, 39.3);
+  tl.fromTo('#img-ar', { opacity: 0 }, { opacity: 1, duration: 0.45, ease: 'power2.inOut' }, 39.5);
+  OM.sfx('paper', 39.5, { gain: 0.4 });
+  hl('#hl3', 40.0, 41.3);
+  hl('#hl4', 41.4, 0);
+
+  // ===== entrust 42.86 – 51.43 : the poster slides over the page
+  tl.addLabel('scene:entrust', 42.857)
+    .set('#s-trust', { opacity: 1 }, 42.857)
+    .fromTo('.pwrap', { x: 1920 }, { x: 0, duration: 0.9, ease: 'expo.out' }, 42.857)
+    .fromTo('.shade', { opacity: 0 }, { opacity: 1, duration: 0.9 }, 43.057)
+    .fromTo('.pwrap img', { scale: 1.0 }, { scale: 1.1, duration: 9, ease: 'none' }, 42.857)
+    .to('.phone', { opacity: 0, duration: 0.3 }, 43.057)
+    .fromTo('.t1', { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.9 }, 43.743)
+    .fromTo('.t2', { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.9 }, 45.743)
+    .fromTo('.t3', { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.9 }, 48.543);
+  tl.set('#s-bank, #bankbg', { opacity: 0 }, 43.843);
+  tl.set('#s-trust', { opacity: 0 }, 52.443);
+  OM.sfx('whoosh', 42.843, { gain: 0.6 });
+  OM.sfx('thud', 43.743, { gain: 0.3 });
+  OM.sfx('thud', 45.743, { gain: 0.3 });
+  OM.sfx('chime', 48.543, { gain: 0.4 });
+
+  // ===== end 51.43 –
+  tl.addLabel('scene:end', 51.429)
+    .fromTo('#s-end', { opacity: 0 }, { opacity: 1, duration: 0.9, ease: 'power2.inOut' }, 51.429)
+    .fromTo('.endline .ch', { yPercent: 140 }, { yPercent: 0, duration: 1.0, stagger: 0.09, ease: 'expo.out' }, 52.143)
+    .fromTo('.erule', { scaleX: 0 }, { scaleX: 1, duration: 0.9, ease: 'expo.inOut' }, 53.143)
+    .fromTo('.brandrow', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.9 }, 53.943)
+    .fromTo('.tag', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 1.0 }, 55.743)
+    .fromTo('.endwrap', { scale: 1 }, { scale: 1.035, duration: 9, ease: 'none' }, 51.843)
+    .to({}, { duration: V.endHold }, 60.043);
+  OM.sfx('impact', 52.143, { gain: 0.5 });
+  OM.sfx('ding', 53.943, { gain: 0.35 });
+
+  window.__timelines['film'] = tl;
+</script>
+</body>
+</html>
