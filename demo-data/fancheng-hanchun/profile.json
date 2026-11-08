@@ -1,0 +1,13 @@
+{
+  "name": "寒春",
+  "gender": "女",
+  "callName": "寒女士",
+  "birthYear": "1921",
+  "hometown": "美国芝加哥",
+  "people": "阳早（丈夫，已故）；韩丁（哥哥，已故）；杨振宁（同学）；费米（指导过工作的老师，已故）",
+  "stage": "",
+  "isDemo": true,
+  "historicalPrototype": { "name": "寒春", "englishName": "Joan Hinton", "birthYear": 1921, "deathYear": 2010 },
+  "demoInterviewer": { "id": "demo-fancheng", "name": "范成", "role": "采访者" },
+  "demoNotice": "范成采访 · 寒春讲述｜虚构演示，非真实访谈。日期为演示排期。"
+}

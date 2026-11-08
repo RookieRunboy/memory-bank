@@ -1,0 +1,81 @@
+{
+  "measuredAt": "2026-11-08T00:51:46.327+08:00",
+  "timezone": "Asia/Shanghai",
+  "environment": "darwin/arm64, v22.23.1",
+  "inputKind": "synthetic Chinese WAV",
+  "sampleRate": 16000,
+  "endpointBudgetMs": 2200,
+  "status": {
+    "asr": {
+      "provider": "openai-compatible",
+      "configured": true,
+      "syntheticRecognitionSucceeded": true
+    },
+    "host": {
+      "provider": "openai-compatible",
+      "configured": true
+    },
+    "tts": {
+      "provider": "dashscope",
+      "configured": true,
+      "sdkAvailable": true,
+      "syntheticStreamingSucceeded": true
+    },
+    "gemini": {
+      "configured": false
+    }
+  },
+  "isolation": "temporary database and empty TTS cache",
+  "attemptedSamples": 3,
+  "samples": [
+    {
+      "sample": 1,
+      "ignored": false,
+      "backendRoundTripMs": 6299,
+      "backendTiming": {
+        "total": 6293,
+        "asr": 1993,
+        "agent": 4300,
+        "fused": false
+      },
+      "asrProvider": "openai-compatible",
+      "hostOutcome": "provider-response",
+      "ttsHttpStatus": 200,
+      "ttsCached": false,
+      "ttsFirstNetworkMs": 6212,
+      "ttsElapsedMs": 6212,
+      "endToFirstNetworkMs": 14711
+    },
+    {
+      "sample": 2,
+      "ignored": false,
+      "backendRoundTripMs": 13068,
+      "backendTiming": {
+        "total": 13063,
+        "asr": 5061,
+        "agent": 8002,
+        "fused": false
+      },
+      "asrProvider": "openai-compatible",
+      "hostOutcome": "fallback",
+      "ttsHttpStatus": 200,
+      "ttsCached": false,
+      "ttsFirstNetworkMs": 3775,
+      "ttsElapsedMs": 3776,
+      "endToFirstNetworkMs": 19043
+    },
+    {
+      "sample": 3,
+      "backendFailure": "HTTP 503",
+      "backendRoundTripMs": null,
+      "endToFirstNetworkMs": null,
+      "elapsedTimeRecorded": false
+    }
+  ],
+  "limits": {
+    "endpoint": "configured budget added to measured backend and TTS timings; not a microphone measurement",
+    "firstSound": "first TTS network data; speaker output not measured",
+    "failedSample": "HTTP 503: original run did not retain elapsed time",
+    "accountOrQuotaErrorObserved": false
+  }
+}

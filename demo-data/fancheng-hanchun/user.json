@@ -1,0 +1,10 @@
+{
+  "id": "demo-fancheng",
+  "name": "范成",
+  "role": "采访者",
+  "isDemo": true,
+  "project": "记忆银行 · 寒春口述经历演示",
+  "narratorIds": ["demo-hanchun"],
+  "interviewIds": ["i-fancheng-1", "i-fancheng-2", "i-fancheng-3", "i-fancheng-4", "i-fancheng-5", "i-fancheng-6"],
+  "notice": "范成为虚构演示采访者；与寒春的访谈从未真实发生。这里不是登录账号或授权记录。"
+}

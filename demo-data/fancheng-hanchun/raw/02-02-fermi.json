@@ -1,0 +1,660 @@
+{
+  "interviewId": "i-fancheng-2",
+  "interviewer": {
+    "id": "demo-fancheng",
+    "name": "范成",
+    "role": "采访者"
+  },
+  "narrator": {
+    "id": "demo-hanchun",
+    "name": "寒春",
+    "role": "受访者"
+  },
+  "fictional": true,
+  "disclosure": "范成采访寒春的虚构演示；依公开生平创作，不是真实访谈或本人原话。",
+  "audio": null,
+  "timingSource": "estimated-script-timing",
+  "turns": [
+    {
+      "id": "i-fancheng-2-t1",
+      "q": "寒女士，今天想先聊哪段经历？",
+      "qid": "youth-firstjob:1",
+      "ask": {
+        "nodeId": "youth-firstjob",
+        "depth": 1
+      },
+      "raw": "今天往前讲一点，说费米。我1944年到洛斯阿拉莫斯，在曼哈顿计划里工作，到1945年都在那里。费米指导过我的工作。我那时候年轻，喜欢动手，走进有仪器的屋子，眼睛就跟着那些东西转。第一次拿记录给他看，我还把纸在桌边磕了磕，想弄整齐一点。",
+      "clean": "今天往前讲一点，说费米。我1944年到洛斯阿拉莫斯，在曼哈顿计划里工作，到1945年都在那里。费米指导过我的工作。我那时候年轻，喜欢动手，走进有仪器的屋子，眼睛就跟着那些东西转。第一次拿记录给他看，我还把纸在桌边磕了磕，想弄整齐一点。",
+      "audio": null,
+      "at": 1793583000000,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "初到实验室的注意力",
+        "整理记录纸的动作"
+      ],
+      "analysis": {
+        "nodeId": "youth-firstjob",
+        "depth": 1,
+        "note": "受访者主动引出费米与洛斯阿拉莫斯。",
+        "entities": [
+          {
+            "type": "person",
+            "name": "费米",
+            "note": "1944—1945年指导过受访者在洛斯阿拉莫斯的工作。"
+          },
+          {
+            "type": "place",
+            "name": "洛斯阿拉莫斯",
+            "note": "1944—1945年参加曼哈顿计划时的工作地点。"
+          },
+          {
+            "type": "thing",
+            "name": "记录本",
+            "note": "虚构工作场景中的提示物。"
+          }
+        ]
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "寒女士，今天想先聊哪段经历？",
+      "idx": 1,
+      "nodeId": "youth-firstjob",
+      "depth": 1,
+      "emotion": "平静",
+      "note": "受访者主动引出费米与洛斯阿拉莫斯。",
+      "askedNode": "youth-firstjob",
+      "askedDepth": 1
+    },
+    {
+      "id": "i-fancheng-2-t2",
+      "q": "刚去时，您先做什么？",
+      "qid": "youth-firstjob:2",
+      "ask": {
+        "nodeId": "youth-firstjob",
+        "depth": 2
+      },
+      "raw": "先弄清自己分到的活，东西放在哪里，做完要记下什么。那地方有些事不能随便问，我能说的是手头工作的样子。我常把本子摊开，一边动手一边记，手脏了就在衣服上蹭一下。刚开始恨不得快点做出一串结果，觉得纸上有数，事情才算往前走。",
+      "clean": "先弄清自己分到的活，东西放在哪里，做完要记下什么。那地方有些事不能随便问，我能说的是手头工作的样子。我常把本子摊开，一边动手一边记，手脏了就在衣服上蹭一下。刚开始恨不得快点做出一串结果，觉得纸上有数，事情才算往前走。",
+      "audio": null,
+      "at": 1793583040680,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "记录习惯",
+        "擦手动作",
+        "年轻时的工作心态"
+      ],
+      "analysis": {
+        "nodeId": "youth-firstjob",
+        "depth": 2,
+        "note": "只聊工作习惯，不涉及武器技术。",
+        "entities": []
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "刚去时，您先做什么？",
+      "idx": 2,
+      "nodeId": "youth-firstjob",
+      "depth": 2,
+      "emotion": "平静",
+      "note": "只聊工作习惯，不涉及武器技术。",
+      "askedNode": "youth-firstjob",
+      "askedDepth": 2
+    },
+    {
+      "id": "i-fancheng-2-t3",
+      "q": "他怎么看您做的记录？",
+      "qid": "youth-firstjob:2",
+      "ask": {
+        "nodeId": "youth-firstjob",
+        "depth": 2
+      },
+      "raw": "他不会只看最后那个数，也会看前面怎么来的。有一回，他用手指点着我记的一处，让我先想想大概该在什么范围。这是我记得的意思，原话不学了。我还想翻后面那页，他的手没挪开，我就知道，先得把眼前这一处说明白。",
+      "clean": "他不会只看最后那个数，也会看前面怎么来的。有一回，他用手指点着我记的一处，让我先想想大概该在什么范围。这是我记得的意思，原话不学了。我还想翻后面那页，他的手没挪开，我就知道，先得把眼前这一处说明白。",
+      "audio": null,
+      "at": 1793583077720,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "费米检查记录的动作",
+        "费米指导方式的转述"
+      ],
+      "analysis": {
+        "nodeId": "youth-firstjob",
+        "depth": 2,
+        "note": "明确为记忆意思的转述，不制造名人逐字语录。",
+        "entities": []
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "他怎么看您做的记录？",
+      "idx": 3,
+      "nodeId": "youth-firstjob",
+      "depth": 2,
+      "emotion": "平静",
+      "note": "明确为记忆意思的转述，不制造名人逐字语录。",
+      "askedNode": "youth-firstjob",
+      "askedDepth": 2
+    },
+    {
+      "id": "i-fancheng-2-t4",
+      "q": "您当时答得出来吗？",
+      "qid": "youth-firstjob:3",
+      "ask": {
+        "nodeId": "youth-firstjob",
+        "depth": 3
+      },
+      "raw": "一开始答得挺快，答完自己又停了。不对，我把一个条件当成没有变化，可它已经变过了。我翻，我重新翻前面的记录，他就等着。我说话慢下来了，没刚拿着结果进去时那么有把握。那次出来，我把本子夹在胳膊底下，在门边站了一会儿才走。",
+      "clean": "一开始答得挺快，答完自己又停了。不对，我把一个条件当成没有变化，可它已经变过了。我重新翻前面的记录，他就等着。我说话慢下来了，没刚拿着结果进去时那么有把握。那次出来，我把本子夹在胳膊底下，在门边站了一会儿才走。",
+      "audio": null,
+      "at": 1793583112240,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "回答与自我修正",
+        "费米等候动作",
+        "门口停步"
+      ],
+      "analysis": {
+        "nodeId": "youth-firstjob",
+        "depth": 3,
+        "note": "保留自然修正，不把停顿解释为遗忘。",
+        "entities": []
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "您当时答得出来吗？",
+      "idx": 4,
+      "nodeId": "youth-firstjob",
+      "depth": 3,
+      "emotion": "平静",
+      "note": "保留自然修正，不把停顿解释为遗忘。",
+      "askedNode": "youth-firstjob",
+      "askedDepth": 3
+    },
+    {
+      "id": "i-fancheng-2-t5",
+      "q": "后来您怎么检查自己的活？",
+      "qid": "youth-firstjob:2",
+      "ask": {
+        "nodeId": "youth-firstjob",
+        "depth": 2
+      },
+      "raw": "先看一遍条件，再看结果，不能光盯着最后那一行。做完也会把本子往远处推一点，歇一下眼，再重新看。我还是喜欢那些仪器，做着做着就把时间忘了。后来到了1945年的试爆，我在远处亲眼看见爆炸。那一回，跟低着头看本子完全是两回事。",
+      "clean": "先看一遍条件，再看结果，不能光盯着最后那一行。做完也会把本子往远处推一点，歇一下眼，再重新看。我还是喜欢那些仪器，做着做着就把时间忘了。后来到了1945年的试爆，我在远处亲眼看见爆炸。那一回，跟低着头看本子完全是两回事。",
+      "audio": null,
+      "at": 1793583149000,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "复核习惯",
+        "工作时的注意力"
+      ],
+      "analysis": {
+        "nodeId": "youth-firstjob",
+        "depth": 2,
+        "note": "由受访者主动转到1945年试爆。",
+        "entities": []
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "后来您怎么检查自己的活？",
+      "idx": 5,
+      "nodeId": "youth-firstjob",
+      "depth": 2,
+      "emotion": "平静",
+      "note": "由受访者主动转到1945年试爆。",
+      "askedNode": "youth-firstjob",
+      "askedDepth": 2
+    },
+    {
+      "id": "i-fancheng-2-t6",
+      "q": "那天您站在哪里？",
+      "qid": "youth-firstjob:2",
+      "ask": {
+        "nodeId": "youth-firstjob",
+        "depth": 2
+      },
+      "raw": "在远处的山坡上。天还暗，我先顾着脚底下，找个能站住的地方。周围有人，可我并没有挨个看是谁。我把脚换了换位置，想着别被石头绊倒。说起那一晚，我连等了多长都不想替它添一个准数，只记得人是等着的，眼睛朝着那边。",
+      "clean": "在远处的山坡上。天还暗，我先顾着脚底下，找个能站住的地方。周围有人，可我并没有挨个看是谁。我把脚换了换位置，想着别被石头绊倒。说起那一晚，我连等了多长都不想替它添一个准数，只记得人是等着的，眼睛朝着那边。",
+      "audio": null,
+      "at": 1793583187160,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "山坡站位与脚下石头",
+        "观测时的个人动作"
+      ],
+      "analysis": {
+        "nodeId": "youth-firstjob",
+        "depth": 2,
+        "note": "使用远处山坡，不编具体距离。",
+        "entities": [
+          {
+            "type": "place",
+            "name": "试爆观察山坡",
+            "note": "受访者称从远处山坡观察1945年试爆，未给出具体距离。"
+          }
+        ]
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "那天您站在哪里？",
+      "idx": 6,
+      "nodeId": "youth-firstjob",
+      "depth": 2,
+      "emotion": "平静",
+      "note": "使用远处山坡，不编具体距离。",
+      "askedNode": "youth-firstjob",
+      "askedDepth": 2
+    },
+    {
+      "id": "i-fancheng-2-t7",
+      "q": "您先看见了什么？",
+      "qid": "youth-firstjob:2",
+      "ask": {
+        "nodeId": "youth-firstjob",
+        "depth": 2
+      },
+      "raw": "亮起来了，先是光。你问我颜色，我说亮，比我平时说灯很亮的那个亮还要大。我眯了眼，手也抬了起来。后来才注意到自己一直站着没动。那里离我们远，眼前的山坡还是山坡，可我原先在屋里做的那些零碎工作，忽然跟远处那一团亮连上了。",
+      "clean": "亮起来了，先是光。你问我颜色，我说亮，比我平时说灯很亮的那个亮还要大。我眯了眼，手也抬了起来。后来才注意到自己一直站着没动。那里离我们远，眼前的山坡还是山坡，可我原先在屋里做的那些零碎工作，忽然跟远处那一团亮连上了。",
+      "audio": null,
+      "at": 1793583221960,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "光的主观感受",
+        "眯眼抬手动作",
+        "由工作联想到爆炸的内心活动"
+      ],
+      "analysis": {
+        "nodeId": "youth-firstjob",
+        "depth": 2,
+        "note": "追问所见，不补充爆炸技术。",
+        "entities": []
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "您先看见了什么？",
+      "idx": 7,
+      "nodeId": "youth-firstjob",
+      "depth": 2,
+      "emotion": "平静",
+      "note": "追问所见，不补充爆炸技术。",
+      "askedNode": "youth-firstjob",
+      "askedDepth": 2
+    },
+    {
+      "id": "i-fancheng-2-t8",
+      "q": "回去的路上说了些什么？",
+      "qid": "youth-firstjob:3",
+      "ask": {
+        "nodeId": "youth-firstjob",
+        "depth": 3
+      },
+      "raw": "说得不多。我有时想开口，又觉得还没理顺，不知道先说哪一件。脚底下得看着，跟着大家慢慢往回走。那天我并没有马上作出什么决定，回去以后还有事情要做。后来听到广岛用了原子弹的消息，我又想起山坡上的那道光，这一次心里跟看试爆时不一样了。",
+      "clean": "说得不多。我有时想开口，又觉得还没理顺，不知道先说哪一件。脚底下得看着，跟着大家慢慢往回走。那天我并没有马上作出什么决定，回去以后还有事情要做。后来听到广岛用了原子弹的消息，我又想起山坡上的那道光，这一次心里跟看试爆时不一样了。",
+      "audio": null,
+      "at": 1793583258440,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "返程动作与沉默",
+        "决定形成的心理过程"
+      ],
+      "analysis": {
+        "nodeId": "youth-firstjob",
+        "depth": 3,
+        "note": "受访者自己提出广岛。",
+        "entities": [
+          {
+            "type": "place",
+            "name": "广岛",
+            "note": "受访者称后来听到这里遭原子弹轰炸的消息。"
+          }
+        ]
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "回去的路上说了些什么？",
+      "idx": 8,
+      "nodeId": "youth-firstjob",
+      "depth": 3,
+      "emotion": "平静",
+      "note": "受访者自己提出广岛。",
+      "askedNode": "youth-firstjob",
+      "askedDepth": 3
+    },
+    {
+      "id": "i-fancheng-2-t9",
+      "q": "您当时正在做什么？",
+      "qid": "life-decision:3",
+      "ask": {
+        "nodeId": "life-decision",
+        "depth": 3
+      },
+      "raw": "我当时坐着，手边还有没合上的本子。听见消息，先把手上的东西放下了，又去看报纸。纸摊在面前，我的手却还压在本子上。我不大愿意讲得像一瞬间全想通了，实际上没有。那几天，工作做到一半，我会停住，想到那不是远处空地上的一次试验。",
+      "clean": "我当时坐着，手边还有没合上的本子。听见消息，先把手上的东西放下了，又去看报纸。纸摊在面前，我的手却还压在本子上。我不大愿意讲得像一瞬间全想通了，实际上没有。那几天，工作做到一半，我会停住，想到那不是远处空地上的一次试验。",
+      "audio": null,
+      "at": 1793583297440,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "得知消息时的场景",
+        "报纸与本子的动作",
+        "工作停顿与内心活动"
+      ],
+      "analysis": {
+        "nodeId": "life-decision",
+        "depth": 3,
+        "note": "只呈现受访者自述的难过。",
+        "entities": [
+          {
+            "type": "thing",
+            "name": "报纸",
+            "note": "虚构得知消息场景中的物件。"
+          }
+        ]
+      },
+      "agent": {
+        "emotion": "难过",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "您当时正在做什么？",
+      "idx": 9,
+      "nodeId": "life-decision",
+      "depth": 3,
+      "emotion": "难过",
+      "note": "只呈现受访者自述的难过。",
+      "askedNode": "life-decision",
+      "askedDepth": 3
+    },
+    {
+      "id": "i-fancheng-2-t10",
+      "q": "您愿意接着讲吗？",
+      "qid": "life-decision:3",
+      "ask": {
+        "nodeId": "life-decision",
+        "depth": 3
+      },
+      "raw": "可以，慢一点讲就行。我难过，也有很多疑问。有时候自己想，想一会儿，又把眼前事情做完。我没有第二天就把所有东西丢下走人。手里会做的还是这些，可下一步到什么地方去、替什么事情做，我开始反复想。后来我回了芝加哥。",
+      "clean": "可以，慢一点讲就行。我难过，也有很多疑问。有时候自己想，想一会儿，又把眼前事情做完。我没有第二天就把所有东西丢下走人。手里会做的还是这些，可下一步到什么地方去、替什么事情做，我开始反复想。后来我回了芝加哥。",
+      "audio": null,
+      "at": 1793583334760,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "忧虑与疑问",
+        "战后去向的思考"
+      ],
+      "analysis": {
+        "nodeId": "life-decision",
+        "depth": 3,
+        "note": "先确认愿意继续，允许放慢。",
+        "entities": [
+          {
+            "type": "place",
+            "name": "芝加哥",
+            "note": "战争后返回之地。"
+          }
+        ]
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "您愿意接着讲吗？",
+      "idx": 10,
+      "nodeId": "life-decision",
+      "depth": 3,
+      "emotion": "平静",
+      "note": "先确认愿意继续，允许放慢。",
+      "askedNode": "life-decision",
+      "askedDepth": 3
+    },
+    {
+      "id": "i-fancheng-2-t11",
+      "q": "接下来去了哪里？",
+      "qid": "life-decision:1",
+      "ask": {
+        "nodeId": "life-decision",
+        "depth": 1
+      },
+      "raw": "1946年回到芝加哥大学，继续做物理。住处的箱子还没收拾好，我已经去看实验室了。那些熟悉的桌子、本子，一碰到手上，人又忙起来。白天该做什么就做什么，到了晚上，箱子还横在那儿，我才想起自己回来了，往后却不能只是照旧往下走。",
+      "clean": "1946年回到芝加哥大学，继续做物理。住处的箱子还没收拾好，我已经去看实验室了。那些熟悉的桌子、本子，一碰到手上，人又忙起来。白天该做什么就做什么，到了晚上，箱子还横在那儿，我才想起自己回来了，往后却不能只是照旧往下走。",
+      "audio": null,
+      "at": 1793583369840,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "返回后的箱子与实验室场景",
+        "夜间心境"
+      ],
+      "analysis": {
+        "nodeId": "life-decision",
+        "depth": 1,
+        "note": "由已提出的芝加哥继续。",
+        "entities": [
+          {
+            "type": "place",
+            "name": "芝加哥大学",
+            "note": "1946年返回继续做物理。"
+          },
+          {
+            "type": "thing",
+            "name": "行李箱",
+            "note": "虚构返回与离开场景中的物件。"
+          }
+        ]
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "接下来去了哪里？",
+      "idx": 11,
+      "nodeId": "life-decision",
+      "depth": 1,
+      "emotion": "平静",
+      "note": "由已提出的芝加哥继续。",
+      "askedNode": "life-decision",
+      "askedDepth": 1
+    },
+    {
+      "id": "i-fancheng-2-t12",
+      "q": "回去以后，还想做实验吗？",
+      "qid": "life-decision:3",
+      "ask": {
+        "nodeId": "life-decision",
+        "depth": 3
+      },
+      "raw": "想啊。看一个东西不对，还是会凑过去，还是会凑过去看看能不能弄明白。我没有突然讨厌物理，更没有把动手的本事忘掉。我也想过别的去处，想找能把手上的本领用到日常生活里的事情。那时并没有一张排得很好的计划表，想一段，试着安排一段。",
+      "clean": "想啊。看一个东西不对，还是会凑过去看看能不能弄明白。我没有突然讨厌物理，更没有把动手的本事忘掉。我也想过别的去处，想找能把手上的本领用到日常生活里的事情。那时并没有一张排得很好的计划表，想一段，试着安排一段。",
+      "audio": null,
+      "at": 1793583406880,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "对物理的感受",
+        "对未来工作的设想"
+      ],
+      "analysis": {
+        "nodeId": "life-decision",
+        "depth": 3,
+        "note": "保留想做物理与另找方向并存的感受。",
+        "entities": []
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "回去以后，还想做实验吗？",
+      "idx": 12,
+      "nodeId": "life-decision",
+      "depth": 3,
+      "emotion": "平静",
+      "note": "保留想做物理与另找方向并存的感受。",
+      "askedNode": "life-decision",
+      "askedDepth": 3
+    },
+    {
+      "id": "i-fancheng-2-t13",
+      "q": "后来怎样作了决定？",
+      "qid": "life-decision:1",
+      "ask": {
+        "nodeId": "life-decision",
+        "depth": 1
+      },
+      "raw": "到1948年，我去了中国。不是前一天想好，第二天就上路，中间有准备，也有犹豫。我想去看看那边的生活，看看自己能做些什么。具体以后在哪儿住，手里到底做哪一件活，出发时并没有全定下来。那阵子最实际的事情，是把行李一件一件摆出来，再决定带走哪件。",
+      "clean": "到1948年，我去了中国。不是前一天想好，第二天就上路，中间有准备，也有犹豫。我想去看看那边的生活，看看自己能做些什么。具体以后在哪儿住，手里到底做哪一件活，出发时并没有全定下来。那阵子最实际的事情，是把行李一件一件摆出来，再决定带走哪件。",
+      "audio": null,
+      "at": 1793583445320,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "出发前的犹豫与动机",
+        "摊开行李的动作"
+      ],
+      "analysis": {
+        "nodeId": "life-decision",
+        "depth": 1,
+        "note": "由受访者自己提出中国及1948年。",
+        "entities": [
+          {
+            "type": "place",
+            "name": "中国",
+            "note": "受访者称1948年前往。"
+          }
+        ]
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "后来怎样作了决定？",
+      "idx": 13,
+      "nodeId": "life-decision",
+      "depth": 1,
+      "emotion": "平静",
+      "note": "由受访者自己提出中国及1948年。",
+      "askedNode": "life-decision",
+      "askedDepth": 1
+    },
+    {
+      "id": "i-fancheng-2-t14",
+      "q": "动身前最忙的是什么？",
+      "qid": "life-decision:2",
+      "ask": {
+        "nodeId": "life-decision",
+        "depth": 2
+      },
+      "raw": "收箱子。书舍不得放下，又不能什么都带着，我就拿起一本，掂一下，再换一本。拿起一本，掂一下。小东西装进盒子，盒子又占地方，来回挪。有些事想得很大，到跟前还是要先把箱盖合上。这个箱子下回再说吧，我坐得有点久，今天想歇一歇。",
+      "clean": "收箱子。书舍不得放下，又不能什么都带着，我就拿起一本，掂一下，再换一本。小东西装进盒子，盒子又占地方，来回挪。有些事想得很大，到跟前还是要先把箱盖合上。这个箱子下回再说吧，我坐得有点久，今天想歇一歇。",
+      "audio": null,
+      "at": 1793583485440,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "挑选书与整理箱子的场景",
+        "访谈当下主动休息"
+      ],
+      "analysis": {
+        "nodeId": "life-decision",
+        "depth": 2,
+        "note": "老人主动休息，此后只播放固定收尾。",
+        "entities": [
+          {
+            "type": "thing",
+            "name": "书",
+            "note": "虚构收拾行李时反复取舍的物件。"
+          }
+        ]
+      },
+      "agent": {
+        "emotion": "累了",
+        "action": "收尾",
+        "source": "demo-scripted"
+      },
+      "question": "动身前最忙的是什么？",
+      "idx": 14,
+      "nodeId": "life-decision",
+      "depth": 2,
+      "emotion": "累了",
+      "note": "老人主动休息，此后只播放固定收尾。",
+      "askedNode": "life-decision",
+      "askedDepth": 2
+    }
+  ]
+}

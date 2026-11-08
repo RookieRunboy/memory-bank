@@ -1,0 +1,341 @@
+{
+  "environment": "macOS Chromium headless, AudioWorklet 48 kHz, synthesized harmonic microphone and PCM TTS, mocked Chinese API transcript fixtures; no acoustic echo/human speech validation",
+  "testedAt": "2026-11-07T17:01:03.047Z",
+  "errors": [],
+  "results": [
+    {
+      "scenario": "five-plus-tail",
+      "turns": 6,
+      "choose": 1,
+      "micOpens": 2,
+      "finishCalls": 1,
+      "fullSegments": 2,
+      "bargeToStopMs": 161.09999999403954,
+      "formalInputTimings": [
+        {
+          "responseId": "choice-reply",
+          "actualInputEndToScheduledAudioMs": 2355.2999999970198
+        },
+        {
+          "responseId": "reply-1",
+          "actualInputEndToScheduledAudioMs": 2371.500000014901
+        },
+        {
+          "responseId": "reply-2",
+          "actualInputEndToScheduledAudioMs": 2417.6000000089407
+        },
+        {
+          "responseId": "reply-4",
+          "actualInputEndToScheduledAudioMs": 2389.8999999910593
+        },
+        {
+          "responseId": "reply-5",
+          "actualInputEndToScheduledAudioMs": 2359.500000014901
+        }
+      ],
+      "metrics": [
+        {
+          "event": "mic-start",
+          "at": 1935.9000000059605,
+          "echoCancellation": false
+        },
+        {
+          "event": "formal-first-audio",
+          "at": 2025.0999999940395,
+          "kind": "formal",
+          "responseId": "opening",
+          "ttsMs": 93.59999999403954,
+          "ttsFirstByteMs": 52.70000000298023,
+          "playbackLeadMs": 29.399999991059303,
+          "endToFirstMs": null
+        },
+        {
+          "event": "speech-start",
+          "at": 2255.5,
+          "confirmationMs": 160,
+          "localStopMs": 248
+        },
+        {
+          "event": "endpoint",
+          "at": 5076.0999999940395,
+          "endpointMs": 2200,
+          "durMs": 1100,
+          "continuation": false
+        },
+        {
+          "event": "backend",
+          "at": 5085.79999999702,
+          "requestId": "97d9b483-b8c2-4894-9c55-338b87d63307",
+          "roundTripMs": 6.399999991059303
+        },
+        {
+          "event": "formal-first-audio",
+          "at": 5130.5999999940395,
+          "kind": "formal",
+          "responseId": "choice-reply",
+          "ttsMs": 63.80000001192093,
+          "ttsFirstByteMs": 43.70000000298023,
+          "playbackLeadMs": 20.100000008940697,
+          "endToFirstMs": 2403,
+          "endpointMs": 2200
+        },
+        {
+          "event": "speech-start",
+          "at": 5280.79999999702,
+          "confirmationMs": 160,
+          "localStopMs": 254
+        },
+        {
+          "event": "endpoint",
+          "at": 8015.29999999702,
+          "endpointMs": 2200,
+          "durMs": 1020,
+          "continuation": false
+        },
+        {
+          "event": "backend",
+          "at": 8103.79999999702,
+          "requestId": "c5bf6ca9-695d-493b-af9e-095afb0fb324",
+          "roundTripMs": 86.59999999403954,
+          "total": 80,
+          "agent": 80,
+          "asr": 0
+        },
+        {
+          "event": "formal-first-audio",
+          "at": 8152.9000000059605,
+          "kind": "formal",
+          "responseId": "reply-1",
+          "ttsMs": 68,
+          "ttsFirstByteMs": 46.29999999701977,
+          "playbackLeadMs": 21.600000008940697,
+          "endToFirstMs": 2426,
+          "endpointMs": 2200
+        },
+        {
+          "event": "speech-start",
+          "at": 8378.20000000298,
+          "confirmationMs": 160,
+          "localStopMs": 251
+        },
+        {
+          "event": "endpoint",
+          "at": 12880.59999999404,
+          "endpointMs": 2200,
+          "durMs": 2880,
+          "continuation": false
+        },
+        {
+          "event": "backend",
+          "at": 13003.70000000298,
+          "requestId": "736e46bb-0062-4c18-9cd9-91380f8f5f49",
+          "roundTripMs": 105.90000000596046,
+          "total": 80,
+          "agent": 80,
+          "asr": 0
+        },
+        {
+          "event": "formal-first-audio",
+          "at": 13052.5,
+          "kind": "formal",
+          "responseId": "reply-2",
+          "ttsMs": 67.29999999701977,
+          "ttsFirstByteMs": 46.79999999701977,
+          "playbackLeadMs": 20.400000005960464,
+          "endToFirstMs": 2465,
+          "endpointMs": 2200
+        },
+        {
+          "event": "speech-start",
+          "at": 13237.5,
+          "confirmationMs": 160,
+          "localStopMs": 250
+        },
+        {
+          "event": "endpoint",
+          "at": 16000.90000000596,
+          "endpointMs": 2200,
+          "durMs": 1140,
+          "continuation": false
+        },
+        {
+          "event": "speech-start",
+          "at": 16218.40000000596,
+          "confirmationMs": 160,
+          "localStopMs": 251
+        },
+        {
+          "event": "backend",
+          "at": 17719.79999999702,
+          "requestId": "1c5e34d5-0c08-485b-a5c5-e65ad1716acc",
+          "roundTripMs": 1717.2000000029802,
+          "total": 1700,
+          "agent": 1700,
+          "asr": 0
+        },
+        {
+          "event": "endpoint",
+          "at": 18917.79999999702,
+          "endpointMs": 2200,
+          "durMs": 940,
+          "continuation": false
+        },
+        {
+          "event": "backend",
+          "at": 19013.20000000298,
+          "requestId": "2a15c83c-1141-4269-bf7d-e70c0841ae84",
+          "roundTripMs": 94.1000000089407,
+          "total": 80,
+          "agent": 80,
+          "asr": 0
+        },
+        {
+          "event": "formal-first-audio",
+          "at": 19068.5,
+          "kind": "formal",
+          "responseId": "reply-4",
+          "ttsMs": 72.8999999910593,
+          "ttsFirstByteMs": 52.400000005960464,
+          "playbackLeadMs": 20.399999991059303,
+          "endToFirstMs": 2441,
+          "endpointMs": 2200
+        },
+        {
+          "event": "speech-start",
+          "at": 19258.90000000596,
+          "confirmationMs": 160,
+          "localStopMs": 252
+        },
+        {
+          "event": "endpoint",
+          "at": 21897.79999999702,
+          "endpointMs": 2200,
+          "durMs": 1000,
+          "continuation": false
+        },
+        {
+          "event": "backend",
+          "at": 21984.70000000298,
+          "requestId": "9f3e7507-383a-4c9d-aae8-4ee997ce2607",
+          "roundTripMs": 86.40000000596046,
+          "total": 80,
+          "agent": 80,
+          "asr": 0
+        },
+        {
+          "event": "formal-first-audio",
+          "at": 22031.40000000596,
+          "kind": "formal",
+          "responseId": "reply-5",
+          "ttsMs": 65.70000000298023,
+          "ttsFirstByteMs": 45.3999999910593,
+          "playbackLeadMs": 20.200000002980232,
+          "endToFirstMs": 2424,
+          "endpointMs": 2200
+        },
+        {
+          "event": "mic-start",
+          "at": 27947.59999999404,
+          "echoCancellation": false
+        },
+        {
+          "event": "formal-first-audio",
+          "at": 27991.20000000298,
+          "kind": "replay",
+          "responseId": "reply-5",
+          "ttsMs": 63.5,
+          "ttsFirstByteMs": 43.400000005960464,
+          "playbackLeadMs": 20.099999994039536,
+          "endToFirstMs": 8384,
+          "endpointMs": 2200
+        },
+        {
+          "event": "speech-start",
+          "at": 28127.90000000596,
+          "confirmationMs": 160,
+          "localStopMs": 178
+        },
+        {
+          "event": "endpoint",
+          "at": 28629.70000000298,
+          "endpointMs": 0,
+          "durMs": 682.6666666666666,
+          "continuation": false
+        },
+        {
+          "event": "ack-first-audio",
+          "at": 28684.79999999702,
+          "ttsMs": 74.20000000298023
+        },
+        {
+          "event": "backend",
+          "at": 28726.59999999404,
+          "requestId": "e99401c6-4fe8-4282-9c0a-0feaf0909570",
+          "roundTripMs": 95.69999998807907,
+          "total": 80,
+          "agent": 80,
+          "asr": 0
+        }
+      ],
+      "source": {
+        "starts": [
+          2094.2000000029802,
+          5100.79999999702,
+          8196.09999999404,
+          10053.5,
+          13074.20000000298,
+          16048.09999999404,
+          19089.09999999404,
+          27961.79999999702
+        ],
+        "ends": [
+          2795.4000000059605,
+          5803,
+          8647,
+          10655.29999999702,
+          13774.79999999702,
+          16699,
+          19692.09999999404,
+          28562.79999999702
+        ],
+        "stops": [
+          2255.2999999970198,
+          5280.29999999702,
+          8377.79999999702,
+          13236.79999999702,
+          19258.20000000298,
+          28127.09999999404,
+          28730.20000000298
+        ]
+      },
+      "audioCount": 7
+    },
+    {
+      "scenario": "card-and-leave",
+      "choose": 1,
+      "savedTailTurns": 1,
+      "fullSegments": 1
+    },
+    {
+      "scenario": "permission-denied",
+      "micOpens": 0,
+      "manualChoices": 1
+    },
+    {
+      "scenario": "retry-reload-finish",
+      "turns": 3,
+      "turnAttempts": 5,
+      "uniqueTurnIds": 3,
+      "retainedAudioBytes": 97964,
+      "preservedQuestionSnapshot": true,
+      "fullSequences": [
+        0,
+        1,
+        2
+      ],
+      "fullAttempts": 4,
+      "finishCalls": 1,
+      "muteKeptMic": true
+    }
+  ]
+}

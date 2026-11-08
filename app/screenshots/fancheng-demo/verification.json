@@ -1,0 +1,32 @@
+{
+  "checkedAt": "2026-11-07T19:08:19.645Z",
+  "base": "http://127.0.0.1:8788",
+  "interviews": 6,
+  "turns": 81,
+  "stories": 6,
+  "entities": 45,
+  "checks": [
+    "fresh-browser-selector",
+    "interviewer-narrator-identity",
+    "api-vs-source",
+    "paragraph-provenance",
+    "no-false-audio-label",
+    "zip-speaker-labels",
+    "desktop-mobile-render"
+  ],
+  "errors": [],
+  "screenshots": [
+    "desktop-account.png",
+    "desktop-home.png",
+    "desktop-history.png",
+    "desktop-story.png",
+    "desktop-transcript.png",
+    "desktop-archive.png",
+    "mobile-account.png",
+    "mobile-home.png",
+    "mobile-history.png",
+    "mobile-story.png",
+    "mobile-transcript.png",
+    "mobile-archive.png"
+  ]
+}

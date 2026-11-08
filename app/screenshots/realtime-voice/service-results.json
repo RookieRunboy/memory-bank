@@ -1,0 +1,174 @@
+{
+  "measuredAt": "2026-11-07T18:29:33.204Z",
+  "sampleCount": 1,
+  "environment": "darwin/arm64, v22.23.1",
+  "input": {
+    "kind": "caller-supplied synthetic Chinese WAV; no elder recording",
+    "sampleRate": 16000,
+    "channels": 1,
+    "durationMs": 7815.3125,
+    "sha256": "080c3bef151f9808680f4d2ad5dcb6049cff66be677d46cfbef3c3f3bdcb70b8"
+  },
+  "isolation": {
+    "temporaryDatabase": true,
+    "ttsPrewarm": false,
+    "ttsCache": "empty",
+    "existingUserServiceRestarted": false,
+    "cleaned": true
+  },
+  "definitions": {
+    "clock": "relative to ASR WebSocket creation unless named durationMs",
+    "audioOutput": "first network PCM bytes only; no device/hardware playback",
+    "endpoint": "explicit finish at end of synthetic audio; microphone/VAD endpoint wait not measured"
+  },
+  "asr": {
+    "events": [
+      {
+        "type": "ready",
+        "atMs": 1367
+      },
+      {
+        "type": "transcript",
+        "atMs": 3502,
+        "chars": 1,
+        "final": false
+      },
+      {
+        "type": "transcript",
+        "atMs": 3601,
+        "chars": 4,
+        "final": false
+      },
+      {
+        "type": "transcript",
+        "atMs": 3701,
+        "chars": 6,
+        "final": false
+      },
+      {
+        "type": "transcript",
+        "atMs": 4111,
+        "chars": 9,
+        "final": false
+      },
+      {
+        "type": "transcript",
+        "atMs": 4714,
+        "chars": 12,
+        "final": false
+      },
+      {
+        "type": "transcript",
+        "atMs": 5431,
+        "chars": 15,
+        "final": false
+      },
+      {
+        "type": "transcript",
+        "atMs": 6239,
+        "chars": 18,
+        "final": false
+      },
+      {
+        "type": "transcript",
+        "atMs": 6948,
+        "chars": 20,
+        "final": false
+      },
+      {
+        "type": "transcript",
+        "atMs": 7653,
+        "chars": 22,
+        "final": false
+      },
+      {
+        "type": "transcript",
+        "atMs": 8559,
+        "chars": 25,
+        "final": false
+      },
+      {
+        "type": "transcript",
+        "atMs": 9069,
+        "chars": 28,
+        "final": false
+      },
+      {
+        "type": "transcript",
+        "atMs": 9791,
+        "chars": 30,
+        "final": false
+      },
+      {
+        "type": "transcript",
+        "atMs": 9791,
+        "chars": 30,
+        "final": true
+      },
+      {
+        "type": "done",
+        "atMs": 9791
+      }
+    ],
+    "readyAtMs": 1367,
+    "audioStartAtMs": 1367,
+    "firstInterimAtMs": 3502,
+    "finishSentAtMs": 9363,
+    "finalAtMs": 9791,
+    "finalChars": 30,
+    "doneAtMs": 9792,
+    "finishToDoneMs": 429
+  },
+  "host": {
+    "replyEvents": [
+      {
+        "atMs": 13935,
+        "chars": 17
+      }
+    ],
+    "cumulativeText": true,
+    "requestAtMs": 9792,
+    "httpStatus": 200,
+    "sse": true,
+    "transcriptAtMs": 9850,
+    "asrSource": "dashscope-realtime",
+    "transcriptChars": 30,
+    "firstReplyAtMs": 13935,
+    "resultAtMs": 14205,
+    "source": "openai-stream",
+    "timing": {
+      "total": 4398,
+      "asr": 1,
+      "agent": 4397,
+      "fused": false
+    },
+    "replyInterrupted": false,
+    "finalReplyChars": 17
+  },
+  "tts": {
+    "requested": true,
+    "requestAtMs": 13936,
+    "sentenceChars": 9,
+    "httpStatus": 200,
+    "cached": false,
+    "firstNetworkAtMs": 18444,
+    "firstNetworkDurationMs": 4508,
+    "firstChunkBytes": 19200,
+    "finishedAtMs": 18445,
+    "requestBeforeResult": true,
+    "firstNetworkBeforeResult": false,
+    "syntheticAudioEndToFirstNetworkMs": 9081
+  },
+  "pass": false,
+  "topicNode": "child-home",
+  "checks": {
+    "asrIncrementalBeforeFinish": true,
+    "asrFinalReused": true,
+    "hostSSE": true,
+    "hostMultipleReplyUpdates": false,
+    "hostCumulativeText": true,
+    "hostCompleted": true,
+    "ttsStartedBeforeHostResult": true,
+    "ttsFirstNetworkReceived": true
+  }
+}

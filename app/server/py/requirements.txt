@@ -1,0 +1,2 @@
+# Existing SpeechSynthesizer (tts_v2) API; upgrade deliberately after a voice probe.
+dashscope==1.27.8

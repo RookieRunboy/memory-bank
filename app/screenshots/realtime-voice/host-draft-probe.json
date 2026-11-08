@@ -1,0 +1,21 @@
+{
+  "date": "2026-11-08",
+  "timezone": "Asia/Shanghai",
+  "kind": "single live host probe with synthetic conversation, after reply-draft implementation",
+  "providerUnchanged": true,
+  "modelUnchanged": true,
+  "source": "openai-stream",
+  "jsonResponseFormatOmittedForRealtime": true,
+  "thinkingDisabledForRealtimeDeepSeek": true,
+  "draftUpdates": 10,
+  "draftCharacterCounts": [2,3,4,5,6,8,10,12,14,15],
+  "firstDraftApproxMs": 3133,
+  "firstStableSentenceApproxMs": 3134,
+  "completeJSONApproxMs": 3581,
+  "replyInterrupted": false,
+  "limitation": "The short reply's deltas arrived almost in the same network batch. This proves real incremental text handling, not ten perceptibly separated screen updates or a latency distribution.",
+  "sources": [
+    "https://api-docs.deepseek.com/guides/thinking_mode/",
+    "https://api-docs.deepseek.com/api/create-chat-completion/"
+  ]
+}

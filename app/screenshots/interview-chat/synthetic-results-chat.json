@@ -1,0 +1,92 @@
+{
+  "environment": "macOS Chromium headless, AudioWorklet 48 kHz, synthesized harmonic microphone and PCM TTS, mocked Chinese API transcript fixtures; no acoustic echo/human speech validation",
+  "demoContent": "截图内容均为模拟对话，不是真实老人资料；10/11截图使用用户给出的江南纠正示例，其余聊天内容为测试编写的演示往事。",
+  "testedAt": "2026-11-07T18:03:51.964Z",
+  "errors": [],
+  "results": [
+    {
+      "scenario": "chat-layout-and-history",
+      "messages": 17,
+      "rawTranscriptPreserved": true,
+      "draftAndFocusPreserved": true,
+      "scrollPreserved": true,
+      "sameIdDeduplicated": true,
+      "level": {
+        "silent": 0,
+        "speaking": 0.556,
+        "after": 0
+      },
+      "layouts": [
+        {
+          "width": 390,
+          "height": 844,
+          "scale": 1,
+          "closed": {
+            "viewport": 390,
+            "document": 390,
+            "chat": 358,
+            "chatWidth": 358,
+            "chatHeight": 596,
+            "dock": 358,
+            "dockWidth": 358
+          },
+          "open": {
+            "viewport": 390,
+            "document": 390,
+            "chat": 358,
+            "chatWidth": 358,
+            "chatHeight": 431,
+            "dock": 358,
+            "dockWidth": 358
+          }
+        },
+        {
+          "width": 320,
+          "height": 568,
+          "scale": 1,
+          "closed": {
+            "viewport": 320,
+            "document": 320,
+            "chat": 296,
+            "chatWidth": 296,
+            "chatHeight": 327,
+            "dock": 296,
+            "dockWidth": 296
+          },
+          "open": {
+            "viewport": 320,
+            "document": 320,
+            "chat": 296,
+            "chatWidth": 296,
+            "chatHeight": 163,
+            "dock": 296,
+            "dockWidth": 296
+          }
+        },
+        {
+          "width": 320,
+          "height": 568,
+          "scale": 1.4,
+          "closed": {
+            "viewport": 320,
+            "document": 320,
+            "chat": 296,
+            "chatWidth": 296,
+            "chatHeight": 257,
+            "dock": 296,
+            "dockWidth": 296
+          },
+          "open": {
+            "viewport": 320,
+            "document": 320,
+            "chat": 296,
+            "chatWidth": 296,
+            "chatHeight": 145,
+            "dock": 296,
+            "dockWidth": 296
+          }
+        }
+      ]
+    }
+  ]
+}

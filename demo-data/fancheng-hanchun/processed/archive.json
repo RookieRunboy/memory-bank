@@ -1,0 +1,626 @@
+{
+  "people": [
+    {
+      "name": "杨振宁",
+      "relation": "同学、实验合作人",
+      "note": "在芝加哥大学一起听课、合作做实验；具体查错互动为虚构。",
+      "sourceTurns": [
+        "i-fancheng-1-t1",
+        "i-fancheng-1-t3",
+        "i-fancheng-1-t4",
+        "i-fancheng-1-t5",
+        "i-fancheng-1-t6"
+      ],
+      "fictional": true
+    },
+    {
+      "name": "费米",
+      "relation": "授课老师",
+      "note": "受访者说与杨振宁一起听过他的课。；1944—1945年在洛斯阿拉莫斯指导过受访者；检查记录的具体互动为演示创作。",
+      "sourceTurns": [
+        "i-fancheng-1-t1",
+        "i-fancheng-2-t1",
+        "i-fancheng-2-t3",
+        "i-fancheng-2-t4"
+      ],
+      "fictional": true
+    },
+    {
+      "name": "艾利森",
+      "relation": "实验室负责人",
+      "note": "受访者说在他的实验室合作。",
+      "sourceTurns": [
+        "i-fancheng-1-t1"
+      ],
+      "fictional": true
+    },
+    {
+      "name": "阳早",
+      "relation": "丈夫",
+      "note": "经哥哥介绍相识，1946年赴华，1949年春在陕北成家；修旧箱子等细节为虚构演绎；1949年9月一起到城川，任三边牧场副场长，管畜牧技术；在奶牛和设备工作中共同观察、讨论。；共同查看记录，并从牛的情况提出补充问题。",
+      "sourceTurns": [
+        "i-fancheng-3-t1",
+        "i-fancheng-3-t4",
+        "i-fancheng-3-t8",
+        "i-fancheng-3-t9",
+        "i-fancheng-3-t10",
+        "i-fancheng-4-t1",
+        "i-fancheng-4-t6",
+        "i-fancheng-5-t7",
+        "i-fancheng-5-t8",
+        "i-fancheng-6-t7",
+        "i-fancheng-6-t12"
+      ],
+      "fictional": true
+    },
+    {
+      "name": "韩丁",
+      "relation": "哥哥",
+      "note": "阳早在康奈尔的同学和室友，介绍两人认识",
+      "sourceTurns": [
+        "i-fancheng-3-t1",
+        "i-fancheng-3-t2"
+      ],
+      "fictional": true
+    },
+    {
+      "name": "奶牛场工人",
+      "relation": "工作伙伴",
+      "note": "以持续值班的观察补充记录。",
+      "sourceTurns": [
+        "i-fancheng-6-t6",
+        "i-fancheng-6-t12"
+      ],
+      "fictional": true
+    }
+  ],
+  "places": [
+    {
+      "name": "芝加哥大学",
+      "note": "1946年回到这里，之后与杨振宁一起听课和做实验。；1946年返回继续做物理。",
+      "sourceTurns": [
+        "i-fancheng-1-t1",
+        "i-fancheng-2-t11"
+      ],
+      "fictional": true
+    },
+    {
+      "name": "艾利森的实验室",
+      "note": "本场测量、记录与合作故事的地点。",
+      "sourceTurns": [
+        "i-fancheng-1-t1",
+        "i-fancheng-1-t2",
+        "i-fancheng-1-t3"
+      ],
+      "fictional": true
+    },
+    {
+      "name": "洛斯阿拉莫斯",
+      "note": "1944—1945年参加曼哈顿计划时的工作地。",
+      "sourceTurns": [
+        "i-fancheng-2-t1"
+      ],
+      "fictional": true
+    },
+    {
+      "name": "试爆观察山坡",
+      "note": "1945年在远处山坡观察试爆，未记录距离。",
+      "sourceTurns": [
+        "i-fancheng-2-t5",
+        "i-fancheng-2-t6"
+      ],
+      "fictional": true
+    },
+    {
+      "name": "广岛",
+      "note": "受访者听到遭原子弹轰炸的消息，并非自述到访。",
+      "sourceTurns": [
+        "i-fancheng-2-t8",
+        "i-fancheng-2-t9"
+      ],
+      "fictional": true
+    },
+    {
+      "name": "中国",
+      "note": "1948年前往。",
+      "sourceTurns": [
+        "i-fancheng-2-t13"
+      ],
+      "fictional": true
+    },
+    {
+      "name": "康奈尔大学",
+      "note": "韩丁和阳早相识并做同学、室友的地方",
+      "sourceTurns": [
+        "i-fancheng-3-t2"
+      ],
+      "fictional": true
+    },
+    {
+      "name": "陕北、延安一带",
+      "note": "1949年相聚和成家的地域背景，不细定婚礼场所",
+      "sourceTurns": [
+        "i-fancheng-3-t5",
+        "i-fancheng-3-t8"
+      ],
+      "fictional": true
+    },
+    {
+      "name": "城川三边牧场",
+      "note": "1949年9月到这里，当时城川属陕甘宁边区；本场不涉及后来的西安草滩时期",
+      "sourceTurns": [
+        "i-fancheng-4-t1"
+      ],
+      "fictional": true
+    },
+    {
+      "name": "红星公社",
+      "note": "1972年返回北京农业生产的阶段。",
+      "sourceTurns": [
+        "i-fancheng-5-t2"
+      ],
+      "fictional": true
+    },
+    {
+      "name": "小王庄",
+      "note": "1980年代设备工作回忆的地点。",
+      "sourceTurns": [
+        "i-fancheng-5-t2"
+      ],
+      "fictional": true
+    },
+    {
+      "name": "西安",
+      "note": "与北京阶段区别的早期铡草机工作。",
+      "sourceTurns": [
+        "i-fancheng-5-t2"
+      ],
+      "fictional": true
+    },
+    {
+      "name": "三边牧场",
+      "note": "由晚期记录联想到早期向当地人学习乳品制作，不认定手中本子来自该地。",
+      "sourceTurns": [
+        "i-fancheng-6-t10"
+      ],
+      "fictional": true
+    }
+  ],
+  "events": [
+    {
+      "title": "与杨振宁合作测量",
+      "when": "1946年回芝加哥大学之后",
+      "detail": "两人轮换读数与记录，发现错行后把两张纸并排核查。具体场景为演示创作。",
+      "sourceTurns": [
+        "i-fancheng-1-t1",
+        "i-fancheng-1-t2",
+        "i-fancheng-1-t3",
+        "i-fancheng-1-t4",
+        "i-fancheng-1-t5",
+        "i-fancheng-1-t6"
+      ],
+      "fictional": true
+    },
+    {
+      "title": "保留订正前的记录",
+      "when": "一次测量结束后",
+      "detail": "订正时标箭头并写清测量批次，补测存疑的数，誊抄后把旧纸夹入本子。",
+      "sourceTurns": [
+        "i-fancheng-1-t6",
+        "i-fancheng-1-t7",
+        "i-fancheng-1-t8"
+      ],
+      "fictional": true
+    },
+    {
+      "title": "收工后补全日期",
+      "when": "芝加哥求学期间",
+      "detail": "走到门口后返回补日期，杨振宁在门外等候。",
+      "sourceTurns": [
+        "i-fancheng-1-t11",
+        "i-fancheng-1-t12"
+      ],
+      "fictional": true
+    },
+    {
+      "title": "费米指导工作",
+      "when": "1944—1945年",
+      "detail": "在洛斯阿拉莫斯工作，费米指导过她；检查条件与记录的具体场景为虚构。",
+      "sourceTurns": [
+        "i-fancheng-2-t1",
+        "i-fancheng-2-t3",
+        "i-fancheng-2-t4"
+      ],
+      "fictional": true
+    },
+    {
+      "title": "远处观察试爆",
+      "when": "1945年",
+      "detail": "从远处山坡亲见试爆，光感、动作与内心活动为虚构演绎。",
+      "sourceTurns": [
+        "i-fancheng-2-t5",
+        "i-fancheng-2-t6",
+        "i-fancheng-2-t7"
+      ],
+      "fictional": true
+    },
+    {
+      "title": "听到广岛消息",
+      "when": "1945年试爆之后",
+      "detail": "听到广岛使用原子弹的消息，开始反复思考下一步的去向；报纸场景及主观感受为演示创作。",
+      "sourceTurns": [
+        "i-fancheng-2-t8",
+        "i-fancheng-2-t9",
+        "i-fancheng-2-t10"
+      ],
+      "fictional": true
+    },
+    {
+      "title": "返回芝加哥大学",
+      "when": "1946年",
+      "detail": "返回大学继续做物理，同时考虑其他工作方向。",
+      "sourceTurns": [
+        "i-fancheng-2-t11",
+        "i-fancheng-2-t12"
+      ],
+      "fictional": true
+    },
+    {
+      "title": "前往中国",
+      "when": "1948年",
+      "detail": "前往中国，出发前整理行李的具体动作与对未来的设想为演示创作。",
+      "sourceTurns": [
+        "i-fancheng-2-t13",
+        "i-fancheng-2-t14"
+      ],
+      "fictional": true
+    },
+    {
+      "title": "经哥哥韩丁认识阳早",
+      "when": "1940年代",
+      "detail": "韩丁介绍两人认识，初识年月和地点未在本次讲述中明确",
+      "sourceTurns": [
+        "i-fancheng-3-t1",
+        "i-fancheng-3-t2"
+      ],
+      "fictional": true
+    },
+    {
+      "title": "先后到中国",
+      "when": "1946年、1948年",
+      "detail": "阳早1946年赴华，我1948年赴华，1949年在陕北相聚",
+      "sourceTurns": [
+        "i-fancheng-3-t4",
+        "i-fancheng-3-t5"
+      ],
+      "fictional": true
+    },
+    {
+      "title": "和阳早成家",
+      "when": "1949年春",
+      "detail": "在陕北成家；整理箱子、缝布、摆杯子是本次虚构生活场景",
+      "sourceTurns": [
+        "i-fancheng-3-t8",
+        "i-fancheng-3-t9",
+        "i-fancheng-3-t10",
+        "i-fancheng-3-t11",
+        "i-fancheng-3-t12"
+      ],
+      "fictional": true
+    },
+    {
+      "title": "到城川建设三边牧场",
+      "when": "1949年9月",
+      "detail": "与阳早一起到城川，在三边牧场开展工作",
+      "sourceTurns": [
+        "i-fancheng-4-t1",
+        "i-fancheng-4-t6"
+      ],
+      "fictional": true
+    },
+    {
+      "title": "向蒙古族牧民学做乳品",
+      "when": "三边牧场时期",
+      "detail": "负责奶酪酸奶生产，向当地蒙古族牧民学习制作和保存；记事本场景为虚构演绎",
+      "sourceTurns": [
+        "i-fancheng-4-t2",
+        "i-fancheng-4-t3",
+        "i-fancheng-4-t10",
+        "i-fancheng-4-t11"
+      ],
+      "fictional": true
+    },
+    {
+      "title": "接奶和清洗奶桶",
+      "when": "三边牧场时期",
+      "detail": "核对送来的奶，忙完检查桶底边沿；具体奶桶经历为虚构演绎",
+      "sourceTurns": [
+        "i-fancheng-4-t7",
+        "i-fancheng-4-t12",
+        "i-fancheng-4-t13",
+        "i-fancheng-4-t14"
+      ],
+      "fictional": true
+    },
+    {
+      "title": "观察搬奶路线后改图",
+      "when": "北京奶牛场设备工作期间，具体日期未设定",
+      "detail": "虚构场景：跟随工人行走，发现转弯处避让困难并圈记。",
+      "sourceTurns": [
+        "i-fancheng-5-t3"
+      ],
+      "fictional": true
+    },
+    {
+      "title": "设备进入日常使用",
+      "when": "一次收工后，具体日期未设定",
+      "detail": "虚构场景：回头查看改过的设备，看到工人已经自然使用。",
+      "sourceTurns": [
+        "i-fancheng-5-t11"
+      ],
+      "fictional": true
+    },
+    {
+      "title": "复看牛舍角落",
+      "when": "农场工作期间，具体日期未设定",
+      "detail": "虚构例子：记录早上看到的潮湿处，下午复看，区别观察与原因猜测。",
+      "sourceTurns": [
+        "i-fancheng-6-t3"
+      ],
+      "fictional": true
+    },
+    {
+      "title": "工人补充记录缺口",
+      "when": "农场工作期间，具体日期未设定",
+      "detail": "虚构事件：原先将变化归于设备，听过值班工人的经过后补记。",
+      "sourceTurns": [
+        "i-fancheng-6-t6"
+      ],
+      "fictional": true
+    }
+  ],
+  "timeline": [
+    {
+      "when": "1944年",
+      "what": "到洛斯阿拉莫斯参加曼哈顿计划，在费米指导下工作。",
+      "sourceTurns": [
+        "i-fancheng-2-t1"
+      ],
+      "fictional": true
+    },
+    {
+      "when": "1945年",
+      "what": "在远处观察试爆，后来听到广岛使用原子弹的消息。",
+      "sourceTurns": [
+        "i-fancheng-2-t5",
+        "i-fancheng-2-t6",
+        "i-fancheng-2-t8"
+      ],
+      "fictional": true
+    },
+    {
+      "when": "1946年",
+      "what": "回到芝加哥大学。",
+      "sourceTurns": [
+        "i-fancheng-1-t1"
+      ],
+      "fictional": true
+    },
+    {
+      "when": "1946年",
+      "what": "回到芝加哥大学继续做物理。",
+      "sourceTurns": [
+        "i-fancheng-2-t11"
+      ],
+      "fictional": true
+    },
+    {
+      "when": "1946年",
+      "what": "阳早赴中国",
+      "sourceTurns": [
+        "i-fancheng-3-t4"
+      ],
+      "fictional": true
+    },
+    {
+      "when": "1948年",
+      "what": "前往中国。",
+      "sourceTurns": [
+        "i-fancheng-2-t13"
+      ],
+      "fictional": true
+    },
+    {
+      "when": "1948年",
+      "what": "我来到中国",
+      "sourceTurns": [
+        "i-fancheng-3-t5"
+      ],
+      "fictional": true
+    },
+    {
+      "when": "1949年春",
+      "what": "与阳早在陕北成家",
+      "sourceTurns": [
+        "i-fancheng-3-t8"
+      ],
+      "fictional": true
+    },
+    {
+      "when": "1949年9月",
+      "what": "与阳早到城川三边牧场工作",
+      "sourceTurns": [
+        "i-fancheng-4-t1"
+      ],
+      "fictional": true
+    },
+    {
+      "when": "1972年",
+      "what": "回到北京南郊红星公社做农业工作。",
+      "sourceTurns": [
+        "i-fancheng-5-t2"
+      ],
+      "fictional": true
+    },
+    {
+      "when": "1980年代",
+      "what": "回忆小王庄等地成套奶牛场设备工作。",
+      "sourceTurns": [
+        "i-fancheng-5-t2"
+      ],
+      "fictional": true
+    },
+    {
+      "when": "回芝加哥大学之后",
+      "what": "与杨振宁同上费米课程，并在艾利森实验室合作。",
+      "sourceTurns": [
+        "i-fancheng-1-t1"
+      ],
+      "fictional": true
+    },
+    {
+      "when": "三边牧场时期",
+      "what": "负责乳品生产，向当地蒙古族牧民学制作和保存",
+      "sourceTurns": [
+        "i-fancheng-4-t2",
+        "i-fancheng-4-t10"
+      ],
+      "fictional": true
+    },
+    {
+      "when": "三边牧场工作时期",
+      "what": "向当地人学习制作奶制品；晚年回忆将这种学习态度与后来记录相联系。",
+      "sourceTurns": [
+        "i-fancheng-6-t10"
+      ],
+      "fictional": true
+    },
+    {
+      "when": "长期农场工作之后",
+      "what": "回看笔记与改动，希望记录交给后来的人继续使用。",
+      "sourceTurns": [
+        "i-fancheng-6-t1",
+        "i-fancheng-6-t11"
+      ],
+      "fictional": true
+    }
+  ],
+  "conflicts": [],
+  "interviews": [
+    "i-fancheng-1",
+    "i-fancheng-2",
+    "i-fancheng-3",
+    "i-fancheng-4",
+    "i-fancheng-5",
+    "i-fancheng-6"
+  ],
+  "asked": [
+    "youth-coworkers:1",
+    "youth-coworkers:2",
+    "youth-coworkers:2",
+    "youth-coworkers:2",
+    "youth-coworkers:3",
+    "youth-coworkers:2",
+    "youth-coworkers:2",
+    "youth-coworkers:2",
+    "youth-coworkers:3",
+    "youth-coworkers:2",
+    "youth-coworkers:2",
+    "youth-coworkers:2",
+    "youth-coworkers:2",
+    "youth-coworkers:2",
+    "youth-firstjob:1",
+    "youth-firstjob:2",
+    "youth-firstjob:2",
+    "youth-firstjob:3",
+    "youth-firstjob:2",
+    "youth-firstjob:2",
+    "youth-firstjob:2",
+    "youth-firstjob:3",
+    "life-decision:3",
+    "life-decision:3",
+    "life-decision:1",
+    "life-decision:3",
+    "life-decision:1",
+    "life-decision:2",
+    "youth-meet:1",
+    "youth-meet:2",
+    "youth-meet:2",
+    "youth-meet:2",
+    "youth-meet:1",
+    "youth-meet:2",
+    "youth-meet:2",
+    "youth-meet:1",
+    "youth-meet:2",
+    "youth-meet:2",
+    "youth-meet:2",
+    "youth-meet:2",
+    "youth-meet:2",
+    "midlife-work:1",
+    "midlife-work:2",
+    "midlife-work:2",
+    "midlife-work:2",
+    "midlife-work:2",
+    "midlife-work:1",
+    "midlife-work:2",
+    "midlife-work:2",
+    "midlife-work:2",
+    "midlife-work:2",
+    "midlife-work:2",
+    "midlife-work:2",
+    "midlife-work:3",
+    "midlife-work:2",
+    "midlife-craft:1",
+    "midlife-craft:1",
+    "midlife-craft:2",
+    "midlife-craft:2",
+    "midlife-craft:2",
+    "midlife-craft:2",
+    "midlife-craft:2",
+    "midlife-craft:3",
+    "midlife-craft:2",
+    "midlife-craft:3",
+    "midlife-craft:3",
+    "midlife-craft:3",
+    "midlife-craft:1",
+    "elder-oldthing:1",
+    "elder-oldthing:2",
+    "elder-oldthing:2",
+    "elder-oldthing:3",
+    "elder-oldthing:2",
+    "elder-oldthing:2",
+    "elder-oldthing:2",
+    "elder-oldthing:3",
+    "elder-oldthing:2",
+    "elder-oldthing:2",
+    "elder-oldthing:3",
+    "elder-oldthing:3",
+    "elder-oldthing:1"
+  ],
+  "lastTopic": "准备下次寻找一页未写完的工作记录，确认后来是否补过；眼睛累了，主动休息。",
+  "source": "demo-scripted",
+  "fictional": true,
+  "processing": "预写并审核的 mock 加工成果，未调用运行时模型生成",
+  "disclosure": "范成采访寒春的虚构演示；依公开生平创作，不是真实访谈或本人原话。",
+  "seedVersion": 1,
+  "interviewer": {
+    "id": "demo-fancheng",
+    "name": "范成",
+    "role": "采访者",
+    "isDemo": true,
+    "project": "记忆银行 · 寒春口述经历演示",
+    "narratorIds": [
+      "demo-hanchun"
+    ],
+    "interviewIds": [
+      "i-fancheng-1",
+      "i-fancheng-2",
+      "i-fancheng-3",
+      "i-fancheng-4",
+      "i-fancheng-5",
+      "i-fancheng-6"
+    ],
+    "notice": "范成为虚构演示采访者；与寒春的访谈从未真实发生。这里不是登录账号或授权记录。"
+  },
+  "updatedAt": 1794015513720
+}

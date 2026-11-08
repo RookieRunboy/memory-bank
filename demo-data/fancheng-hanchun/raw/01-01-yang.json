@@ -1,0 +1,640 @@
+{
+  "interviewId": "i-fancheng-1",
+  "interviewer": {
+    "id": "demo-fancheng",
+    "name": "范成",
+    "role": "采访者"
+  },
+  "narrator": {
+    "id": "demo-hanchun",
+    "name": "寒春",
+    "role": "受访者"
+  },
+  "fictional": true,
+  "disclosure": "范成采访寒春的虚构演示；依公开生平创作，不是真实访谈或本人原话。",
+  "audio": null,
+  "timingSource": "estimated-script-timing",
+  "turns": [
+    {
+      "id": "i-fancheng-1-t1",
+      "q": "寒女士，今天想先聊哪段经历？",
+      "qid": "youth-coworkers:1",
+      "ask": {
+        "nodeId": "youth-coworkers",
+        "depth": 1
+      },
+      "raw": "今天说说杨振宁吧。我1946年回到芝加哥大学，后来跟他一起上过费米的课，也在艾利森负责的实验室合作过。嗯，合作过。你让我想那段时候，先出来的不是哪一堂课，是桌上一张写得乱七八糟的记录纸，边上还压着我的铅笔。",
+      "clean": "今天说说杨振宁吧。我1946年回到芝加哥大学，后来跟他一起上过费米的课，也在艾利森负责的实验室合作过。你让我想那段时候，先出来的不是哪一堂课，是桌上一张写得乱七八糟的记录纸，边上还压着我的铅笔。",
+      "audio": null,
+      "at": 1793496600000,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "记忆触发顺序",
+        "桌面与记录纸场景"
+      ],
+      "analysis": {
+        "nodeId": "youth-coworkers",
+        "depth": 1,
+        "note": "受访者主动提出芝加哥大学与杨振宁。",
+        "entities": [
+          {
+            "type": "person",
+            "name": "杨振宁",
+            "note": "芝加哥大学时期的同学与实验合作人。",
+            "relation": "colleagues"
+          },
+          {
+            "type": "person",
+            "name": "费米",
+            "note": "在芝加哥大学听过他的课程。"
+          },
+          {
+            "type": "person",
+            "name": "艾利森",
+            "note": "受访者提到在他的实验室工作。"
+          },
+          {
+            "type": "place",
+            "name": "芝加哥大学",
+            "note": "1946年回到这里求学。"
+          },
+          {
+            "type": "thing",
+            "name": "记录纸",
+            "note": "贯穿本场访谈的虚构提示物。"
+          }
+        ]
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "寒女士，今天想先聊哪段经历？",
+      "idx": 1,
+      "nodeId": "youth-coworkers",
+      "depth": 1,
+      "emotion": "平静",
+      "note": "受访者主动提出芝加哥大学与杨振宁。",
+      "askedNode": "youth-coworkers",
+      "askedDepth": 1
+    },
+    {
+      "id": "i-fancheng-1-t2",
+      "q": "那张纸上记的是什么？",
+      "qid": "youth-coworkers:2",
+      "ask": {
+        "nodeId": "youth-coworkers",
+        "depth": 2
+      },
+      "raw": "一组测量的数。今天读一次，隔一会儿再读一次，把当时的条件也放在旁边。我爱先把东西摆好，接线归接线，纸归纸，免得手一伸就把纸碰下去。杨振宁会来看看我们打算怎么比，有时还没开始，他已经在纸边画了两道线。",
+      "clean": "一组测量的数。今天读一次，隔一会儿再读一次，把当时的条件也放在旁边。我爱先把东西摆好，接线归接线，纸归纸，免得手一伸就把纸碰下去。杨振宁会来看看我们打算怎么比，有时还没开始，他已经在纸边画了两道线。",
+      "audio": null,
+      "at": 1793496636760,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "实验分工",
+        "整理桌面的动作",
+        "杨振宁画线的动作"
+      ],
+      "analysis": {
+        "nodeId": "youth-coworkers",
+        "depth": 2,
+        "note": "只追问已提出的记录纸。",
+        "entities": [
+          {
+            "type": "thing",
+            "name": "测量记录",
+            "note": "本场虚构实验的测量数与条件记录。"
+          }
+        ]
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "那张纸上记的是什么？",
+      "idx": 2,
+      "nodeId": "youth-coworkers",
+      "depth": 2,
+      "emotion": "平静",
+      "note": "只追问已提出的记录纸。",
+      "askedNode": "youth-coworkers",
+      "askedDepth": 2
+    },
+    {
+      "id": "i-fancheng-1-t3",
+      "q": "两道线是做什么的？",
+      "qid": "youth-coworkers:2",
+      "ask": {
+        "nodeId": "youth-coworkers",
+        "depth": 2
+      },
+      "raw": "把两次的数隔开呀，不是什么了不得的图。他看表格，我去读数，做着做着也会换过来。谁手边空着谁就记。我们都很年轻，急着知道结果，可那些东西不跟着人着急，该等多久还得等。有一次就是等完以后，我把数写错了行。",
+      "clean": "把两次的数隔开呀，不是什么了不得的图。他看表格，我去读数，做着做着也会换过来。谁手边空着谁就记。我们都很年轻，急着知道结果，可那些东西不跟着人着急，该等多久还得等。有一次就是等完以后，我把数写错了行。",
+      "audio": null,
+      "at": 1793496671280,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "轮换分工",
+        "等待测量",
+        "记录错行事件",
+        "当时心境"
+      ],
+      "analysis": {
+        "nodeId": "youth-coworkers",
+        "depth": 2,
+        "note": "顺着纸边画线的具体动作。",
+        "entities": []
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "两道线是做什么的？",
+      "idx": 3,
+      "nodeId": "youth-coworkers",
+      "depth": 2,
+      "emotion": "平静",
+      "note": "顺着纸边画线的具体动作。",
+      "askedNode": "youth-coworkers",
+      "askedDepth": 2
+    },
+    {
+      "id": "i-fancheng-1-t4",
+      "q": "错行是怎么发现的？",
+      "qid": "youth-coworkers:2",
+      "ask": {
+        "nodeId": "youth-coworkers",
+        "depth": 2
+      },
+      "raw": "他拿着纸，从上往下看，手指停在一处。我还以为是仪器出了毛病，已经转身要去检查了。他让我先把前一遍的记录拿来。我把两张纸并在一起，才发现后面几行都错了位置，数本身倒没写错。这可不是重新读一遍就能糊过去的。",
+      "clean": "他拿着纸，从上往下看，手指停在一处。我还以为是仪器出了毛病，已经转身要去检查了。他让我先把前一遍的记录拿来。我把两张纸并在一起，才发现后面几行都错了位置，数本身倒没写错。这可不是重新读一遍就能糊过去的。",
+      "audio": null,
+      "at": 1793496705800,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "杨振宁检查记录的动作",
+        "错行发现过程",
+        "受访者当时判断"
+      ],
+      "analysis": {
+        "nodeId": "youth-coworkers",
+        "depth": 2,
+        "note": "询问发现问题的动作，不预设谁发现。",
+        "entities": []
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "错行是怎么发现的？",
+      "idx": 4,
+      "nodeId": "youth-coworkers",
+      "depth": 2,
+      "emotion": "平静",
+      "note": "询问发现问题的动作，不预设谁发现。",
+      "askedNode": "youth-coworkers",
+      "askedDepth": 2
+    },
+    {
+      "id": "i-fancheng-1-t5",
+      "q": "您当时怎么说？",
+      "qid": "youth-coworkers:3",
+      "ask": {
+        "nodeId": "youth-coworkers",
+        "depth": 3
+      },
+      "raw": "我说先别动，让我找找从哪儿开始串的。其实脸有一点热，我手上做东西向来挺有把握，偏偏错在纸上。他没站在那里看着我难堪，拉了把椅子坐下，把两张纸的上边对齐。那样就好办了，我们盯着同一行看，不用隔着桌子争。",
+      "clean": "我说先别动，让我找找从哪儿开始串的。其实脸有一点热，我手上做东西向来挺有把握，偏偏错在纸上。他没站在那里看着我难堪，拉了把椅子坐下，把两张纸的上边对齐。那样就好办了，我们盯着同一行看，不用隔着桌子争。",
+      "audio": null,
+      "at": 1793496740600,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "受访者对白与心境",
+        "杨振宁拉椅子对齐纸张的动作"
+      ],
+      "analysis": {
+        "nodeId": "youth-coworkers",
+        "depth": 3,
+        "note": "受访者自述反应，不编造杨振宁逐字原话。",
+        "entities": []
+      },
+      "agent": {
+        "emotion": "开心",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "您当时怎么说？",
+      "idx": 5,
+      "nodeId": "youth-coworkers",
+      "depth": 3,
+      "emotion": "开心",
+      "note": "受访者自述反应，不编造杨振宁逐字原话。",
+      "askedNode": "youth-coworkers",
+      "askedDepth": 3
+    },
+    {
+      "id": "i-fancheng-1-t6",
+      "q": "两个人接着怎么查？",
+      "qid": "youth-coworkers:2",
+      "ask": {
+        "nodeId": "youth-coworkers",
+        "depth": 2
+      },
+      "raw": "我念，他看。念到一半，他看，他念，我看，换了一次。读到那个空格，事情就清楚了：我先前留了一行，回头再记时，把那一行给跳过去了。我就在旁边画一个小箭头，写清楚是哪一次，不能只把旧的擦掉，弄得好像从来没错过。",
+      "clean": "我念，他看。念到一半，他念，我看，换了一次。读到那个空格，事情就清楚了：我先前留了一行，回头再记时，把那一行给跳过去了。我就在旁边画一个小箭头，写清楚是哪一次，不能只把旧的擦掉，弄得好像从来没错过。",
+      "audio": null,
+      "at": 1793496774560,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "交换核对角色",
+        "错行原因",
+        "箭头订正方法"
+      ],
+      "analysis": {
+        "nodeId": "youth-coworkers",
+        "depth": 2,
+        "note": "继续展开共同查错的方法。",
+        "entities": []
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "两个人接着怎么查？",
+      "idx": 6,
+      "nodeId": "youth-coworkers",
+      "depth": 2,
+      "emotion": "平静",
+      "note": "继续展开共同查错的方法。",
+      "askedNode": "youth-coworkers",
+      "askedDepth": 2
+    },
+    {
+      "id": "i-fancheng-1-t7",
+      "q": "改完就能接着做了吗？",
+      "qid": "youth-coworkers:2",
+      "ask": {
+        "nodeId": "youth-coworkers",
+        "depth": 2
+      },
+      "raw": "还不行，有一个数我们都不大放心，又去量了一遍。那一遍慢，我就靠着桌边等，他拿铅笔在纸上算。屋子里没什么话，只有走动和翻纸的声音。后来数对上了，我们才往下做。忙了半天，纸上增加的其实没有几行。",
+      "clean": "还不行，有一个数我们都不大放心，又去量了一遍。那一遍慢，我就靠着桌边等，他拿铅笔在纸上算。屋子里没什么话，只有走动和翻纸的声音。后来数对上了，我们才往下做。忙了半天，纸上增加的其实没有几行。",
+      "audio": null,
+      "at": 1793496809640,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "补测过程",
+        "等待姿势",
+        "实验室声音"
+      ],
+      "analysis": {
+        "nodeId": "youth-coworkers",
+        "depth": 2,
+        "note": "查错后的后续动作。",
+        "entities": []
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "改完就能接着做了吗？",
+      "idx": 7,
+      "nodeId": "youth-coworkers",
+      "depth": 2,
+      "emotion": "平静",
+      "note": "查错后的后续动作。",
+      "askedNode": "youth-coworkers",
+      "askedDepth": 2
+    },
+    {
+      "id": "i-fancheng-1-t8",
+      "q": "那张旧纸后来怎么处理？",
+      "qid": "youth-coworkers:2",
+      "ask": {
+        "nodeId": "youth-coworkers",
+        "depth": 2
+      },
+      "raw": "夹回本子里了。另抄一张整齐的，旧的也留着，免得过两天再问为什么改这个数，还得从头找。我抄完，他再扫一眼。有一处字挤得太小，他把纸转过来，我才看见自己连尾巴都写到下一格去了。",
+      "clean": "夹回本子里了。另抄一张整齐的，旧的也留着，免得过两天再问为什么改这个数，还得从头找。我抄完，他再扫一眼。有一处字挤得太小，他把纸转过来，我才看见自己连尾巴都写到下一格去了。",
+      "audio": null,
+      "at": 1793496843040,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "保留旧纸",
+        "誊抄检查",
+        "字迹与纸张动作"
+      ],
+      "analysis": {
+        "nodeId": "youth-coworkers",
+        "depth": 2,
+        "note": "保留旧记录这一条线索。",
+        "entities": [
+          {
+            "type": "thing",
+            "name": "记录本",
+            "note": "在虚构场景中夹存旧记录纸。"
+          }
+        ]
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "那张旧纸后来怎么处理？",
+      "idx": 8,
+      "nodeId": "youth-coworkers",
+      "depth": 2,
+      "emotion": "平静",
+      "note": "保留旧记录这一条线索。",
+      "askedNode": "youth-coworkers",
+      "askedDepth": 2
+    },
+    {
+      "id": "i-fancheng-1-t9",
+      "q": "您看见了怎么反应？",
+      "qid": "youth-coworkers:3",
+      "ask": {
+        "nodeId": "youth-coworkers",
+        "depth": 3
+      },
+      "raw": "笑了呀。我把纸拿回来，重新写大一点。这回可不能怪纸小。做实验有时候就是这样，一下午很认真，最后两个人对着一个难看的字笑起来，倒把刚才那点着急给笑没了。",
+      "clean": "笑了呀。我把纸拿回来，重新写大一点。这回可不能怪纸小。做实验有时候就是这样，一下午很认真，最后两个人对着一个难看的字笑起来，倒把刚才那点着急给笑没了。",
+      "audio": null,
+      "at": 1793496874200,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "笑看字迹的场景",
+        "当时情绪"
+      ],
+      "analysis": {
+        "nodeId": "youth-coworkers",
+        "depth": 3,
+        "note": "从具体动作带出短回答。",
+        "entities": []
+      },
+      "agent": {
+        "emotion": "开心",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "您看见了怎么反应？",
+      "idx": 9,
+      "nodeId": "youth-coworkers",
+      "depth": 3,
+      "emotion": "开心",
+      "note": "从具体动作带出短回答。",
+      "askedNode": "youth-coworkers",
+      "askedDepth": 3
+    },
+    {
+      "id": "i-fancheng-1-t10",
+      "q": "你们也有意见不同的时候吗？",
+      "qid": "youth-coworkers:2",
+      "ask": {
+        "nodeId": "youth-coworkers",
+        "depth": 2
+      },
+      "raw": "当然有。一个数跟前头不一样，我会想再动动仪器，他有时想先把已有的数排在一起看看。也不能每次都照我的来。我们把手先停住，看这一遍到底改了什么。要是两件事一起改，出了变化，谁也讲不清是哪一件造成的。",
+      "clean": "当然有。一个数跟前头不一样，我会想再动动仪器，他有时想先把已有的数排在一起看看。也不能每次都照我的来。我们把手先停住，看这一遍到底改了什么。要是两件事一起改，出了变化，谁也讲不清是哪一件造成的。",
+      "audio": null,
+      "at": 1793496901720,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "合作分歧",
+        "排查顺序的讨论"
+      ],
+      "analysis": {
+        "nodeId": "youth-coworkers",
+        "depth": 2,
+        "note": "围绕合作方式展开，不要求人物评价。",
+        "entities": []
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "你们也有意见不同的时候吗？",
+      "idx": 10,
+      "nodeId": "youth-coworkers",
+      "depth": 2,
+      "emotion": "平静",
+      "note": "围绕合作方式展开，不要求人物评价。",
+      "askedNode": "youth-coworkers",
+      "askedDepth": 2
+    },
+    {
+      "id": "i-fancheng-1-t11",
+      "q": "收工前还要做什么？",
+      "qid": "youth-coworkers:2",
+      "ask": {
+        "nodeId": "youth-coworkers",
+        "depth": 2
+      },
+      "raw": "该关的关好，工具放回去，桌子上不能留一堆散纸。我喜欢再看一眼记录，给第二天留个开头。有一次走到门口又回来了，倒不是有什么大事，就是忘了把那页的日期写全。等明天再补，容易跟今天的混到一起。",
+      "clean": "该关的关好，工具放回去，桌子上不能留一堆散纸。我喜欢再看一眼记录，给第二天留个开头。有一次走到门口又回来了，倒不是有什么大事，就是忘了把那页的日期写全。等明天再补，容易跟今天的混到一起。",
+      "audio": null,
+      "at": 1793496936520,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "收工习惯",
+        "返身补日期的事件"
+      ],
+      "analysis": {
+        "nodeId": "youth-coworkers",
+        "depth": 2,
+        "note": "跟进实验完成后的动作。",
+        "entities": []
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "收工前还要做什么？",
+      "idx": 11,
+      "nodeId": "youth-coworkers",
+      "depth": 2,
+      "emotion": "平静",
+      "note": "跟进实验完成后的动作。",
+      "askedNode": "youth-coworkers",
+      "askedDepth": 2
+    },
+    {
+      "id": "i-fancheng-1-t12",
+      "q": "他当时还在吗？",
+      "qid": "youth-coworkers:2",
+      "ask": {
+        "nodeId": "youth-coworkers",
+        "depth": 2
+      },
+      "raw": "在门外等着呢。我说还得一会儿，他就在走廊边站着，等我把本子合上。我们出来也没继续争那几个数，先说该去吃饭了。那时候一起做事情，就是会有这些零零碎碎的等，不是每次见面都在讨论多大的问题。",
+      "clean": "在门外等着呢。我说还得一会儿，他就在走廊边站着，等我把本子合上。我们出来也没继续争那几个数，先说该去吃饭了。那时候一起做事情，就是会有这些零零碎碎的等，不是每次见面都在讨论多大的问题。",
+      "audio": null,
+      "at": 1793496969080,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "走廊等待",
+        "收工后谈吃饭的场景"
+      ],
+      "analysis": {
+        "nodeId": "youth-coworkers",
+        "depth": 2,
+        "note": "回到双方互动。",
+        "entities": []
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "他当时还在吗？",
+      "idx": 12,
+      "nodeId": "youth-coworkers",
+      "depth": 2,
+      "emotion": "平静",
+      "note": "回到双方互动。",
+      "askedNode": "youth-coworkers",
+      "askedDepth": 2
+    },
+    {
+      "id": "i-fancheng-1-t13",
+      "q": "第二天先看哪一页？",
+      "qid": "youth-coworkers:2",
+      "ask": {
+        "nodeId": "youth-coworkers",
+        "depth": 2
+      },
+      "raw": "就看昨天最后那一页。先看看，先看那个没做完的地方，不急着另开一张。有时纸角卷起来了，拿手抹平，再把本子放到老位置。前一天怎么停的，今天就从哪里接。说起来很慢，当时做起来倒是顺手的。",
+      "clean": "就看昨天最后那一页。先看那个没做完的地方，不急着另开一张。有时纸角卷起来了，拿手抹平，再把本子放到老位置。前一天怎么停的，今天就从哪里接。说起来很慢，当时做起来倒是顺手的。",
+      "audio": null,
+      "at": 1793497000800,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "次日接续工作的习惯",
+        "抹平纸角动作"
+      ],
+      "analysis": {
+        "nodeId": "youth-coworkers",
+        "depth": 2,
+        "note": "回到留下的记录，不索取人生总结。",
+        "entities": []
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "第二天先看哪一页？",
+      "idx": 13,
+      "nodeId": "youth-coworkers",
+      "depth": 2,
+      "emotion": "平静",
+      "note": "回到留下的记录，不索取人生总结。",
+      "askedNode": "youth-coworkers",
+      "askedDepth": 2
+    },
+    {
+      "id": "i-fancheng-1-t14",
+      "q": "那张纸现在还在手边吗？",
+      "qid": "youth-coworkers:2",
+      "ask": {
+        "nodeId": "youth-coworkers",
+        "depth": 2
+      },
+      "raw": "手边没有了。你要我照着再画一张，我可画不出原来的样子。不过两个人把纸并起来看的那个动作，我还能比划出来，就是这样挨着。好了，手也比划累了，今天让我歇一歇，下回再慢慢说。",
+      "clean": "手边没有了。你要我照着再画一张，我可画不出原来的样子。不过两个人把纸并起来看的那个动作，我还能比划出来，就是这样挨着。好了，手也比划累了，今天让我歇一歇，下回再慢慢说。",
+      "audio": null,
+      "at": 1793497032520,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "演示访谈当下的比划动作",
+        "物件现状",
+        "主动休息"
+      ],
+      "analysis": {
+        "nodeId": "youth-coworkers",
+        "depth": 2,
+        "note": "老人主动结束；本轮后只播放固定收尾。",
+        "entities": []
+      },
+      "agent": {
+        "emotion": "累了",
+        "action": "收尾",
+        "source": "demo-scripted"
+      },
+      "question": "那张纸现在还在手边吗？",
+      "idx": 14,
+      "nodeId": "youth-coworkers",
+      "depth": 2,
+      "emotion": "累了",
+      "note": "老人主动结束；本轮后只播放固定收尾。",
+      "askedNode": "youth-coworkers",
+      "askedDepth": 2
+    }
+  ]
+}

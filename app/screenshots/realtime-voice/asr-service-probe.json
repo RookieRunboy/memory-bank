@@ -1,0 +1,145 @@
+{
+  "date": "2026-11-08",
+  "timezone": "Asia/Shanghai",
+  "kind": "single synthetic speech probe; not a latency distribution or real-microphone test",
+  "provider": "DashScope",
+  "model": "qwen-audio-3.1-asr-flash-streaming",
+  "source": {
+    "generator": "macOS say / Tingting, rate 140",
+    "content": "synthetic Chinese childhood narrative, no user or elder recording",
+    "sampleRate": 16000,
+    "channels": 1,
+    "encoding": "PCM signed 16-bit little-endian",
+    "durationMs": 7815.3125,
+    "sha256": "080c3bef151f9808680f4d2ad5dcb6049cff66be677d46cfbef3c3f3bdcb70b8"
+  },
+  "sdkProbe": {
+    "firstInterimMs": 1888,
+    "finalMs": 8656,
+    "totalMs": 8820,
+    "interimCharacterCounts": [
+      1,
+      4,
+      6,
+      9,
+      12,
+      15,
+      18,
+      20,
+      22,
+      25,
+      28
+    ],
+    "finalCharacterCount": 30,
+    "notes": "Timing starts after Python SDK import, before Recognition.start; samples were paced at 100ms."
+  },
+  "fullBridgeProbe": {
+    "path": "Node local WebSocket -> Python DashScope SDK -> configured workspace provider",
+    "readyMs": 1450,
+    "firstInterimMs": 4311,
+    "firstInterimAfterAudioStartApproxMs": 2861,
+    "finishSentMs": 9457,
+    "finalAndDoneMs": 9897,
+    "finishToDoneMs": 440,
+    "cachedFinalCharacterCount": 30,
+    "events": [
+      {
+        "type": "ready",
+        "atMs": 1450
+      },
+      {
+        "type": "transcript",
+        "atMs": 4311,
+        "chars": 1,
+        "final": false
+      },
+      {
+        "type": "transcript",
+        "atMs": 4408,
+        "chars": 4,
+        "final": false
+      },
+      {
+        "type": "transcript",
+        "atMs": 4504,
+        "chars": 6,
+        "final": false
+      },
+      {
+        "type": "transcript",
+        "atMs": 4604,
+        "chars": 9,
+        "final": false
+      },
+      {
+        "type": "transcript",
+        "atMs": 4915,
+        "chars": 12,
+        "final": false
+      },
+      {
+        "type": "transcript",
+        "atMs": 5516,
+        "chars": 15,
+        "final": false
+      },
+      {
+        "type": "transcript",
+        "atMs": 6438,
+        "chars": 18,
+        "final": false
+      },
+      {
+        "type": "transcript",
+        "atMs": 7135,
+        "chars": 20,
+        "final": false
+      },
+      {
+        "type": "transcript",
+        "atMs": 7839,
+        "chars": 22,
+        "final": false
+      },
+      {
+        "type": "transcript",
+        "atMs": 8757,
+        "chars": 25,
+        "final": false
+      },
+      {
+        "type": "transcript",
+        "atMs": 9157,
+        "chars": 28,
+        "final": false
+      },
+      {
+        "type": "transcript",
+        "atMs": 9897,
+        "chars": 30,
+        "final": false
+      },
+      {
+        "type": "transcript",
+        "atMs": 9897,
+        "chars": 30,
+        "final": true
+      },
+      {
+        "type": "done",
+        "atMs": 9897
+      }
+    ]
+  },
+  "validation": {
+    "incrementalTextBeforeFinish": true,
+    "finalTokenCacheReadable": true,
+    "rawProviderCredentialsOrWorkspaceURLRecorded": false,
+    "realMicrophoneAcousticsTested": false,
+    "hardwarePlaybackLatencyTested": false
+  },
+  "sources": [
+    "https://help.aliyun.com/zh/model-studio/real-time-speech-recognition-user-guide",
+    "https://help.aliyun.com/zh/model-studio/qwen-audio-asr-streaming-client-events"
+  ]
+}

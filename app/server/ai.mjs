@@ -2,7 +2,8 @@ import { parseStory as parse } from '../src/parseStory.js';
 // 访谈 Agent / 转写整理 / 故事 / 记忆档案。每个函数先走 Gemini，失败回退规则+演示数据。
 import fs from 'fs'; import path from 'path'; import { fileURLToPath } from 'url';
 import { gemini } from './gemini.mjs';
-import { asrViaOpenai, openaiTranscribe } from './openai.mjs';
+import { asrViaOpenai, openaiTranscribe, openaiEnabled, openaiChat } from './openai.mjs';
+import { topLevelJSON } from './streaming-json.mjs';
 import { DEMO_ANSWERS } from '../src/questions.js';
 import * as P from '../src/planner.js';
 import { detectCallName } from '../src/callname.js';
@@ -16,37 +17,25 @@ export const HOST_PROMPT = blocks[0] + '\n' + style, STORY_PROMPT = blocks[1]; /
 const vars = (t, p, v = {}) => P.assertNoVars(P.fillAll(t.replace(/\{重要人物\}/g, p.people || ''), p, v), '提示词');
 const say = t => P.assertNoVars(P.speakable(t), '朗读');
 const archText = a => JSON.stringify({ 人物: a.people, 地点: a.places, 事件: a.events, 时间线: a.timeline, 上次聊到: a.lastTopic, 已问过: (a.asked || []).slice(-30) }, null, 0);
-const histText = turns => turns.map(t => `小忆：${t.q}\n老人：${t.clean || t.raw || '（没说话）'}`).join('\n');
+const histText = turns => turns.map(t => `小忆${t.interrupted ? '（这句未播完，老人已插话）' : ''}：${t.q}\n老人${t.continuation ? '（长段讲述，尚未讲完）' : ''}：${t.clean || t.raw || '（没说话）'}`).join('\n');
 const isDemo = turns => turns.some(t => DEMO_ANSWERS.includes(t.clean || t.raw));
 
 const NODE_LIST = FW.nodes.map(n => `${n.id}:${n.title}`).join('，');
 const ctxText = (c, p) => { const s = c.plan && P.st(c.states, c.plan.ask.nodeId);
-  return `【记忆档案（以往访谈积累）】${archText(c.archive || {})}\n【实体表】${JSON.stringify((c.entities || []).map(e => ({ 名称: e.name, 类型: e.type, 关系: e.relation, 已故: e.deceased || undefined, 要点: e.notes?.slice(-2) })))}\n` +
-    (s ? `【当前节点状态】${c.plan.ask.nodeId} 已到第${s.depth}层，本节点已聊${s.turns}轮，连续简短回答${s.shortRun || 0}次\n` +
+  return `${c.delivery?.length ? '【播放情况】上次生成的回复可能未播放或已被插话打断。只以每轮记录的实际问题为准，不假定老人听过生成但未播出的提问。先接着老人的最新补充。\n' : ''}【记忆档案（以往访谈积累）】${archText(c.archive || {})}\n【实体表】${JSON.stringify((c.entities || []).map(e => ({ 名称: e.name, 类型: e.type, 关系: e.relation, 已故: e.deceased || undefined, 要点: e.notes?.slice(-2) })))}\n` +
+    (s && !c.plan.free ? `【当前节点状态】${c.plan.ask.nodeId} 已到第${s.depth}层，本节点已聊${s.turns}轮，连续简短回答${s.shortRun || 0}次\n` +
       `【当前话题的访谈参考】${JSON.stringify(P.questionGuide(FW, c.plan.ask.nodeId, p))}\n按 entryCondition 判断适用前提，结合回答从 questions 中选一个角度。简短或卡住时参考 gentleQuestion，遵守 precautions。问过的跳过，反思按本人意愿，问法可自然改写。\n` : ''); };
 
-export async function opening(p, c, isReturn, recent = []) { // c: { archive, states, entities, plan }；recent：档案还没整理进去的上次访谈记录（兜底）
-  const v = P.planVars(FW, c.plan, c);
-  try {
-    const r = await gemini([{ text: `${ctxText(c, p)}${recent.length ? `【上次访谈原话（档案还在整理中，以此为准）】\n${histText(recent)}\n` : ''}${isReturn ? '这是再次访谈。' : '这是首次访谈。'}按【开场与收尾】只说一句问候，不提问、不回顾往事。系统随后念候选话题。\n只输出 JSON：{"say":"要朗读的问候"}` }], { system: vars(HOST_PROMPT, p, v), json: true });
-    if (r.say) return { say: say(r.say), ask: c.plan.ask, source: 'gemini' };
-  } catch (e) { if (/未替换的变量/.test(e.message)) console.warn('[vars]', e.message); }
-  return { say: P.greetText(FW, c.plan, { ...c, profile: p }, isReturn), ask: c.plan.ask, source: 'fallback' };
+export async function opening(p, c, isReturn) {
+  // 用户已定稿；只替换称呼，避免模型改写或增加一次开场等待。
+  return { say: P.greetText(FW, c.plan, { ...c, profile: p }, isReturn), ask: c.plan.ask, source: 'template' };
 }
-// 老人选话题：本地规则先判（序号/关键词/换几个…），拿不准再问 Gemini，失败就用规则（含糊默认第一个）
+// Only explicit menu commands select a card. Natural speech goes intact to
+// the host, including subjects absent from the reference question bank.
 export async function chooseTopic(p, cards, text, { after = false } = {}) {
-  const rule = P.parseChoice(FW, text, cards, p, { after });
-  if (rule.sure || !String(text || '').trim()) return { ...rule, source: 'rule' };
-  try {
-    const r = await gemini([{ text: `小忆刚给老人念了几个话题让他选：${cards.map((c, i) => `${i + 1}. ${c.text}（${c.nodeId}）`).join('；')}${after ? '；也可以继续聊刚才的话题，或者今天先到这' : ''}。\n老人说：“${text}”\n判断老人的选择。action：pick 选了某个（index 为 0 起的序号；如果老人说的是别的具体话题，index 填 -1 并在 nodeId 填最接近的节点 id，节点：${NODE_LIST}）；more 想换几个；free 想自由聊别的、没有明确话题；${after ? 'stay 继续聊刚才的；end 今天先到这；' : ''}含糊或都行就 pick 0。\n只输出 JSON：{"action":"pick|more|free${after ? '|stay|end' : ''}","index":0,"nodeId":null}` }], { json: true, timeout: 6000 });
-    const ok = ['pick', 'more', 'free', ...(after ? ['stay', 'end'] : [])];
-    if (ok.includes(r?.action)) { if (r.action !== 'pick') return { action: r.action, source: 'gemini' };
-      if (cards[r.index]) return { action: 'pick', index: +r.index, source: 'gemini' };
-      if (r.nodeId && validNode(r.nodeId)) return { action: 'pick', nodeId: r.nodeId, source: 'gemini' };
-      return { action: 'pick', index: 0, source: 'gemini' }; }
-  } catch {}
-  return { ...rule, source: 'rule' };
+  return { ...P.parseChoice(FW, text, cards, p, { after }), source: 'rule' };
 }
+const requestsChoices = (p, text) => ['more', 'help'].includes(P.parseChoice(FW, text || '', [], p, { after: true }).action);
 export const closing = (p, c) => P.closingText(FW, c.plan, { ...c, profile: p });
 
 // whisper 对静音/噪音偶尔会“幻觉”出固定字幕语，这类整句直接当没听清
@@ -54,38 +43,46 @@ const HALLU = /^(请)?(不吝)?点赞|字幕(志愿者|由)|谢谢(大家)?(观�
 export async function transcribe(audio, mime, hint) { // 优先 whisper（OpenAI 协议），失败回退 Gemini 听音频
   if (audio?.length > 1000 && asrViaOpenai()) try {
     const t = await openaiTranscribe(audio, mime);
-    if (!t || HALLU.test(t.replace(/\s/g, ''))) return { raw: '', clean: (hint || '').trim(), source: 'whisper-nospeech' };
+    if (!t || HALLU.test(t.replace(/\s/g, ''))) return { raw: '', clean: '', source: 'whisper-nospeech' };
     return { raw: t, clean: t, source: 'whisper' };
   } catch (e) { console.warn('[asr] whisper 失败', e.message.slice(0, 100), '→ 回退'); }
   if (audio?.length > 1000) try {
     const r = await gemini([{ inlineData: { mimeType: (mime || 'audio/webm').split(';')[0], data: audio.toString('base64') } },
       { text: '先判断：这段录音里是否有清晰可辨的人声在说中文？如果只有静音、噪音、蜂鸣/提示音或听不清，必须输出 {"speech":false,"raw":"","clean":""}，绝对不要猜测或编写任何内容。若有人声：这是一位中国老人讲述往事的录音（可能带方言）。输出 JSON：{"speech":true,...}，字段：{"raw":"逐字原始转写，保留嗯啊重复","clean":"整理后文本：去掉口头禅、重复和停顿，按意思分段（用\\n分隔），保留老人原话的味道和方言词，绝不编造或补充"}。听不清就 raw 和 clean 都给空字符串。' }], { json: true, temperature: 0 });
     if (r.speech !== false && (r.raw || r.clean)) return { raw: r.raw || '', clean: r.clean || r.raw, source: 'gemini' };
-    if (r.speech === false) return { raw: '', clean: (hint || '').trim(), source: 'gemini-nospeech' };
+    return { raw: '', clean: '', source: 'gemini-nospeech' };
   } catch {}
   const t = (hint || '').trim();
-  return { raw: t, clean: t.replace(/(嗯+|啊+|那个|就是说)[，,、]?/g, '').trim() || t, source: 'fallback' };
+  return { raw: t, clean: t.replace(/(嗯+|啊+|那个|就是说)[，,、]?/g, '').trim() || t, source: 'fallback', ...(audio?.length > 1000 && !t ? { unavailable: true } : {}) };
 }
 
-async function nextGemini(p, c, turns, audio) {
+async function nextGemini(p, c, turns, audio, progress) {
   const MAX = 10;
+  const invoke = progress && openaiEnabled() && !audio ? openaiChat : gemini;
+  const schema = progress
+    ? '{"ask":{"nodeId":"下一句问的是哪个节点","depth":1},"done":false,"callName":null,"say":"要朗读的话","answer":{"nodeId":"","depth":0,"note":"","entities":[{"type":"person|place|thing","name":"","aliases":[],"relation":"parents|siblings|spouse|children|friends|teachers|colleagues|null","deceased":false,"trigger":"photo|song|food|object|festival|null","note":""}]},"emotion":"兴致好|开心|平静|卡壳|难过|困惑|累了|烦躁","leave":null,"action":"追问细节|留白|澄清|给台阶|安抚|换话题|过渡|收尾"}'
+    : `{${audio ? '"speech":true,"raw":"","clean":"",' : ''}"answer":{"nodeId":"","depth":0,"note":"","entities":[{"type":"person|place|thing","name":"","aliases":[],"relation":"parents|siblings|spouse|children|friends|teachers|colleagues|null","deceased":false,"trigger":"photo|song|food|object|festival|null","note":""}]},"emotion":"兴致好|开心|平静|卡壳|难过|困惑|累了|烦躁","leave":null,"ask":{"nodeId":"下一句问的是哪个节点","depth":1},"action":"追问细节|留白|澄清|给台阶|安抚|换话题|过渡|收尾","callName":null,"say":"要朗读的话","done":false}`;
     const v = P.planVars(FW, c.plan, { ...c, profile: p });
-    return await gemini([{ text:  `${ctxText(c, p)}【本次对话】\n${histText(turns)}\n\n【话题网节点】${NODE_LIST}\n` +
-      (c.plan.free ? '老人选了“想聊什么都行”：顺着老人自己说的内容聊，不要拉回任何指定话题，ask.nodeId 填老人正在讲的节点。\n'
-        : '老人想换话题、连着三次简短回答，或当前故事讲完时，ask.nodeId 填 "switch"，say 简短回应即可，不提问、不总结故事，系统会接着念候选。层次只记录讲到哪里，不按层次强行切换话题。\n') +
-      `顺着老人刚才的话决定下一句。已经聊了${turns.length}轮，满${MAX}轮或老人想停时，简短收尾，done 填 true，ask 保持当前节点。收尾优先于换话题。\n` +
-      `同时分析老人刚才这一句：属于哪个节点（跑题就填它真正讲到的节点 id，找不到就填最接近的）、到达第几层（0 没有实质内容，1 事实，2 场景细节，3 感受，4 意义与寄语）、一句要点、提到的人地物。\n` +
-      `只输出 JSON：{${audio ? `"speech":true,"raw":"","clean":"",` : ""}"answer":{"nodeId":"","depth":0,"note":"","entities":[{"type":"person|place|thing","name":"","aliases":[],"relation":"parents|siblings|spouse|children|friends|teachers|colleagues|null","deceased":false,"trigger":"photo|song|food|object|festival|null","note":""}]},"emotion":"兴致好|开心|平静|卡壳|难过|困惑|累了|烦躁","leave":null,"ask":{"nodeId":"下一句问的是哪个节点","depth":1},"action":"追问细节|留白|澄清|给台阶|安抚|换话题|过渡|收尾","callName":null,"say":"要朗读的话","done":false}。leave 只在老人难过且安抚后仍未恢复时填 "upset"，累了填 "tired"。老人还在兴致勃勃地讲时，action 填“留白”，say 用“您接着说。”这类短回应。没听清意思时 action 填“澄清”。callName 只在老人刚才明确要求换个叫法时填新称呼（如老人说“叫我老王就行”就填 "老王"），并且 say 里当场用新称呼；否则填 null。${FIRST_RULE}` }, ...(audio ? [{ text: '【老人刚才这一句的录音】见下面的音频。' + '附带的录音是老人刚才这一句的回答（中国老人，可能带方言）。先听清它：没有清晰人声（静音、噪音、提示音）就输出 {"speech":false}，绝不猜测编写。有人声就在 JSON 里同时给出 "speech":true、"raw"（逐字原始转写，保留嗯啊重复）、"clean"（去掉口头禅重复停顿、按意思分段用\\n、保留原话味道和方言词、绝不编造），raw 和 clean 只能是录音里真的说出来的话，一个字也不能从上下文、档案或前面的对话里补；录音只有几个字，clean 就只有那几个字。然后把它当作老人这一句来分析和回复。\n' + '输出 JSON 时把 "speech"、"raw"、"clean" 放在最前面：先只凭音频写完转写，再写回复。' }, { inlineData: { mimeType: (audio.mime || 'audio/webm').split(';')[0], data: audio.buf.toString('base64') } }] : [])],
-      { system: vars(HOST_PROMPT, p, v), json: true, ...(audio && { timeout: +(process.env.GEMINI_FUSED_TIMEOUT_MS || 10000) }) });
+    if (c.plan.free) Object.assign(v, { 今天话题: '以老人本次讲述为准', 当前话题: '以老人最新讲述为准', 当前层次: '', 当前话题入场问题: '', 顺藤线索: '' });
+    return await invoke([{ text:  `${ctxText(c, p)}【本次对话】\n${histText(turns)}\n\n【话题网节点】${NODE_LIST}\n` +
+      '老人最新说的话是当前话题的依据。老人纠正话题、否认你的假设或已说出另一个具体话题时，直接跟进他明确说的内容；不要让他再选一次，不要拉回题库或档案里的旧话题。\n' +
+      (requestsChoices(p, turns.at(-1)?.clean || turns.at(-1)?.raw)
+        ? '老人明确请求推荐或更换候选话题，可以填 ask.nodeId="switch"，say 简短回应，系统会提供候选。\n'
+        : '本轮不提供话题菜单，不填 ask.nodeId="switch"。题库只是归档标签，不限制老人能讲什么；没有对应节点也正常。\n') +
+      `顺着老人刚才的话决定下一句。已经聊了${turns.filter(t => !t.continuation).length}轮，满${MAX}轮或老人想停时，简短收尾，done 填 true，ask 保持当前节点。收尾优先于换话题。\n` +
+      `同时分析老人刚才这一句：属于哪个节点（有直接对应的才填节点 id，没有就填 null，不强行归到最接近的；ask.nodeId 可保留当前参考节点，但不能因此改变要聊的内容）、到达第几层（0 没有实质内容，1 事实，2 场景细节，3 感受，4 意义与寄语）、一句要点、提到的人地物。\n` +
+      `只输出 JSON：${schema}。leave 只在老人难过且安抚后仍未恢复时填 "upset"，累了填 "tired"。老人还在兴致勃勃地讲时，action 填“留白”，say 用“您接着说。”这类短回应。没听清意思时 action 填“澄清”。callName 只在老人刚才明确要求换个叫法时填新称呼（如老人说“叫我老王就行”就填 "老王"），并且 say 里当场用新称呼；否则填 null。${FIRST_RULE}${progress ? '按示例顺序先输出 ask、done、callName、say，再输出其余分析。say 里只写最终要说的话，不在后面的字段修改已写的内容。' : ''}` }, ...(audio ? [{ text: '【老人刚才这一句的录音】见下面的音频。' + '附带的录音是老人刚才这一句的回答（中国老人，可能带方言）。先听清它：没有清晰人声（静音、噪音、提示音）就输出 {"speech":false}，绝不猜测编写。有人声就在 JSON 里同时给出 "speech":true、"raw"（逐字原始转写，保留嗯啊重复）、"clean"（去掉口头禅重复停顿、按意思分段用\\n、保留原话味道和方言词、绝不编造），raw 和 clean 只能是录音里真的说出来的话，一个字也不能从上下文、档案或前面的对话里补；录音只有几个字，clean 就只有那几个字。然后把它当作老人这一句来分析和回复。\n' + '输出 JSON 时把 "speech"、"raw"、"clean" 放在最前面：先只凭音频写完转写，再写回复。' }, { inlineData: { mimeType: (audio.mime || 'audio/webm').split(';')[0], data: audio.buf.toString('base64') } }] : [])],
+      { system: vars(HOST_PROMPT, p, v), json: true, ...(progress && openaiEnabled() && !audio && { realtime: true, onDelta: (_delta, accumulated) => progress.update(accumulated) }), ...(audio && { timeout: +(process.env.GEMINI_FUSED_TIMEOUT_MS || 10000) }) });
 }
 
 const validNode = id => !!P.nodeById(FW, id);
 // 每轮：模型同时输出 回答归属节点/层次/要点/实体/情绪 + 下一问的节点/层次 + 要朗读的话；据此更新节点状态、实体表、会话规划
 // 合并调用：音频 + 上下文一次给模型，同时输出 raw/clean 转写和下一句（省掉一次往返）；失败抛 FUSED，调用方回退两步流程
 export const FUSED_FAIL = 'fused-failed';
+export const NO_SPEECH = 'no-speech';
 // 合并调用偶尔会把上下文“补”进转写：按录音时长估一个字数上限（老人语速一般 ≤ 6 字/秒），超了就不信，回退两步
 export const plausible = (text, durMs) => !durMs || String(text || '').replace(/[\s，。,.！!？?…、；;：:"“”]/g, '').length <= durMs / 1000 * 6 + 6;
-const FIRST_RULE = '前端已播过一句短回应。say 直接接着问或继续听，不再以“嗯”“哦”“我听着呢”“明白了”开头，不必另加一句复述。';
+const FIRST_RULE = 'say 直接接着问或继续听，不必另加一句复述。不要假定老人听过尚未播放或被打断的问题。';
 export const FORGOT_RE = /记不(太)?清|想不起|忘了|不记得|不知道/;
 // 服务端兜底：一次只问一个问题（第二个问号之后全截掉）
 export const oneQuestion = t => { const m = String(t || '').match(/^[^？?]*[？?]/); return m ? m[0] : String(t || ''); };
@@ -96,7 +93,7 @@ export const soothe = (t, said, q = CONCRETE[0]) => { if (!FORGOT_RE.test(said |
 // 换话题这一轮：只留模型“接住”的部分，候选由服务端念（与卡片一致）
 // 泛问检测与具体小问题兜底（画面/物件，好答）
 export const VAGUE_RE = /(日子|生活|那时候|那会儿|当时)?(过得)?(怎么样|如何)[？?]|感觉怎么样|觉得怎么样|什么感受|心里(怎么样|什么滋味)|还有什么想(说|聊)/;
-export const CONCRETE = ['那时候家里做饭用的是煤炉还是灶台？', '屋里最显眼的是什么家具呀？', '那会儿您常穿什么颜色的衣服？', '从家里窗户往外看，能看见什么？', '那时候家里有收音机吗？', '过年的时候，家里桌上常摆什么菜？'];
+export const CONCRETE = ['这件事，您想从哪一段讲起？', '那一段里，您还记得哪个细节？', '接下来发生了什么？', '当时您先注意到了什么？', '关于这件事，您还记得谁说过什么？', '您刚才提到的那一刻，发生了什么？'];
 export const concreteQ = (n, avoid = []) => CONCRETE.filter(q => !avoid.some(a => sim(a, q) > 0.5))[n % CONCRETE.length] || CONCRETE[n % CONCRETE.length];
 // 相似度：二字组 Dice 系数（去标点）；≥0.6 视为原样复述
 const bg = t => { const x = String(t || '').replace(/[\s，。,.！!？?…、；;：:“”"呀啊呢吗吧]/g, ''); const a = []; for (let i = 0; i < x.length - 1; i++) a.push(x.slice(i, i + 2)); return a; };
@@ -106,49 +103,116 @@ export const echoes = (say, refs) => { const q = questionOf(say); return !!q && 
 // 把 say 里的问题句换成 q（保留前面接住的部分）
 export const swapQuestion = (say, q) => { const k = String(say).search(/[^。！!？?]*[？?]/); return (k >= 0 ? String(say).slice(0, k) : String(say)) + q; };
 export const keepAck = t => String(t || '').replace(/(接下来|咱们聊聊哪|您想聊哪|想聊哪|下面|第一个[，,])[\s\S]*$/, '').replace(/[^。！!]*[？?]\s*$/, '').trim();
-export async function nextTurn(p, c, turns, sessionId, { audio } = {}) {
-  const MAX = 10, last = turns.at(-1), ask = c.plan.ask;
-  let r0 = null;
+// Drafts follow actual provider characters; only checked complete sentences
+// enter the voice queue. A draft may revise its unspoken tail, never a stable
+// prefix already offered for playback. Explicit topic switches stay buffered.
+export function hostProgress(p, c, turns, onReply, onDraft) {
+  const last = turns.at(-1), ask = c.plan.ask, count = turns.filter(t => !t.continuation).length;
+  const short = (last?.clean || '').replace(/[\s，。,.！!？?…、]/g, '').length < 8 || /不知道|忘了|想不起/.test(last?.clean || '');
+  const progress = { text: '', controls: null, draft: '', rawDraft: '',
+    preview(text, ask) {
+      const visible = text.startsWith(this.text) ? text : this.text;
+      if (visible === this.draft) return;
+      this.draft = visible; onDraft?.(visible, { ask, phase: 'chat' });
+    },
+    emit(text, ask) {
+      if (!text || text === this.text) return;
+      if (!text.startsWith(this.text)) return;
+      this.text = text; this.ask = ask; onReply?.(text, { ask, phase: 'chat' });
+      this.preview(this.rawDraft, ask);
+    },
+    update(json) {
+      const partial = topLevelJSON(json);
+      if (partial.text === undefined || !partial.fields.ask || typeof partial.fields.done !== 'boolean') return;
+      this.controls = partial.fields;
+      const nextAsk = partial.fields.ask, done = partial.fields.done || count >= 10;
+      const nA = validNode(nextAsk.nodeId) ? { nodeId: nextAsk.nodeId, depth: Math.max(1, Math.min(4, +nextAsk.depth || 1)) } : { ...ask };
+      // A known node can be displayed before its attribution finishes because
+      // this text is not yet audible. Never display metadata or a switch's
+      // speculative question as if it had already passed the speaking guards.
+      if (nextAsk.nodeId !== 'switch' && (validNode(nextAsk.nodeId) || done)) {
+        this.rawDraft = done ? say(partial.text) : oneQuestion(say(partial.text));
+        this.preview(this.rawDraft, nA);
+      }
+      // A menu decision is finalized after analysis, even in elder-led mode.
+      if (!done && nextAsk.nodeId === 'switch') return;
+      if (!done && !c.plan.free && nextAsk.nodeId !== ask.nodeId && (!validNode(nextAsk.nodeId) || partial.fields.answer?.nodeId !== nextAsk.nodeId)) return;
+      if (!done && FORGOT_RE.test(last?.clean || '') && !partial.complete) return;
+      const matches = [...partial.text.matchAll(/[。！？!?]/g)];
+      const end = partial.complete ? partial.text.length : matches.at(-1)?.index + 1;
+      if (!end) return;
+      let candidate = say(partial.text.slice(0, end));
+      if (!done) {
+        const refs = [P.questionFor(FW, nA.nodeId, nA.depth || 1, p), questionOf(last?.q), P.questionFor(FW, ask.nodeId, ask.depth, p)];
+        if (echoes(candidate, refs) || ((short || FORGOT_RE.test(last?.clean || '')) && VAGUE_RE.test(questionOf(candidate)))) candidate = swapQuestion(candidate, concreteQ(count, refs));
+        candidate = oneQuestion(soothe(candidate, last?.clean, concreteQ(count)));
+      }
+      this.emit(candidate, nA);
+    },
+  };
+  return progress;
+}
+
+export async function nextTurn(p, c, turns, sessionId, { audio, onReply, onDraft } = {}) {
+  const MAX = 10, last = turns.at(-1), ask = c.plan.ask, turnCount = turns.filter(t => !t.continuation).length;
+  let r0 = null, streamInterrupted = false;
+  const progress = (onReply || onDraft) && !audio ? hostProgress(p, c, turns, onReply, onDraft) : null;
   if (audio) { const real = last.clean; last.clean = '（见附带的录音）';
     try { r0 = await nextGemini(p, c, turns, audio); } catch (e) { r0 = null; } last.clean = real;
-    if (!r0 || r0.speech === false || !(r0.clean || r0.raw) || !r0.say || !plausible(r0.raw || r0.clean, audio.durMs)) throw new Error(FUSED_FAIL);
+    if (r0 && (r0.speech === false || !(r0.clean || r0.raw))) throw new Error(NO_SPEECH);
+    if (!r0 || !(r0.clean || r0.raw) || !r0.say || !plausible(r0.raw || r0.clean, audio.durMs)) throw new Error(FUSED_FAIL);
     last.raw = r0.raw || r0.clean; last.clean = r0.clean || r0.raw; }
   const short = (last?.clean || '').replace(/[\s，。,.！!？?…、]/g, '').length < 8 || /不知道|忘了|想不起/.test(last?.clean || '');
   const second = c.plan.nodes[c.plan.currentNodeIndex + 1];
-  let r = r0, source = r0 ? 'gemini-fused' : 'gemini';
+  let r = r0, source = r0 ? 'gemini-fused' : progress && openaiEnabled() ? 'openai-stream' : 'gemini';
   if (!r) try {
-    r = await nextGemini(p, c, turns);
+    r = await nextGemini(p, c, turns, null, progress);
     if (!r?.say) throw new Error('empty');
-  } catch (e) { if (/未替换的变量/.test(e.message)) console.warn('[vars]', e.message); r = null; source = 'fallback'; }
+  } catch (e) {
+    if (/未替换的变量/.test(e.message)) console.warn('[vars]', e.message);
+    if (progress?.text) { streamInterrupted = true; source = 'stream-interrupted'; r = { ...progress.controls, ask: progress.ask || ask, done: false, say: progress.text, action: '留白' }; }
+    else { r = null; source = 'fallback'; }
+  }
+  // A model's label cannot override a concrete subject the person just gave.
+  // Buffering switch replies above means this repair never replaces spoken audio.
+  if (r?.ask?.nodeId === 'switch' && !requestsChoices(p, last?.clean || last?.raw) && !r.done) {
+    r = { ...r, ask, action: '澄清', say: '刚才我没接准。您接着讲这件事。' };
+  }
   // 0) 改口：老人主动要求别的叫法（模型给 callName，或规则从原话识别），当场生效
   const newCall = (typeof r?.callName === 'string' && r.callName.trim() && r.callName.trim() !== p.callName ? r.callName.trim().slice(0, 8) : null) || (() => { const c = detectCallName(last?.clean); return c && c !== p.callName ? c : null; })();
   if (newCall) p = { ...p, callName: newCall, callNameBy: 'elder' };
   // 1) 回答归属与状态
-  const rule = P.ruleAnalyze(FW, last?.clean || '', ask, p);
-  const an = r?.answer && validNode(r.answer.nodeId) ? { ...r.answer, depth: Math.max(0, Math.min(4, +r.answer.depth || 0)) } : rule;
+  // A stale reference topic must not turn an unnamed teammate into a spouse.
+  // With no model attribution, free conversation only retains explicit mentions.
+  const rule = P.ruleAnalyze(FW, last?.clean || '', c.plan.free ? null : ask, p);
+  const unclassified = (r?.answer && !validNode(r.answer.nodeId)) || (c.plan.free && !r?.answer);
+  const an = unclassified ? { ...(r?.answer || rule), nodeId: null, depth: Math.max(0, Math.min(4, +r?.answer?.depth || 0)) } : r?.answer && validNode(r.answer.nodeId) ? { ...r.answer, depth: Math.max(0, Math.min(4, +r.answer.depth || 0)) } : rule;
   const emotion = r?.emotion || rule.emotion;
-  const upd = P.applyAnswer(FW, c.states, { nodeId: an.nodeId, depth: an.depth, note: an.note, short, emotion, leave: r?.leave || null }, sessionId);
+  const upd = unclassified ? { states: c.states, leave: null } : P.applyAnswer(FW, c.states, { nodeId: an.nodeId, depth: an.depth, note: an.note, short, emotion, leave: r?.leave || null }, sessionId);
   let states = upd.states; const entities = P.mergeEntities(c.entities, an.entities || [], an.nodeId, sessionId);
   // 当前节点是否聊够（跑题时当前节点也可能因连续简短等聊够）
   const curS = P.st(states, ask.nodeId), leave = an.nodeId === ask.nodeId ? upd.leave : (curS.depth >= 4 ? 'deep' : null);
   // 2) 规划推进
   let plan = { ...c.plan }, text, done;
   let sw = false;
-  if (r && r.ask?.nodeId === 'switch' && !c.plan.free) { sw = true; text = say(r.say); done = turns.length >= MAX; }
+  if (r && r.ask?.nodeId === 'switch' && requestsChoices(p, last?.clean || last?.raw)) { sw = true; text = say(r.say); done = turnCount >= MAX; }
   else if (r) {
     const nA = r.ask && validNode(r.ask.nodeId) ? { nodeId: r.ask.nodeId, depth: Math.max(1, Math.min(4, +r.ask.depth || 1)) } : ask;
-    if (!c.plan.free && nA.nodeId !== ask.nodeId && nA.nodeId !== an.nodeId && leave !== 'upset' && !r.done && turns.length < MAX) { // 模型想换话题：不直接跳，交给老人选
+    if (requestsChoices(p, last?.clean || last?.raw) && nA.nodeId !== ask.nodeId && nA.nodeId !== an.nodeId && leave !== 'upset' && !r.done && turnCount < MAX) { // 模型想换话题：不直接跳，交给老人选
       sw = true; text = say(r.say); done = false;
     } else {
     const k = plan.nodes.findIndex(x => x.nodeId === nA.nodeId);
     if (k > plan.currentNodeIndex) plan.currentNodeIndex = k;
-    plan.ask = nA; text = say(r.say); done = !!r.done || turns.length >= MAX;
+    plan.ask = nA; text = say(r.say); done = !!r.done || turnCount >= MAX;
     }
+  } else if (plan.free) {
+    done = turnCount >= MAX || P.parseChoice(FW, last?.clean || last?.raw || '', [], p, { after: true }).action === 'end';
+    text = done ? null : '刚才回复没接上。您接着讲这件事。';
   } else {
     const nx = P.nextAsk(FW, plan, states, leave);
-    if (leave !== 'upset' && leave !== 'tired' && turns.length < 5 && (nx.currentNodeIndex !== plan.currentNodeIndex || nx.done)) sw = true; // 聊够了：让老人自己选下一个
+    if (leave !== 'upset' && leave !== 'tired' && turnCount < 5 && (nx.currentNodeIndex !== plan.currentNodeIndex || nx.done)) sw = true; // 聊够了：让老人自己选下一个
     else plan = nx;
-    done = !sw && (plan.done || turns.length >= 5);
+    done = !sw && (plan.done || turnCount >= 5);
     const sad = emotion === '难过', forgot = /卡壳/.test(emotion);
     const pre = sad ? '您慢慢说。' : forgot ? '没关系。' : '';
     text = done ? null : sw ? '好，咱们换个话题。' : say(pre + P.questionFor(FW, plan.ask.nodeId, plan.ask.depth, p));
@@ -156,10 +220,15 @@ export async function nextTurn(p, c, turns, sessionId, { audio } = {}) {
   if (r && text && !done && !sw) { // 服务端把关：不原样复述计划问题/上一轮问题；短答、记不清后不泛问
     const prevQ = questionOf(turns.at(-1)?.q), planQ = P.questionFor(FW, plan.ask.nodeId, plan.ask.depth, p), refs = [planQ, prevQ, P.questionFor(FW, ask.nodeId, ask.depth, p)];
     const bad = t => echoes(t, refs) || ((short || FORGOT_RE.test(last?.clean || '')) && VAGUE_RE.test(questionOf(t)));
-    if (bad(text)) { const was = text; text = swapQuestion(text, concreteQ(turns.length, refs)); console.log('[turn] 问题复述/泛问 → 本地换成具体小问题（不再多调一次模型，免得拖慢第一声）:', questionOf(was), '→', questionOf(text)); } }
-  if (r && text && !done) text = sw ? keepAck(text) : oneQuestion(soothe(text, last?.clean, concreteQ(turns.length)));
+    if (bad(text)) { text = swapQuestion(text, concreteQ(turnCount, refs)); console.log('[turn] repeated-question locally replaced'); } }
+  if (r && text && !done) text = sw ? keepAck(text) : oneQuestion(soothe(text, last?.clean, concreteQ(turnCount)));
   if (done) { plan.done = true; if (!r) text = closing(p, { ...c, states, entities, plan }); }
-  return { emotion, action: r?.action || (done ? '收尾' : leave ? '过渡' : '追问细节'), say: text, done, source, analysis: { ...an, short, leave }, plan, states, entities, callName: newCall, switch: sw && !done };
+  if (progress?.text && (streamInterrupted || !String(text || '').startsWith(progress.text))) {
+    // A malformed/failed tail cannot replace a sentence already shown/spoken.
+    text = progress.text; streamInterrupted = true; sw = false; done = false;
+    plan = { ...c.plan, ask: progress.ask || ask, done: false };
+  }
+  return { streamInterrupted, emotion, action: r?.action || (done ? '收尾' : leave ? '过渡' : '追问细节'), say: text, done, source, analysis: { ...an, short, leave }, plan, states, entities, callName: newCall, switch: sw && !done };
 }
 
 export const DEMO_STORY = { title: '他说我跟桂花糕一样甜', body: '我是在纺织厂认识老李的。他是修机器的，一身机油味。\n\n头一回见他，傻乎乎的，脸一红就不会说话了。哈哈。\n\n那时候谈对象，我们去瘦西湖，他骑自行车带我。那是哪一年来着，我想不起来了。只记得是春天，柳树都绿了。\n\n他给我买过一包桂花糕，说扬州最甜的就是这个，跟我一样甜。\n\n他走了好多年了。这些事，我讲给小梅听，也讲给孙子听。', people: '李建国（老伴）；小梅（女儿）', timePlace: '江苏扬州，纺织厂、瘦西湖', quotes: '“他说扬州最甜的就是这个，跟我一样甜。”' };

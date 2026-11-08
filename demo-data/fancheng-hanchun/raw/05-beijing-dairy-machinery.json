@@ -1,0 +1,617 @@
+{
+  "interviewId": "i-fancheng-5",
+  "interviewer": {
+    "id": "demo-fancheng",
+    "name": "范成",
+    "role": "采访者"
+  },
+  "narrator": {
+    "id": "demo-hanchun",
+    "name": "寒春",
+    "role": "受访者"
+  },
+  "fictional": true,
+  "disclosure": "范成采访寒春的虚构演示；依公开生平创作，不是真实访谈或本人原话。",
+  "audio": null,
+  "timingSource": "estimated-script-timing",
+  "turns": [
+    {
+      "id": "i-fancheng-5-t1",
+      "q": "寒女士，今天想先聊哪段经历？",
+      "qid": "midlife-craft:1",
+      "ask": {
+        "nodeId": "midlife-craft",
+        "depth": 1
+      },
+      "raw": "聊聊北京养牛时做机器的事吧。别人常问我，从核物理到牛场，是不是一下子走得太远。我自己倒没这样想过。到了牛场，事情就在眼前：奶挤出来要往哪里送，机器能不能洗干净，人每天得多搬几回。这些问题都得有人蹲下来，一件一件地弄明白。",
+      "clean": "聊聊北京养牛时做机器的事吧。别人常问我，从核物理到牛场，是不是一下子走得太远。我自己倒没这样想过。到了牛场，事情就在眼前：奶挤出来要往哪里送，机器能不能洗干净，人每天得多搬几回。这些问题都得有人蹲下来，一件一件地弄明白。",
+      "audio": null,
+      "at": 1793928600000,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "重新组织的自我评价",
+        "生产现场问题的口语化列举"
+      ],
+      "analysis": {
+        "nodeId": "midlife-craft",
+        "depth": 1,
+        "note": "将话题落到生产现场。",
+        "entities": [
+          {
+            "type": "place",
+            "name": "北京",
+            "note": "后期农牧和机械工作所在地"
+          },
+          {
+            "type": "thing",
+            "name": "奶牛场设备",
+            "note": "本次回忆主题"
+          }
+        ]
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "寒女士，今天想先聊哪段经历？",
+      "idx": 1,
+      "nodeId": "midlife-craft",
+      "depth": 1,
+      "emotion": "平静",
+      "note": "将话题落到生产现场。",
+      "askedNode": "midlife-craft",
+      "askedDepth": 1
+    },
+    {
+      "id": "i-fancheng-5-t2",
+      "q": "那是哪一段时候？",
+      "qid": "midlife-craft:1",
+      "ask": {
+        "nodeId": "midlife-craft",
+        "depth": 1
+      },
+      "raw": "嗯，要分开讲，分开讲。我们一九七二年先回到北京南郊红星公社做农业工作，后来才有八十年代那些成套设备的事，小王庄是后面这一段。你如果把我早年在西安修铡草机的事情都放进这里，时间就乱了。牛还是牛，可手头的工具、能一起做事的人，已经不一样了。",
+      "clean": "要分开讲。我们一九七二年先回到北京南郊红星公社做农业工作，后来才有八十年代那些成套设备的事，小王庄是后面这一段。你如果把我早年在西安修铡草机的事情都放进这里，时间就乱了。牛还是牛，可手头的工具、能一起做事的人，已经不一样了。",
+      "audio": null,
+      "at": 1793928638720,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "纠正叙述顺序的口吻",
+        "对条件变化的概括"
+      ],
+      "analysis": {
+        "nodeId": "midlife-craft",
+        "depth": 1,
+        "note": "主动区分红星公社与后期设备工作。",
+        "entities": [
+          {
+            "type": "place",
+            "name": "红星公社",
+            "note": "1972年回到农业生产的地点"
+          },
+          {
+            "type": "place",
+            "name": "小王庄",
+            "note": "后期牛场设备工作的地点"
+          },
+          {
+            "type": "place",
+            "name": "西安",
+            "note": "更早的农机工作阶段"
+          }
+        ]
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "那是哪一段时候？",
+      "idx": 2,
+      "nodeId": "midlife-craft",
+      "depth": 1,
+      "emotion": "平静",
+      "note": "主动区分红星公社与后期设备工作。",
+      "askedNode": "midlife-craft",
+      "askedDepth": 1
+    },
+    {
+      "id": "i-fancheng-5-t3",
+      "q": "做一套设备，先看什么？",
+      "qid": "midlife-craft:2",
+      "ask": {
+        "nodeId": "midlife-craft",
+        "depth": 2
+      },
+      "raw": "我先看人怎么干活。图纸上的一条线很直，人走起来未必方便。我记得有一次，先跟着工人走了一遍搬奶的路，走到拐弯处，两个人得互相让一下。我就在纸上圈了那个地方。不是先挑一台漂亮机器，再想往哪里塞，是先弄清楚，眼前到底哪里让人费劲。",
+      "clean": "我先看人怎么干活。图纸上的一条线很直，人走起来未必方便。我记得有一次，先跟着工人走了一遍搬奶的路，走到拐弯处，两个人得互相让一下。我就在纸上圈了那个地方。不是先挑一台漂亮机器，再想往哪里塞，是先弄清楚，眼前到底哪里让人费劲。",
+      "audio": null,
+      "at": 1793928678000,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "跟随工人搬奶的具体场景",
+        "转弯避让的动作",
+        "在纸上画圈"
+      ],
+      "analysis": {
+        "nodeId": "midlife-craft",
+        "depth": 2,
+        "note": "先讲观察，再引出图纸。",
+        "entities": [
+          {
+            "type": "thing",
+            "name": "设备图纸",
+            "note": "用于记录工作动线"
+          }
+        ]
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "做一套设备，先看什么？",
+      "idx": 3,
+      "nodeId": "midlife-craft",
+      "depth": 2,
+      "emotion": "平静",
+      "note": "先讲观察，再引出图纸。",
+      "askedNode": "midlife-craft",
+      "askedDepth": 2
+    },
+    {
+      "id": "i-fancheng-5-t4",
+      "q": "工人会给您提意见吗？",
+      "qid": "midlife-craft:2",
+      "ask": {
+        "nodeId": "midlife-craft",
+        "depth": 2
+      },
+      "raw": "会，有时一句话就把我问住了。他们天天做的事，我站一上午未必看全。比如我觉得一个位置够用了，他们会带着平时用的桶过来，摆给我看，人还要转身呢。我很喜欢这种办法，别只在桌子边争。拿着东西到现场去，一个人的身体要占地方，不能在图上给他省掉。",
+      "clean": "会，有时一句话就把我问住了。他们天天做的事，我站一上午未必看全。比如我觉得一个位置够用了，他们会带着平时用的桶过来，摆给我看，人还要转身呢。我很喜欢这种办法，别只在桌子边争。拿着东西到现场去，一个人的身体要占地方，不能在图上给他省掉。",
+      "audio": null,
+      "at": 1793928716440,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "工人拿桶示范的情节",
+        "双方讨论的内容",
+        "当时情绪"
+      ],
+      "analysis": {
+        "nodeId": "midlife-craft",
+        "depth": 2,
+        "note": "谈工人的实际经验。",
+        "entities": []
+      },
+      "agent": {
+        "emotion": "开心",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "工人会给您提意见吗？",
+      "idx": 4,
+      "nodeId": "midlife-craft",
+      "depth": 2,
+      "emotion": "开心",
+      "note": "谈工人的实际经验。",
+      "askedNode": "midlife-craft",
+      "askedDepth": 2
+    },
+    {
+      "id": "i-fancheng-5-t5",
+      "q": "挤完的奶还要经过哪些环节？",
+      "qid": "midlife-craft:2",
+      "ask": {
+        "nodeId": "midlife-craft",
+        "depth": 2
+      },
+      "raw": "挤出来只是开头，还要输送、冷却，容器和管道也得清洗。哪一段接得不好，前头再用力也白费。我关心的不是让人站远一点，看机器自己动，就算先进了。得让做这份工作的人能照管它，知道哪里要查，哪里出了问题能看出来。机器最终还是要交到他们手里。",
+      "clean": "挤出来只是开头，还要输送、冷却，容器和管道也得清洗。哪一段接得不好，前头再用力也白费。我关心的不是让人站远一点，看机器自己动，就算先进了。得让做这份工作的人能照管它，知道哪里要查，哪里出了问题能看出来。机器最终还是要交到他们手里。",
+      "audio": null,
+      "at": 1793928756000,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "对设备设计目标的第一人称解释"
+      ],
+      "analysis": {
+        "nodeId": "midlife-craft",
+        "depth": 2,
+        "note": "描述整套工作的衔接，不给技术操作参数。",
+        "entities": [
+          {
+            "type": "thing",
+            "name": "挤奶设备",
+            "note": "需要与输送、冷却和清洗配合"
+          }
+        ]
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "挤完的奶还要经过哪些环节？",
+      "idx": 5,
+      "nodeId": "midlife-craft",
+      "depth": 2,
+      "emotion": "平静",
+      "note": "描述整套工作的衔接，不给技术操作参数。",
+      "askedNode": "midlife-craft",
+      "askedDepth": 2
+    },
+    {
+      "id": "i-fancheng-5-t6",
+      "q": "图纸画好就能放心了吗？",
+      "qid": "midlife-craft:2",
+      "ask": {
+        "nodeId": "midlife-craft",
+        "depth": 2
+      },
+      "raw": "不能，不能这样想。装起来以后，还得看实际怎么用。我有时拿着图去，才发现自己画的时候，手是从一个很方便的角度伸进去的，现场却不是那个角度。那就改。纸不会埋怨你，工人每天别着胳膊干活，可是实实在在的难受。我宁可图上多留几道改过的痕迹。",
+      "clean": "不能这样想。装起来以后，还得看实际怎么用。我有时拿着图去，才发现自己画的时候，手是从一个很方便的角度伸进去的，现场却不是那个角度。那就改。纸不会埋怨你，工人每天别着胳膊干活，可是实实在在的难受。我宁可图上多留几道改过的痕迹。",
+      "audio": null,
+      "at": 1793928795840,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "伸手角度不便的模拟问题",
+        "改图动作",
+        "个人取舍"
+      ],
+      "analysis": {
+        "nodeId": "midlife-craft",
+        "depth": 2,
+        "note": "承认设计需要在现场修正。",
+        "entities": []
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "图纸画好就能放心了吗？",
+      "idx": 6,
+      "nodeId": "midlife-craft",
+      "depth": 2,
+      "emotion": "平静",
+      "note": "承认设计需要在现场修正。",
+      "askedNode": "midlife-craft",
+      "askedDepth": 2
+    },
+    {
+      "id": "i-fancheng-5-t7",
+      "q": "阳早主要留意什么？",
+      "qid": "midlife-craft:2",
+      "ask": {
+        "nodeId": "midlife-craft",
+        "depth": 2
+      },
+      "raw": "他看牛看得很细，我容易盯住机器。不是说我们各管一半就不来往了，碰到一件事，常常是两个方向看过去。我在看通道够不够顺，他会注意牛进来以后站得安不安稳。听他讲完，我得再看一遍图。有些问题不是加一个零件就解决的，得把整个安排想一遍。",
+      "clean": "他看牛看得很细，我容易盯住机器。不是说我们各管一半就不来往了，碰到一件事，常常是两个方向看过去。我在看通道够不够顺，他会注意牛进来以后站得安不安稳。听他讲完，我得再看一遍图。有些问题不是加一个零件就解决的，得把整个安排想一遍。",
+      "audio": null,
+      "at": 1793928835120,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "两人的具体观察分工",
+        "检查通道的情境",
+        "重新看图的动作"
+      ],
+      "analysis": {
+        "nodeId": "midlife-craft",
+        "depth": 2,
+        "note": "将合作写成互补观察。",
+        "entities": [
+          {
+            "type": "person",
+            "name": "阳早",
+            "note": "寒春的丈夫，共同从事奶牛与农机工作"
+          }
+        ]
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "阳早主要留意什么？",
+      "idx": 7,
+      "nodeId": "midlife-craft",
+      "depth": 2,
+      "emotion": "平静",
+      "note": "将合作写成互补观察。",
+      "askedNode": "midlife-craft",
+      "askedDepth": 2
+    },
+    {
+      "id": "i-fancheng-5-t8",
+      "q": "你们意见不一样时呢？",
+      "qid": "midlife-craft:3",
+      "ask": {
+        "nodeId": "midlife-craft",
+        "depth": 3
+      },
+      "raw": "也有不一样的时候，谁都不能因为先说了就算数。我有时觉得一处安排已经省了很多力气，他还嫌不够方便。那就去看，叫每天用的人试一试。说起来简单，轮到自己花了不少心思的东西，要承认还有毛病，也会不痛快。我可没那么好脾气，只是不能拿机器跟人赌气。",
+      "clean": "也有不一样的时候，谁都不能因为先说了就算数。我有时觉得一处安排已经省了很多力气，他还嫌不够方便。那就去看，叫每天用的人试一试。说起来简单，轮到自己花了不少心思的东西，要承认还有毛病，也会不痛快。我可没那么好脾气，只是不能拿机器跟人赌气。",
+      "audio": null,
+      "at": 1793928873280,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "意见不合的情节",
+        "自己的不悦",
+        "请使用者试用的过程"
+      ],
+      "analysis": {
+        "nodeId": "midlife-craft",
+        "depth": 3,
+        "note": "承认合作中的不悦，没有编他人原话。",
+        "entities": []
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "你们意见不一样时呢？",
+      "idx": 8,
+      "nodeId": "midlife-craft",
+      "depth": 3,
+      "emotion": "平静",
+      "note": "承认合作中的不悦，没有编他人原话。",
+      "askedNode": "midlife-craft",
+      "askedDepth": 3
+    },
+    {
+      "id": "i-fancheng-5-t9",
+      "q": "改动通常怎么记下来？",
+      "qid": "midlife-craft:2",
+      "ask": {
+        "nodeId": "midlife-craft",
+        "depth": 2
+      },
+      "raw": "我会在原来的图旁边留一点地方，写这回为什么改。只留最后一个样子，过后可能又把旧毛病做回来。小改动尤其容易忘，当时觉得不过挪一点点，几个月以后，连自己都要问为什么。当初要是多记几行，就少猜一回，也省得别人拿着我的图到处找我。",
+      "clean": "我会在原来的图旁边留一点地方，写这回为什么改。只留最后一个样子，过后可能又把旧毛病做回来。小改动尤其容易忘，当时觉得不过挪一点点，几个月以后，连自己都要问为什么。当初要是多记几行，就少猜一回，也省得别人拿着我的图到处找我。",
+      "audio": null,
+      "at": 1793928913120,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "图旁留白的方式",
+        "担心重犯旧问题的心理",
+        "几个月后翻图的假想情境"
+      ],
+      "analysis": {
+        "nodeId": "midlife-craft",
+        "depth": 2,
+        "note": "引出记录改动原因的习惯。",
+        "entities": [
+          {
+            "type": "thing",
+            "name": "改动记录",
+            "note": "本场虚构的具体记录方式"
+          }
+        ]
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "改动通常怎么记下来？",
+      "idx": 9,
+      "nodeId": "midlife-craft",
+      "depth": 2,
+      "emotion": "平静",
+      "note": "引出记录改动原因的习惯。",
+      "askedNode": "midlife-craft",
+      "askedDepth": 2
+    },
+    {
+      "id": "i-fancheng-5-t10",
+      "q": "物理学的训练还用得上吗？",
+      "qid": "midlife-craft:3",
+      "ask": {
+        "nodeId": "midlife-craft",
+        "depth": 3
+      },
+      "raw": "用得上，可不是靠一个从前的身份就够了。嗯，不够，懂一点道理，跟能把东西做好，中间还隔着材料、加工，还有人的经验。我在农场也要学。以前做实验，要看现象和设想是不是一回事；现在看机器，也得让它实际跑起来。不能因为图画得好看，就说事情已经成了。",
+      "clean": "用得上，可不是靠一个从前的身份就够了。懂一点道理，跟能把东西做好，中间还隔着材料、加工，还有人的经验。我在农场也要学。以前做实验，要看现象和设想是不是一回事；现在看机器，也得让它实际跑起来。不能因为图画得好看，就说事情已经成了。",
+      "audio": null,
+      "at": 1793928951000,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "比较两段工作的方法",
+        "自我修正的口语"
+      ],
+      "analysis": {
+        "nodeId": "midlife-craft",
+        "depth": 3,
+        "note": "将实验训练与继续学习联系起来。",
+        "entities": []
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "物理学的训练还用得上吗？",
+      "idx": 10,
+      "nodeId": "midlife-craft",
+      "depth": 3,
+      "emotion": "平静",
+      "note": "将实验训练与继续学习联系起来。",
+      "askedNode": "midlife-craft",
+      "askedDepth": 3
+    },
+    {
+      "id": "i-fancheng-5-t11",
+      "q": "什么时刻让您觉得没白忙？",
+      "qid": "midlife-craft:3",
+      "ask": {
+        "nodeId": "midlife-craft",
+        "depth": 3
+      },
+      "raw": "不是别人来参观的时候。有一回收工，我还惦记着刚改过的地方，绕过去看，人家已经很自然地在用了，没有围着机器等我指点。我站了一会儿就回去了。那种时候心里很踏实。你弄出的东西进了别人的日常，不需要每天把设计它的人叫来，这才是往前走了一点。",
+      "clean": "不是别人来参观的时候。有一回收工，我还惦记着刚改过的地方，绕过去看，人家已经很自然地在用了，没有围着机器等我指点。我站了一会儿就回去了。那种时候心里很踏实。你弄出的东西进了别人的日常，不需要每天把设计它的人叫来，这才是往前走了一点。",
+      "audio": null,
+      "at": 1793928991680,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "收工后绕回查看",
+        "工人自然使用的情节",
+        "站立片刻离开",
+        "内心踏实"
+      ],
+      "analysis": {
+        "nodeId": "midlife-craft",
+        "depth": 3,
+        "note": "用一个日常场景表现成就感。",
+        "entities": []
+      },
+      "agent": {
+        "emotion": "开心",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "什么时刻让您觉得没白忙？",
+      "idx": 11,
+      "nodeId": "midlife-craft",
+      "depth": 3,
+      "emotion": "开心",
+      "note": "用一个日常场景表现成就感。",
+      "askedNode": "midlife-craft",
+      "askedDepth": 3
+    },
+    {
+      "id": "i-fancheng-5-t12",
+      "q": "这些经历最想留给后来人什么？",
+      "qid": "midlife-craft:3",
+      "ask": {
+        "nodeId": "midlife-craft",
+        "depth": 3
+      },
+      "raw": "不要只留一张完成以后的照片。我希望把走过的弯路也留着，哪里想简单了，谁提醒过我，为什么又改了一次。别人接着做，可能会比我们做得更好，那不是把我们的工作抹掉了。我怕的是明明有人碰过的墙，后面的人不知道，又白白碰一回。笔记在这里就很有用。",
+      "clean": "不要只留一张完成以后的照片。我希望把走过的弯路也留着，哪里想简单了，谁提醒过我，为什么又改了一次。别人接着做，可能会比我们做得更好，那不是把我们的工作抹掉了。我怕的是明明有人碰过的墙，后面的人不知道，又白白碰一回。笔记在这里就很有用。",
+      "audio": null,
+      "at": 1793929031520,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "希望后人如何使用材料的表述",
+        "对重复犯错的担忧"
+      ],
+      "analysis": {
+        "nodeId": "midlife-craft",
+        "depth": 3,
+        "note": "转到技术记录的传承。",
+        "entities": [
+          {
+            "type": "thing",
+            "name": "工作笔记",
+            "note": "连接下一次访谈的线索"
+          }
+        ]
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "这些经历最想留给后来人什么？",
+      "idx": 12,
+      "nodeId": "midlife-craft",
+      "depth": 3,
+      "emotion": "平静",
+      "note": "转到技术记录的传承。",
+      "askedNode": "midlife-craft",
+      "askedDepth": 3
+    },
+    {
+      "id": "i-fancheng-5-t13",
+      "q": "下回从那本笔记接着聊？",
+      "qid": "midlife-craft:1",
+      "ask": {
+        "nodeId": "midlife-craft",
+        "depth": 1
+      },
+      "raw": "好，下回就从记录说。我想先找一找旧图边上的几行改动说明，不一定是什么大事，可能只是一个不方便伸手的位置。当时为什么写下来，比纸上画得多整齐更有意思。今天我说得有点久，嗓子干了，先歇一歇吧。这一段你先存着，别急着替我收成一个什么结论。",
+      "clean": "好，下回就从记录说。我想先找一找旧图边上的几行改动说明，不一定是什么大事，可能只是一个不方便伸手的位置。当时为什么写下来，比纸上画得多整齐更有意思。今天我说得有点久，嗓子干了，先歇一歇吧。这一段你先存着，别急着替我收成一个什么结论。",
+      "audio": null,
+      "at": 1793929072200,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "准备寻找旧图说明",
+        "嗓子干的当下状态",
+        "主动休息与叮嘱"
+      ],
+      "analysis": {
+        "nodeId": "midlife-craft",
+        "depth": 1,
+        "note": "受访者主动休息，留下具体线索。",
+        "entities": []
+      },
+      "agent": {
+        "emotion": "累了",
+        "action": "收尾",
+        "source": "demo-scripted"
+      },
+      "question": "下回从那本笔记接着聊？",
+      "idx": 13,
+      "nodeId": "midlife-craft",
+      "depth": 1,
+      "emotion": "累了",
+      "note": "受访者主动休息，留下具体线索。",
+      "askedNode": "midlife-craft",
+      "askedDepth": 1
+    }
+  ]
+}

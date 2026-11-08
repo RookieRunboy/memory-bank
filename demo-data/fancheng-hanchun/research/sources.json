@@ -1,0 +1,331 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-08",
+  "timezone": "Asia/Shanghai",
+  "purpose": "寒春生平原型的虚构访谈演示事实边界",
+  "fictionNotice": "范成采访寒春的虚构演示；依公开生平创作，不是真实访谈或本人原话。2026年的日期仅为演示安排。",
+  "sources": [
+    {
+      "id": "H01",
+      "title": "Joan Hinton '42",
+      "publisher": "Bennington College",
+      "url": "https://www.bennington.edu/bennington-network/outsized-impact/joan-hinton",
+      "kind": "母校人物介绍",
+      "access": "全文可读",
+      "supports": [
+        "F01",
+        "F02",
+        "F03",
+        "F14",
+        "F15"
+      ],
+      "caveats": "仅采用教育、工作与迁居基本信息；该文关于在中国初识丈夫的说法与早年室友关系材料不符，不采用。"
+    },
+    {
+      "id": "H02",
+      "title": "Bob Carter’s Interview (2018)",
+      "publisher": "Atomic Heritage Foundation / National Museum of Nuclear Science & History",
+      "url": "https://ahf.nuclearmuseum.org/voices/oral-histories/bob-carters-interview-2018/",
+      "kind": "当事同事原始口述",
+      "interviewDate": "2018-05-22",
+      "access": "全文可读",
+      "supports": [
+        "F02",
+        "F03",
+        "F14"
+      ],
+      "caveats": "晚年回忆；观测距离回忆与机构简介不同，不写死距离。"
+    },
+    {
+      "id": "H03",
+      "title": "寒春与杨振宁",
+      "publisher": "清华校友总会转载光明网，李树喜",
+      "publishedAt": "2021-09-27",
+      "url": "https://www.tsinghua.org.cn/info/1023/35976.htm",
+      "kind": "据早年口述撰写的报告文学回顾",
+      "access": "正文仍可读取，页面同时显示‘此文档已删除’",
+      "supports": [
+        "F01",
+        "F04"
+      ],
+      "caveats": "非逐字访谈原始档；精确相识日、学位、唯一女性、核实验技术描述不得无条件沿用。"
+    },
+    {
+      "id": "H04",
+      "title": "谈科学家与政治以及科学与哲学——2016年5月6日杨振宁访谈",
+      "publisher": "《物理》2021年第50卷第9期；爱思想转载",
+      "interviewDate": "2016-05-06",
+      "url": "https://wuli.iphy.ac.cn/cn/article/pdf/preview/10.7693/wl20210905.pdf",
+      "readableMirror": "https://www.aisixiang.com/data/145942.html",
+      "kind": "当事人访谈的期刊发表本",
+      "access": "原PDF检索索引可读、直接打开超时；转载正文可读",
+      "supports": [
+        "F04",
+        "F05",
+        "F03"
+      ],
+      "caveats": "关于相识年份的回忆与其他资料有差异，采用战后芝加哥这一共同范围。"
+    },
+    {
+      "id": "H05",
+      "title": "一对来自美国的夫妻，在中国留下一处红色教育基地",
+      "publisher": "新华每日电讯，人民周刊转载",
+      "publishedAt": "2021-03-22",
+      "url": "https://www.peopleweekly.cn/html/2021/renwu_0322/64594.html",
+      "kind": "记者采访报道",
+      "access": "全文可读",
+      "supports": [
+        "F06",
+        "F07",
+        "F08",
+        "F13"
+      ],
+      "caveats": "赴华月份、抵延安月份、婚礼场所与其他报道有差异；不用文章的跨年代连接句代替时间线。"
+    },
+    {
+      "id": "H06",
+      "title": "为中国养奶牛的阳早和寒春",
+      "publisher": "学习时报，人民周刊转载，朱明玉",
+      "publishedAt": "2021-12-17",
+      "url": "https://www.peopleweekly.cn/html/2021/wenshi_1217/104049.html",
+      "kind": "历史人物回顾",
+      "access": "全文可读",
+      "supports": [
+        "F06",
+        "F07",
+        "F08",
+        "F09",
+        "F10",
+        "F11"
+      ],
+      "caveats": "农学学校表述与康奈尔原始校友资料不一；不使用未经核对的学籍细节。"
+    },
+    {
+      "id": "H07",
+      "title": "阳早寒春在草滩",
+      "publisher": "西安市纪委监委转载《党风与廉政》，马磊",
+      "publishedAt": "2025-11-13",
+      "url": "https://xian.qinfeng.gov.cn/info/1157/42120.htm",
+      "kind": "采访后人及农场人员的地方历史报道",
+      "access": "全文可读",
+      "supports": [
+        "F09",
+        "F11",
+        "F13"
+      ],
+      "caveats": "篇章间‘同一时期’不可理解为同一年；不采用与其他来源冲突的婚礼地点。"
+    },
+    {
+      "id": "H08",
+      "title": "国机集团干部教育基地",
+      "publisher": "人民网专题中的国机集团基地资料",
+      "url": "https://finance.people.com.cn/GB/8215/435221/437704/437840/index.html",
+      "kind": "工作机构纪念基地及实物展陈介绍",
+      "access": "检索索引全文与图片题注可读，直接打开返回502",
+      "supports": [
+        "F01",
+        "F06",
+        "F07",
+        "F11",
+        "F12",
+        "F13"
+      ],
+      "caveats": "只采用身份、工作和展陈实物；年龄口径不统一，不从享年反推生日。"
+    },
+    {
+      "id": "H09",
+      "title": "Alumni Traced, Cornell Alumni News, February 1989, p.13",
+      "publisher": "Cornell University eCommons",
+      "publishedAt": "1989-02",
+      "url": "https://ecommons.cornell.edu/bitstream/1813/28048/1/091_06.pdf",
+      "kind": "校友档案核认说明",
+      "access": "检索索引可读，直接打开受429限流",
+      "supports": [
+        "F06"
+      ],
+      "caveats": "确认Erwin Sid Engst与William Hinton的室友关系、Joan为William妹妹；不提供Joan与Erwin初见日期。"
+    },
+    {
+      "id": "H10",
+      "title": "Joan Hinton",
+      "publisher": "National Museum of Nuclear Science & History / Atomic Heritage Foundation",
+      "url": "https://ahf.nuclearmuseum.org/ahf/profile/joan-hinton/",
+      "kind": "专业历史博物馆人物简介",
+      "access": "全文可读",
+      "supports": [
+        "F01",
+        "F02",
+        "F13",
+        "F14"
+      ],
+      "caveats": "所列1944博士学位与中文资料及后续研究生经历冲突，不采用学位结论；不用‘defected’作为无争议事实标签。"
+    },
+    {
+      "id": "H11",
+      "title": "但愿人长久，千里共同途",
+      "publisher": "清华校友通讯，杨振宁百岁讲话",
+      "url": "https://www.tsinghua.org.cn/__local/B/DA/B6/ACBBB9749359E0AE1E853BA3041_F27E5625_1B04EE.pdf",
+      "kind": "当事人讲话",
+      "access": "检索索引可读，直接打开超时",
+      "supports": [
+        "F04",
+        "F15"
+      ],
+      "caveats": "可支持同实验室20个月及核查中国原子弹传言；不据此倒推相识具体日。"
+    }
+  ],
+  "facts": [
+    {
+      "id": "F01",
+      "claim": "寒春是Joan Hinton（琼·辛顿），1921—2010；1942年毕业于本宁顿学院，后赴威斯康辛读物理研究生。",
+      "sourceRefs": [
+        "H01",
+        "H03",
+        "H10"
+      ],
+      "confidence": "高"
+    },
+    {
+      "id": "F02",
+      "claim": "1944—1945年在洛斯阿拉莫斯参与曼哈顿计划，和Bob Carter一起做费米的实验助手。",
+      "sourceRefs": [
+        "H01",
+        "H02",
+        "H10"
+      ],
+      "confidence": "高"
+    },
+    {
+      "id": "F03",
+      "claim": "战后赴芝加哥继续研究；1948年离美赴中国。不是1945试爆后立即到陕北。",
+      "sourceRefs": [
+        "H01",
+        "H02",
+        "H04"
+      ],
+      "confidence": "高；不写赴华月份"
+    },
+    {
+      "id": "F04",
+      "claim": "战后在芝加哥与杨振宁同学、同实验室工作；加速器合作属于Allison实验室阶段，不能写成两人共同参与曼哈顿计划。",
+      "sourceRefs": [
+        "H03",
+        "H04",
+        "H11"
+      ],
+      "confidence": "共同范围高；精确相识日有冲突"
+    },
+    {
+      "id": "F05",
+      "claim": "费米指导过寒春工作，适合称老师或工作上的指导者；杨振宁访谈明确区别其与正式研究生导师的关系。",
+      "sourceRefs": [
+        "H04"
+      ],
+      "confidence": "高"
+    },
+    {
+      "id": "F06",
+      "claim": "阳早是Erwin（Sid）Engst；韩丁是William Hinton、寒春的兄长，曾与阳早做康奈尔室友；两人经韩丁相识。",
+      "sourceRefs": [
+        "H05",
+        "H06",
+        "H09"
+      ],
+      "confidence": "高；初见年月地点未确认"
+    },
+    {
+      "id": "F07",
+      "claim": "阳早1946年赴华；寒春1948年赴华、1949年到延安并与阳早成婚。1947年撤离延安保护牛群是阳早的经历。",
+      "sourceRefs": [
+        "H05",
+        "H06",
+        "H08"
+      ],
+      "confidence": "年份高；到达月份、婚礼具体场所有差异"
+    },
+    {
+      "id": "F08",
+      "claim": "1949年秋夫妻赴城川三边牧场工作；地点在陕北与今内蒙古鄂托克前旗一带。阳早管畜牧技术，寒春从事乳品加工，并向当地牧民学习。",
+      "sourceRefs": [
+        "H05",
+        "H06"
+      ],
+      "confidence": "高；不把行政沿革简化为今日陕西县域"
+    },
+    {
+      "id": "F09",
+      "claim": "1950年代转入西安闫庄、草滩奶牛场阶段，参与消毒、制冷、铡草机及挤奶设备改进。",
+      "sourceRefs": [
+        "H06",
+        "H07"
+      ],
+      "confidence": "高；阶段内具体年份按具体事项判断"
+    },
+    {
+      "id": "F10",
+      "claim": "1966年调北京做译校；1972年到北京南郊红星公社重返农业生产和农机改进。",
+      "sourceRefs": [
+        "H06"
+      ],
+      "confidence": "较高"
+    },
+    {
+      "id": "F11",
+      "claim": "1980年代在北京等地推进奶牛场设备和设计，包括挤奶、冷却、饲喂等环节；直冷式奶罐及成套设备属于较晚工作。",
+      "sourceRefs": [
+        "H06",
+        "H07",
+        "H08"
+      ],
+      "confidence": "高；不写成1949陕北已有成套系统"
+    },
+    {
+      "id": "F12",
+      "claim": "纪念基地展示成箱工作笔记，可支撑长期记录工作的主题。具体某页、牛号、笔迹和笔记句子未核实。",
+      "sourceRefs": [
+        "H08"
+      ],
+      "confidence": "笔记存在高；具体内容不可据此认定"
+    },
+    {
+      "id": "F13",
+      "claim": "阳早于2003年去世，寒春于2010年6月8日在北京去世。2026年的访谈只能是范成采访寒春的虚构演示。",
+      "sourceRefs": [
+        "H05",
+        "H07",
+        "H08",
+        "H10"
+      ],
+      "confidence": "高"
+    },
+    {
+      "id": "F14",
+      "claim": "1945年7月寒春从远处目击Trinity试爆；同事Carter原始口述证实同行。广岛、长崎后她参加反核武器与和平活动。",
+      "sourceRefs": [
+        "H01",
+        "H02",
+        "H10"
+      ],
+      "confidence": "高；不使用精确观测距离"
+    },
+    {
+      "id": "F15",
+      "claim": "没有可靠依据把寒春写成中国原子弹工程参与者或核秘密传递者；杨振宁记述曾核查相关传言。",
+      "sourceRefs": [
+        "H01",
+        "H11"
+      ],
+      "confidence": "高"
+    }
+  ],
+  "interviewer": {
+    "id": "demo-fancheng",
+    "name": "范成",
+    "role": "采访者"
+  },
+  "narrator": {
+    "id": "demo-hanchun",
+    "name": "寒春",
+    "role": "受访者"
+  }
+}

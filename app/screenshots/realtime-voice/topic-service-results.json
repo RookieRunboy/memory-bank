@@ -1,0 +1,59 @@
+{
+  "measuredAt": "2026-11-07T18:57:09.112Z",
+  "isolation": {
+    "temporaryDatabase": true,
+    "existingUserDataChanged": false
+  },
+  "rounds": [
+    {
+      "label": "opening",
+      "manual": "Ok，这次聊聊这次的。我年轻时候第一次参加的黑客松的比赛。",
+      "say": "您头一回参加，那是个什么比赛？",
+      "phase": "chat",
+      "source": "openai-stream",
+      "nodeId": null,
+      "drafts": 1,
+      "replies": 1,
+      "durationMs": 4093,
+      "interrupted": false
+    },
+    {
+      "label": "correction",
+      "manual": "哎，我是问，我是说的是。聊第一次参加黑客松比赛的经历吧。",
+      "say": "比赛那天，您带着什么去的？",
+      "phase": "chat",
+      "source": "openai-stream",
+      "nodeId": null,
+      "drafts": 1,
+      "replies": 1,
+      "durationMs": 3484,
+      "interrupted": false
+    },
+    {
+      "label": "followup",
+      "manual": "当时我们四个人，一夜没睡，一起做了个帮助盲人识别物品的小程序。",
+      "say": "帮盲人认东西，那主意是谁先提的？",
+      "phase": "chat",
+      "source": "openai-stream",
+      "nodeId": "youth-times",
+      "drafts": 13,
+      "replies": 1,
+      "durationMs": 2662,
+      "interrupted": false
+    },
+    {
+      "label": "recover-from-wedding",
+      "manual": "不是结婚，我说的是第一次参加黑客松比赛的经历。",
+      "say": "那场比赛，您做的是什么？",
+      "phase": "chat",
+      "source": "openai-stream",
+      "nodeId": "life-technology",
+      "drafts": 7,
+      "replies": 1,
+      "durationMs": 2806,
+      "interrupted": false
+    }
+  ],
+  "transportPass": true,
+  "menuAbsent": true
+}

@@ -1,0 +1,594 @@
+{
+  "interviewId": "i-fancheng-6",
+  "interviewer": {
+    "id": "demo-fancheng",
+    "name": "范成",
+    "role": "采访者"
+  },
+  "narrator": {
+    "id": "demo-hanchun",
+    "name": "寒春",
+    "role": "受访者"
+  },
+  "fictional": true,
+  "disclosure": "范成采访寒春的虚构演示；依公开生平创作，不是真实访谈或本人原话。",
+  "audio": null,
+  "timingSource": "estimated-script-timing",
+  "turns": [
+    {
+      "id": "i-fancheng-6-t1",
+      "q": "寒女士，今天想先聊哪段经历？",
+      "qid": "elder-oldthing:1",
+      "ask": {
+        "nodeId": "elder-oldthing",
+        "depth": 1
+      },
+      "raw": "上回说到图纸边上的记录，今天就聊这个吧。工作做久了，留下不少本子。人家看这些东西，可能先问值不值得保存。我想，本子本身没什么了不起，里面记着一个问题怎么来，又怎么改，才有一点用。只看最后那张干干净净的图，有些事情反而看不见了。",
+      "clean": "上回说到图纸边上的记录，今天就聊这个吧。工作做久了，留下不少本子。人家看这些东西，可能先问值不值得保存。我想，本子本身没什么了不起，里面记着一个问题怎么来，又怎么改，才有一点用。只看最后那张干干净净的图，有些事情反而看不见了。",
+      "audio": null,
+      "at": 1794015000000,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "当次接续话题的表达",
+        "对保存价值的个人判断"
+      ],
+      "analysis": {
+        "nodeId": "elder-oldthing",
+        "depth": 1,
+        "note": "承接上场具体线索。",
+        "entities": [
+          {
+            "type": "thing",
+            "name": "工作笔记",
+            "note": "本场回忆中心"
+          },
+          {
+            "type": "thing",
+            "name": "设备图纸",
+            "note": "上次访谈留下的线索"
+          }
+        ]
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "寒女士，今天想先聊哪段经历？",
+      "idx": 1,
+      "nodeId": "elder-oldthing",
+      "depth": 1,
+      "emotion": "平静",
+      "note": "承接上场具体线索。",
+      "askedNode": "elder-oldthing",
+      "askedDepth": 1
+    },
+    {
+      "id": "i-fancheng-6-t2",
+      "q": "里面通常记些什么？",
+      "qid": "elder-oldthing:2",
+      "ask": {
+        "nodeId": "elder-oldthing",
+        "depth": 2
+      },
+      "raw": "杂，杂得很。有图，有计算，也有看牛时记的零碎事。你别把它想成一本写得很漂亮的日记。我有时只写几行，先把当时的问题留下。等到再看，发现几行还不够，又补一点。人以为刚发生的事永远忘不了，其实过些时候，连先后次序也会混，所以我不大信只靠脑子。",
+      "clean": "杂得很。有图，有计算，也有看牛时记的零碎事。你别把它想成一本写得很漂亮的日记。我有时只写几行，先把当时的问题留下。等到再看，发现几行还不够，又补一点。人以为刚发生的事永远忘不了，其实过些时候，连先后次序也会混，所以我不大信只靠脑子。",
+      "audio": null,
+      "at": 1794015039560,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "本内材料的模拟组合",
+        "补写方式",
+        "对记忆的自我评价"
+      ],
+      "analysis": {
+        "nodeId": "elder-oldthing",
+        "depth": 2,
+        "note": "先说明记录用途，不赋予具体实物出处。",
+        "entities": []
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "里面通常记些什么？",
+      "idx": 2,
+      "nodeId": "elder-oldthing",
+      "depth": 2,
+      "emotion": "平静",
+      "note": "先说明记录用途，不赋予具体实物出处。",
+      "askedNode": "elder-oldthing",
+      "askedDepth": 2
+    },
+    {
+      "id": "i-fancheng-6-t3",
+      "q": "能讲一条这样的零碎记录吗？",
+      "qid": "elder-oldthing:2",
+      "ask": {
+        "nodeId": "elder-oldthing",
+        "depth": 2
+      },
+      "raw": "比如牛舍一个角落，早上看着比旁边湿。我先记在那个地方，下午再去看，还是湿，才有接着查的方向。只写一句牛舍不好，过后谁知道我说的是哪里呢。要把眼睛看到的那一点先写清楚，别马上把原因也当成看见的东西。我自己也犯过这个毛病，猜到了就急着下结论。",
+      "clean": "比如牛舍一个角落，早上看着比旁边湿。我先记在那个地方，下午再去看，还是湿，才有接着查的方向。只写一句牛舍不好，过后谁知道我说的是哪里呢。要把眼睛看到的那一点先写清楚，别马上把原因也当成看见的东西。我自己也犯过这个毛病，猜到了就急着下结论。",
+      "audio": null,
+      "at": 1794015079120,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "牛舍角落偏湿的例子",
+        "早晚复看过程",
+        "记录内容",
+        "曾急于判断的自述"
+      ],
+      "analysis": {
+        "nodeId": "elder-oldthing",
+        "depth": 2,
+        "note": "用模拟观察说明事实与判断的区别。",
+        "entities": [
+          {
+            "type": "thing",
+            "name": "牛舍角落观察记录",
+            "note": "用于示范记录方法的虚构条目"
+          }
+        ]
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "能讲一条这样的零碎记录吗？",
+      "idx": 3,
+      "nodeId": "elder-oldthing",
+      "depth": 2,
+      "emotion": "平静",
+      "note": "用模拟观察说明事实与判断的区别。",
+      "askedNode": "elder-oldthing",
+      "askedDepth": 2
+    },
+    {
+      "id": "i-fancheng-6-t4",
+      "q": "复看以后，会改原来的记录吗？",
+      "qid": "elder-oldthing:3",
+      "ask": {
+        "nodeId": "elder-oldthing",
+        "depth": 3
+      },
+      "raw": "会补，但我不愿意把前面完全擦掉。今天发现昨天想错了，就在旁边说清楚错在哪里。否则翻回来，全是正确答案，好像我们从来没费过劲，那有什么意思。有人拿去接着做，也得知道我曾经漏看了什么。留着错误，不是要替自己辩护，是把事情交代完整一点。",
+      "clean": "会补，但我不愿意把前面完全擦掉。今天发现昨天想错了，就在旁边说清楚错在哪里。否则翻回来，全是正确答案，好像我们从来没费过劲，那有什么意思。有人拿去接着做，也得知道我曾经漏看了什么。留着错误，不是要替自己辩护，是把事情交代完整一点。",
+      "audio": null,
+      "at": 1794015120080,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "补记而不擦除的具体习惯",
+        "对记录用途的阐述"
+      ],
+      "analysis": {
+        "nodeId": "elder-oldthing",
+        "depth": 3,
+        "note": "说明保留修正痕迹的意义。",
+        "entities": []
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "复看以后，会改原来的记录吗？",
+      "idx": 4,
+      "nodeId": "elder-oldthing",
+      "depth": 3,
+      "emotion": "平静",
+      "note": "说明保留修正痕迹的意义。",
+      "askedNode": "elder-oldthing",
+      "askedDepth": 3
+    },
+    {
+      "id": "i-fancheng-6-t5",
+      "q": "这是实验室带来的习惯吗？",
+      "qid": "elder-oldthing:2",
+      "ask": {
+        "nodeId": "elder-oldthing",
+        "depth": 2
+      },
+      "raw": "有关系。在实验室，你希望得到一个结果，仪器却不一定照你的希望来。到了农场，也一样。不是说学过物理，看到一头牛就什么都懂了。牛、饲料、天气，还有人怎么照管，都得继续学。我觉得记录能拦自己一下，先看看写下来的东西，再说是不是已经弄明白了。",
+      "clean": "有关系。在实验室，你希望得到一个结果，仪器却不一定照你的希望来。到了农场，也一样。不是说学过物理，看到一头牛就什么都懂了。牛、饲料、天气，还有人怎么照管，都得继续学。我觉得记录能拦自己一下，先看看写下来的东西，再说是不是已经弄明白了。",
+      "audio": null,
+      "at": 1794015160200,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "对两类工作的类比",
+        "记录可以约束判断的个人体会"
+      ],
+      "analysis": {
+        "nodeId": "elder-oldthing",
+        "depth": 2,
+        "note": "连接科学训练与农场学习。",
+        "entities": []
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "这是实验室带来的习惯吗？",
+      "idx": 5,
+      "nodeId": "elder-oldthing",
+      "depth": 2,
+      "emotion": "平静",
+      "note": "连接科学训练与农场学习。",
+      "askedNode": "elder-oldthing",
+      "askedDepth": 2
+    },
+    {
+      "id": "i-fancheng-6-t6",
+      "q": "工人会纠正您吗？",
+      "qid": "elder-oldthing:2",
+      "ask": {
+        "nodeId": "elder-oldthing",
+        "depth": 2
+      },
+      "raw": "会，会的，而且有些事情只有他们能告诉我。我看一会儿就走了，他们一班一班地守着。曾有一次，我把一处变化怪到设备上，听值班的人把前后的事情讲完，才发现我少知道一段。那就添上。我喜欢问他当时看到了什么，不要急着问他同不同意我的判断。",
+      "clean": "会的，而且有些事情只有他们能告诉我。我看一会儿就走了，他们一班一班地守着。曾有一次，我把一处变化怪到设备上，听值班的人把前后的事情讲完，才发现我少知道一段。那就添上。我喜欢问他当时看到了什么，不要急着问他同不同意我的判断。",
+      "audio": null,
+      "at": 1794015200320,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "误判设备原因的模拟事件",
+        "工人补充经过",
+        "补记动作",
+        "提问方式"
+      ],
+      "analysis": {
+        "nodeId": "elder-oldthing",
+        "depth": 2,
+        "note": "承认自己的观察范围有限。",
+        "entities": [
+          {
+            "type": "person",
+            "name": "值班工人",
+            "note": "未设姓名的虚构合成人物"
+          }
+        ]
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "工人会纠正您吗？",
+      "idx": 6,
+      "nodeId": "elder-oldthing",
+      "depth": 2,
+      "emotion": "平静",
+      "note": "承认自己的观察范围有限。",
+      "askedNode": "elder-oldthing",
+      "askedDepth": 2
+    },
+    {
+      "id": "i-fancheng-6-t7",
+      "q": "阳早也会看这些记录吗？",
+      "qid": "elder-oldthing:2",
+      "ask": {
+        "nodeId": "elder-oldthing",
+        "depth": 2
+      },
+      "raw": "我们会一起看，不过留意的地方不同。我有时把机器的事情写了一大段，他看过以后，还是回头问牛的情况。不是他不关心机器，是最后还得落到牛身上。两个人坐下来对一对，发现没有记的，比已经记好的还要紧。那一页就有了下一次该去看的事情，不算白翻。",
+      "clean": "我们会一起看，不过留意的地方不同。我有时把机器的事情写了一大段，他看过以后，还是回头问牛的情况。不是他不关心机器，是最后还得落到牛身上。两个人坐下来对一对，发现没有记的，比已经记好的还要紧。那一页就有了下一次该去看的事情，不算白翻。",
+      "audio": null,
+      "at": 1794015238200,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "共同翻阅记录的具体场景",
+        "彼此留意重点",
+        "从遗漏提出下次观察"
+      ],
+      "analysis": {
+        "nodeId": "elder-oldthing",
+        "depth": 2,
+        "note": "通过共同回看表现工作关系。",
+        "entities": [
+          {
+            "type": "person",
+            "name": "阳早",
+            "note": "丈夫与长期工作伙伴"
+          }
+        ]
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "阳早也会看这些记录吗？",
+      "idx": 7,
+      "nodeId": "elder-oldthing",
+      "depth": 2,
+      "emotion": "平静",
+      "note": "通过共同回看表现工作关系。",
+      "askedNode": "elder-oldthing",
+      "askedDepth": 2
+    },
+    {
+      "id": "i-fancheng-6-t8",
+      "q": "看见旧错误会不自在吗？",
+      "qid": "elder-oldthing:3",
+      "ask": {
+        "nodeId": "elder-oldthing",
+        "depth": 3
+      },
+      "raw": "会有一点。有时看到自己写得那么肯定，后来又改掉，心里也要笑自己一下。我可不是每次都很谦虚的人，有时也固执。可是本子不用替我保面子。你留下它，是想把工作讲清楚，还是想证明自己一直聪明？这两个念头放在一起，纸上写出来的东西会很不一样。",
+      "clean": "会有一点。有时看到自己写得那么肯定，后来又改掉，心里也要笑自己一下。我可不是每次都很谦虚的人，有时也固执。可是本子不用替我保面子。你留下它，是想把工作讲清楚，还是想证明自己一直聪明？这两个念头放在一起，纸上写出来的东西会很不一样。",
+      "audio": null,
+      "at": 1794015277760,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "回看旧判断的情绪",
+        "自我追问的表达"
+      ],
+      "analysis": {
+        "nodeId": "elder-oldthing",
+        "depth": 3,
+        "note": "自嘲中承认固执。",
+        "entities": []
+      },
+      "agent": {
+        "emotion": "开心",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "看见旧错误会不自在吗？",
+      "idx": 8,
+      "nodeId": "elder-oldthing",
+      "depth": 3,
+      "emotion": "开心",
+      "note": "自嘲中承认固执。",
+      "askedNode": "elder-oldthing",
+      "askedDepth": 3
+    },
+    {
+      "id": "i-fancheng-6-t9",
+      "q": "有些页没写完，也留着吗？",
+      "qid": "elder-oldthing:2",
+      "ask": {
+        "nodeId": "elder-oldthing",
+        "depth": 2
+      },
+      "raw": "留着。没写完不一定是没用，有时是事情做到这里，还缺一个条件，也可能是那天被别的事叫走了。我会想，后来的人看见空着的一段，最好能明白这是还没弄清，不是已经没问题。留一个没有回答完的问题，总比装成从头到尾都明白要好。",
+      "clean": "留着。没写完不一定是没用，有时是事情做到这里，还缺一个条件，也可能是那天被别的事叫走了。我会想，后来的人看见空着的一段，最好能明白这是还没弄清，不是已经没问题。留一个没有回答完的问题，总比装成从头到尾都明白要好。",
+      "audio": null,
+      "at": 1794015317040,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "未完成页面的模拟原因",
+        "对后人阅读方式的期待"
+      ],
+      "analysis": {
+        "nodeId": "elder-oldthing",
+        "depth": 2,
+        "note": "明确不完整记录不等于结论。",
+        "entities": []
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "有些页没写完，也留着吗？",
+      "idx": 9,
+      "nodeId": "elder-oldthing",
+      "depth": 2,
+      "emotion": "平静",
+      "note": "明确不完整记录不等于结论。",
+      "askedNode": "elder-oldthing",
+      "askedDepth": 2
+    },
+    {
+      "id": "i-fancheng-6-t10",
+      "q": "翻这些本子，会想到三边吗？",
+      "qid": "elder-oldthing:2",
+      "ask": {
+        "nodeId": "elder-oldthing",
+        "depth": 2
+      },
+      "raw": "会想到那时候向当地人学做奶制品。嗯，不是说手里这一本就是从三边带来的，我没有这样说。是那种感觉相通：到了一个地方，先别觉得自己带来的知识就够了。人家手上有做了许多年的经验，你得肯看，肯问。后来我记设备、记牛，也常提醒自己别把这一点忘了。",
+      "clean": "会想到那时候向当地人学做奶制品。不是说手里这一本就是从三边带来的，我没有这样说。是那种感觉相通：到了一个地方，先别觉得自己带来的知识就够了。人家手上有做了许多年的经验，你得肯看，肯问。后来我记设备、记牛，也常提醒自己别把这一点忘了。",
+      "audio": null,
+      "at": 1794015354080,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "翻本子引发的联想",
+        "记录时的自我提醒"
+      ],
+      "analysis": {
+        "nodeId": "elder-oldthing",
+        "depth": 2,
+        "note": "阻止把晚期本子伪认作早期实物。",
+        "entities": [
+          {
+            "type": "place",
+            "name": "三边牧场",
+            "note": "1949年后工作与向牧民学习的阶段"
+          }
+        ]
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "翻这些本子，会想到三边吗？",
+      "idx": 10,
+      "nodeId": "elder-oldthing",
+      "depth": 2,
+      "emotion": "平静",
+      "note": "阻止把晚期本子伪认作早期实物。",
+      "askedNode": "elder-oldthing",
+      "askedDepth": 2
+    },
+    {
+      "id": "i-fancheng-6-t11",
+      "q": "后来人接过本子，您希望怎样用？",
+      "qid": "elder-oldthing:3",
+      "ask": {
+        "nodeId": "elder-oldthing",
+        "depth": 3
+      },
+      "raw": "先看看他要解决什么问题，再去翻，别把我的字当成不能改的东西。条件变了，办法当然也会变。有些旧办法今天未必合适，可为什么要做这件事，想给谁省一点力气，这个还值得问。我希望本子到了别人手里，能继续添东西，不是只隔着玻璃看它有多旧。",
+      "clean": "先看看他要解决什么问题，再去翻，别把我的字当成不能改的东西。条件变了，办法当然也会变。有些旧办法今天未必合适，可为什么要做这件事，想给谁省一点力气，这个还值得问。我希望本子到了别人手里，能继续添东西，不是只隔着玻璃看它有多旧。",
+      "audio": null,
+      "at": 1794015394760,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "对后来使用者的想象",
+        "希望继续增补的态度"
+      ],
+      "analysis": {
+        "nodeId": "elder-oldthing",
+        "depth": 3,
+        "note": "表达记录应继续被使用。",
+        "entities": []
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "后来人接过本子，您希望怎样用？",
+      "idx": 11,
+      "nodeId": "elder-oldthing",
+      "depth": 3,
+      "emotion": "平静",
+      "note": "表达记录应继续被使用。",
+      "askedNode": "elder-oldthing",
+      "askedDepth": 3
+    },
+    {
+      "id": "i-fancheng-6-t12",
+      "q": "回头看，最舍不得丢掉什么？",
+      "qid": "elder-oldthing:3",
+      "ask": {
+        "nodeId": "elder-oldthing",
+        "depth": 3
+      },
+      "raw": "一起做事的人吧。本子上可能只有我的字，但那个办法未必就是我一个人想出来的。有时候是工人让我再去看一眼，有时候是阳早问了一个我没想到的问题。我现在讲这些，怕一整理，就只剩下一个人的名字。牛场的工作不是这样做出来的，这一点请你替我留住。",
+      "clean": "一起做事的人吧。本子上可能只有我的字，但那个办法未必就是我一个人想出来的。有时候是工人让我再去看一眼，有时候是阳早问了一个我没想到的问题。我现在讲这些，怕一整理，就只剩下一个人的名字。牛场的工作不是这样做出来的，这一点请你替我留住。",
+      "audio": null,
+      "at": 1794015434600,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "对整理可能遗漏合作者的担忧",
+        "当下向采访者的叮嘱"
+      ],
+      "analysis": {
+        "nodeId": "elder-oldthing",
+        "depth": 3,
+        "note": "将个人回忆扩展到共同劳动者。",
+        "entities": []
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "回头看，最舍不得丢掉什么？",
+      "idx": 12,
+      "nodeId": "elder-oldthing",
+      "depth": 3,
+      "emotion": "平静",
+      "note": "将个人回忆扩展到共同劳动者。",
+      "askedNode": "elder-oldthing",
+      "askedDepth": 3
+    },
+    {
+      "id": "i-fancheng-6-t13",
+      "q": "下一次想接着找哪一页？",
+      "qid": "elder-oldthing:1",
+      "ask": {
+        "nodeId": "elder-oldthing",
+        "depth": 1
+      },
+      "raw": "先找那页没写完的吧，我想看看后面有没有补过。要是没有，也别替我把答案填齐，空在那里就是空在那里。今天翻着讲，眼睛有点累了，我想先休息。你把我们刚才说的整理好，尤其是谁提醒过我那些地方，别为了句子顺，就一块儿省掉了。今天到这里吧。",
+      "clean": "先找那页没写完的吧，我想看看后面有没有补过。要是没有，也别替我把答案填齐，空在那里就是空在那里。今天翻着讲，眼睛有点累了，我想先休息。你把我们刚才说的整理好，尤其是谁提醒过我那些地方，别为了句子顺，就一块儿省掉了。今天到这里吧。",
+      "audio": null,
+      "at": 1794015474720,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "拟寻找未完成页",
+        "眼睛累的当下状态",
+        "主动结束与编辑叮嘱"
+      ],
+      "analysis": {
+        "nodeId": "elder-oldthing",
+        "depth": 1,
+        "note": "主动休息；未完成条目作为下次线索。",
+        "entities": []
+      },
+      "agent": {
+        "emotion": "累了",
+        "action": "收尾",
+        "source": "demo-scripted"
+      },
+      "question": "下一次想接着找哪一页？",
+      "idx": 13,
+      "nodeId": "elder-oldthing",
+      "depth": 1,
+      "emotion": "累了",
+      "note": "主动休息；未完成条目作为下次线索。",
+      "askedNode": "elder-oldthing",
+      "askedDepth": 1
+    }
+  ]
+}

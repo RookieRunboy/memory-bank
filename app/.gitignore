@@ -1,2 +1,5 @@
 .env*
 server/data/
+
+.venv/
+server/py/__pycache__/

@@ -1,0 +1,23 @@
+{
+  "environment": "macOS Chromium headless, AudioWorklet 48 kHz, synthesized harmonic microphone and PCM TTS, mocked Chinese API transcript fixtures; no acoustic echo/human speech validation",
+  "testedAt": "2026-11-07T17:11:18.316Z",
+  "errors": [],
+  "results": [
+    {
+      "scenario": "retry-reload-finish",
+      "turns": 3,
+      "turnAttempts": 5,
+      "uniqueTurnIds": 3,
+      "retainedAudioBytes": 99884,
+      "preservedQuestionSnapshot": true,
+      "fullSequences": [
+        0,
+        1,
+        2
+      ],
+      "fullAttempts": 4,
+      "finishCalls": 1,
+      "muteKeptMic": true
+    }
+  ]
+}

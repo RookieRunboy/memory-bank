@@ -1,0 +1,976 @@
+[
+  {
+    "id": "p-杨振宁",
+    "type": "person",
+    "name": "杨振宁",
+    "aliases": [],
+    "relation": "colleagues",
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "youth-coworkers"
+    ],
+    "firstSessionId": "i-fancheng-1",
+    "lastSessionId": "i-fancheng-1",
+    "notes": [
+      "芝加哥大学时期的同学与实验合作人。"
+    ],
+    "sourceTurns": [
+      "i-fancheng-1-t1"
+    ]
+  },
+  {
+    "id": "p-费米",
+    "type": "person",
+    "name": "费米",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "youth-coworkers",
+      "youth-firstjob"
+    ],
+    "firstSessionId": "i-fancheng-1",
+    "lastSessionId": "i-fancheng-2",
+    "notes": [
+      "在芝加哥大学听过他的课程。",
+      "1944—1945年指导过受访者在洛斯阿拉莫斯的工作。"
+    ],
+    "sourceTurns": [
+      "i-fancheng-1-t1",
+      "i-fancheng-2-t1"
+    ]
+  },
+  {
+    "id": "p-艾利森",
+    "type": "person",
+    "name": "艾利森",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "youth-coworkers"
+    ],
+    "firstSessionId": "i-fancheng-1",
+    "lastSessionId": "i-fancheng-1",
+    "notes": [
+      "受访者提到在他的实验室工作。"
+    ],
+    "sourceTurns": [
+      "i-fancheng-1-t1"
+    ]
+  },
+  {
+    "id": "pl-芝加哥大学",
+    "type": "place",
+    "name": "芝加哥大学",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "youth-coworkers",
+      "life-decision"
+    ],
+    "firstSessionId": "i-fancheng-1",
+    "lastSessionId": "i-fancheng-2",
+    "notes": [
+      "1946年回到这里求学。",
+      "1946年返回继续做物理。"
+    ],
+    "sourceTurns": [
+      "i-fancheng-1-t1",
+      "i-fancheng-2-t11"
+    ]
+  },
+  {
+    "id": "t-记录纸",
+    "type": "thing",
+    "name": "记录纸",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "youth-coworkers"
+    ],
+    "firstSessionId": "i-fancheng-1",
+    "lastSessionId": "i-fancheng-1",
+    "notes": [
+      "贯穿本场访谈的虚构提示物。"
+    ],
+    "sourceTurns": [
+      "i-fancheng-1-t1"
+    ]
+  },
+  {
+    "id": "t-测量记录",
+    "type": "thing",
+    "name": "测量记录",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "youth-coworkers"
+    ],
+    "firstSessionId": "i-fancheng-1",
+    "lastSessionId": "i-fancheng-1",
+    "notes": [
+      "本场虚构实验的测量数与条件记录。"
+    ],
+    "sourceTurns": [
+      "i-fancheng-1-t2"
+    ]
+  },
+  {
+    "id": "t-记录本",
+    "type": "thing",
+    "name": "记录本",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "youth-coworkers",
+      "youth-firstjob"
+    ],
+    "firstSessionId": "i-fancheng-1",
+    "lastSessionId": "i-fancheng-2",
+    "notes": [
+      "在虚构场景中夹存旧记录纸。",
+      "虚构工作场景中的提示物。"
+    ],
+    "sourceTurns": [
+      "i-fancheng-1-t8",
+      "i-fancheng-2-t1"
+    ]
+  },
+  {
+    "id": "pl-洛斯阿拉莫斯",
+    "type": "place",
+    "name": "洛斯阿拉莫斯",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "youth-firstjob"
+    ],
+    "firstSessionId": "i-fancheng-2",
+    "lastSessionId": "i-fancheng-2",
+    "notes": [
+      "1944—1945年参加曼哈顿计划时的工作地点。"
+    ],
+    "sourceTurns": [
+      "i-fancheng-2-t1"
+    ]
+  },
+  {
+    "id": "pl-试爆观察山坡",
+    "type": "place",
+    "name": "试爆观察山坡",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "youth-firstjob"
+    ],
+    "firstSessionId": "i-fancheng-2",
+    "lastSessionId": "i-fancheng-2",
+    "notes": [
+      "受访者称从远处山坡观察1945年试爆，未给出具体距离。"
+    ],
+    "sourceTurns": [
+      "i-fancheng-2-t6"
+    ]
+  },
+  {
+    "id": "pl-广岛",
+    "type": "place",
+    "name": "广岛",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "youth-firstjob"
+    ],
+    "firstSessionId": "i-fancheng-2",
+    "lastSessionId": "i-fancheng-2",
+    "notes": [
+      "受访者称后来听到这里遭原子弹轰炸的消息。"
+    ],
+    "sourceTurns": [
+      "i-fancheng-2-t8"
+    ]
+  },
+  {
+    "id": "t-报纸",
+    "type": "thing",
+    "name": "报纸",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "life-decision"
+    ],
+    "firstSessionId": "i-fancheng-2",
+    "lastSessionId": "i-fancheng-2",
+    "notes": [
+      "虚构得知消息场景中的物件。"
+    ],
+    "sourceTurns": [
+      "i-fancheng-2-t9"
+    ]
+  },
+  {
+    "id": "pl-芝加哥",
+    "type": "place",
+    "name": "芝加哥",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "life-decision"
+    ],
+    "firstSessionId": "i-fancheng-2",
+    "lastSessionId": "i-fancheng-2",
+    "notes": [
+      "战争后返回之地。"
+    ],
+    "sourceTurns": [
+      "i-fancheng-2-t10"
+    ]
+  },
+  {
+    "id": "t-行李箱",
+    "type": "thing",
+    "name": "行李箱",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "life-decision"
+    ],
+    "firstSessionId": "i-fancheng-2",
+    "lastSessionId": "i-fancheng-2",
+    "notes": [
+      "虚构返回与离开场景中的物件。"
+    ],
+    "sourceTurns": [
+      "i-fancheng-2-t11"
+    ]
+  },
+  {
+    "id": "pl-中国",
+    "type": "place",
+    "name": "中国",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "life-decision",
+      "youth-meet"
+    ],
+    "firstSessionId": "i-fancheng-2",
+    "lastSessionId": "i-fancheng-3",
+    "notes": [
+      "受访者称1948年前往。",
+      "阳早1946年赴华，我1948年赴华"
+    ],
+    "sourceTurns": [
+      "i-fancheng-2-t13",
+      "i-fancheng-3-t4"
+    ]
+  },
+  {
+    "id": "t-书",
+    "type": "thing",
+    "name": "书",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "life-decision"
+    ],
+    "firstSessionId": "i-fancheng-2",
+    "lastSessionId": "i-fancheng-2",
+    "notes": [
+      "虚构收拾行李时反复取舍的物件。"
+    ],
+    "sourceTurns": [
+      "i-fancheng-2-t14"
+    ]
+  },
+  {
+    "id": "p-阳早",
+    "type": "person",
+    "name": "阳早",
+    "aliases": [],
+    "relation": "spouse",
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "youth-meet",
+      "midlife-work",
+      "midlife-craft",
+      "elder-oldthing"
+    ],
+    "firstSessionId": "i-fancheng-3",
+    "lastSessionId": "i-fancheng-6",
+    "notes": [
+      "经哥哥韩丁介绍认识，后来成为丈夫",
+      "学畜牧，能谈许多农场里的事情",
+      "谈养牛时愿意耐心解释具体观察",
+      "1946年先到中国",
+      "相聚后商量共同生活",
+      "1949年春与我在陕北结婚",
+      "1949年9月一起到城川建设三边牧场",
+      "忙完牛的事情后也会来看看乳品工作",
+      "三边牧场副场长，负责畜牧技术",
+      "寒春的丈夫，共同从事奶牛与农机工作",
+      "丈夫与长期工作伙伴"
+    ],
+    "sourceTurns": [
+      "i-fancheng-3-t1",
+      "i-fancheng-3-t2",
+      "i-fancheng-3-t3",
+      "i-fancheng-3-t4",
+      "i-fancheng-3-t7",
+      "i-fancheng-3-t8",
+      "i-fancheng-4-t1",
+      "i-fancheng-4-t5",
+      "i-fancheng-4-t6",
+      "i-fancheng-5-t7",
+      "i-fancheng-6-t7"
+    ]
+  },
+  {
+    "id": "p-韩丁",
+    "type": "person",
+    "name": "韩丁",
+    "aliases": [],
+    "relation": "siblings",
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "youth-meet"
+    ],
+    "firstSessionId": "i-fancheng-3",
+    "lastSessionId": "i-fancheng-3",
+    "notes": [
+      "哥哥，介绍我认识阳早"
+    ],
+    "sourceTurns": [
+      "i-fancheng-3-t1"
+    ]
+  },
+  {
+    "id": "pl-康奈尔大学",
+    "type": "place",
+    "name": "康奈尔大学",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "youth-meet"
+    ],
+    "firstSessionId": "i-fancheng-3",
+    "lastSessionId": "i-fancheng-3",
+    "notes": [
+      "韩丁与阳早做同学和室友的地方"
+    ],
+    "sourceTurns": [
+      "i-fancheng-3-t2"
+    ]
+  },
+  {
+    "id": "t-食槽",
+    "type": "thing",
+    "name": "食槽",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "youth-meet",
+      "midlife-work"
+    ],
+    "firstSessionId": "i-fancheng-3",
+    "lastSessionId": "i-fancheng-4",
+    "notes": [
+      "谈论牛吃食时用来解释的物件",
+      "跟着看牛时观察残留饲料，袖口曾蹭到槽边"
+    ],
+    "sourceTurns": [
+      "i-fancheng-3-t3",
+      "i-fancheng-4-t8"
+    ]
+  },
+  {
+    "id": "pl-陕北",
+    "type": "place",
+    "name": "陕北",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "youth-meet"
+    ],
+    "firstSessionId": "i-fancheng-3",
+    "lastSessionId": "i-fancheng-3",
+    "notes": [
+      "1949年到这里，与阳早相聚"
+    ],
+    "sourceTurns": [
+      "i-fancheng-3-t5"
+    ]
+  },
+  {
+    "id": "pl-延安",
+    "type": "place",
+    "name": "延安",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "youth-meet"
+    ],
+    "firstSessionId": "i-fancheng-3",
+    "lastSessionId": "i-fancheng-3",
+    "notes": [
+      "1949年相聚的地域背景"
+    ],
+    "sourceTurns": [
+      "i-fancheng-3-t5"
+    ]
+  },
+  {
+    "id": "t-阳早的小册子",
+    "type": "thing",
+    "name": "阳早的小册子",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "youth-meet"
+    ],
+    "firstSessionId": "i-fancheng-3",
+    "lastSessionId": "i-fancheng-3",
+    "notes": [
+      "边角卷起，记着草料等事情",
+      "记不清具体内容，记得两人一起翻看"
+    ],
+    "sourceTurns": [
+      "i-fancheng-3-t6",
+      "i-fancheng-3-t7"
+    ]
+  },
+  {
+    "id": "t-旧箱子",
+    "type": "thing",
+    "name": "旧箱子",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "youth-meet"
+    ],
+    "firstSessionId": "i-fancheng-3",
+    "lastSessionId": "i-fancheng-3",
+    "notes": [
+      "成家时整理衣物纸张使用",
+      "提手一边松动，阳早找绳修补",
+      "提手多了绳结，整理后能重新提起和盖好"
+    ],
+    "sourceTurns": [
+      "i-fancheng-3-t8",
+      "i-fancheng-3-t9",
+      "i-fancheng-3-t10"
+    ]
+  },
+  {
+    "id": "t-包衣服的布",
+    "type": "thing",
+    "name": "包衣服的布",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "youth-meet"
+    ],
+    "firstSessionId": "i-fancheng-3",
+    "lastSessionId": "i-fancheng-3",
+    "notes": [
+      "压在旧箱子底下",
+      "后来用来垫板面，边角开线后自己缝补"
+    ],
+    "sourceTurns": [
+      "i-fancheng-3-t10",
+      "i-fancheng-3-t11"
+    ]
+  },
+  {
+    "id": "t-两个人的杯子",
+    "type": "thing",
+    "name": "两个人的杯子",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "youth-meet"
+    ],
+    "firstSessionId": "i-fancheng-3",
+    "lastSessionId": "i-fancheng-3",
+    "notes": [
+      "成家收拾屋子时摆在垫布上"
+    ],
+    "sourceTurns": [
+      "i-fancheng-3-t12"
+    ]
+  },
+  {
+    "id": "t-阳早的鞋",
+    "type": "thing",
+    "name": "阳早的鞋",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "youth-meet"
+    ],
+    "firstSessionId": "i-fancheng-3",
+    "lastSessionId": "i-fancheng-3",
+    "notes": [
+      "收拾东西时横在脚边",
+      "挪到边上，鞋尖朝外，给走动腾地方"
+    ],
+    "sourceTurns": [
+      "i-fancheng-3-t12",
+      "i-fancheng-3-t13"
+    ]
+  },
+  {
+    "id": "pl-城川三边牧场",
+    "type": "place",
+    "name": "城川三边牧场",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "midlife-work"
+    ],
+    "firstSessionId": "i-fancheng-4",
+    "lastSessionId": "i-fancheng-4",
+    "notes": [
+      "当时位于陕甘宁边区，1949年9月到这里工作"
+    ],
+    "sourceTurns": [
+      "i-fancheng-4-t1"
+    ]
+  },
+  {
+    "id": "t-奶桶",
+    "type": "thing",
+    "name": "奶桶",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "midlife-work"
+    ],
+    "firstSessionId": "i-fancheng-4",
+    "lastSessionId": "i-fancheng-4",
+    "notes": [
+      "提着奶桶走路时要留意里面的奶晃动",
+      "接收奶时先确认本次是否送齐",
+      "忙完后清洗并检查桶底边沿，挪到不挡路处",
+      "装满压手，空桶提起来轻，忙完后还记得握把的感觉",
+      "空桶提手碰到桶边会轻响"
+    ],
+    "sourceTurns": [
+      "i-fancheng-4-t1",
+      "i-fancheng-4-t7",
+      "i-fancheng-4-t12",
+      "i-fancheng-4-t13",
+      "i-fancheng-4-t14"
+    ]
+  },
+  {
+    "id": "t-奶酪和酸奶",
+    "type": "thing",
+    "name": "奶酪和酸奶",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "midlife-work"
+    ],
+    "firstSessionId": "i-fancheng-4",
+    "lastSessionId": "i-fancheng-4",
+    "notes": [
+      "在三边牧场负责生产，并向蒙古族牧民学习",
+      "除制作外，也向牧民学习保存"
+    ],
+    "sourceTurns": [
+      "i-fancheng-4-t2",
+      "i-fancheng-4-t10"
+    ]
+  },
+  {
+    "id": "t-乳品记事本",
+    "type": "thing",
+    "name": "乳品记事本",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "midlife-work"
+    ],
+    "firstSessionId": "i-fancheng-4",
+    "lastSessionId": "i-fancheng-4",
+    "notes": [
+      "记下向牧民学习时不明白的地方，留待再问",
+      "用文字和盆的简图记录，之后还会补充",
+      "有空时复核记录，也用来记乳品保存方面的问题",
+      "多次修订补记，纸张边角翻毛",
+      "收在不容易溅水的地方"
+    ],
+    "sourceTurns": [
+      "i-fancheng-4-t3",
+      "i-fancheng-4-t4",
+      "i-fancheng-4-t10",
+      "i-fancheng-4-t11",
+      "i-fancheng-4-t12"
+    ]
+  },
+  {
+    "id": "t-铅笔",
+    "type": "thing",
+    "name": "铅笔",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "midlife-work"
+    ],
+    "firstSessionId": "i-fancheng-4",
+    "lastSessionId": "i-fancheng-4",
+    "notes": [
+      "记事时放在干净位置，有时一时找不到",
+      "原来夹在合上的记事本里面"
+    ],
+    "sourceTurns": [
+      "i-fancheng-4-t4",
+      "i-fancheng-4-t5"
+    ]
+  },
+  {
+    "id": "t-饲草",
+    "type": "thing",
+    "name": "饲草",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "midlife-work"
+    ],
+    "firstSessionId": "i-fancheng-4",
+    "lastSessionId": "i-fancheng-4",
+    "notes": [
+      "养牛工作需要安排，和牛群改良、防疫一道受到重视"
+    ],
+    "sourceTurns": [
+      "i-fancheng-4-t6"
+    ]
+  },
+  {
+    "id": "t-乳品用盆",
+    "type": "thing",
+    "name": "乳品用盆",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "midlife-work"
+    ],
+    "firstSessionId": "i-fancheng-4",
+    "lastSessionId": "i-fancheng-4",
+    "notes": [
+      "做乳品前准备干净用具，衣袖和手也要收拾干净"
+    ],
+    "sourceTurns": [
+      "i-fancheng-4-t9"
+    ]
+  },
+  {
+    "id": "pl-北京",
+    "type": "place",
+    "name": "北京",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "midlife-craft"
+    ],
+    "firstSessionId": "i-fancheng-5",
+    "lastSessionId": "i-fancheng-5",
+    "notes": [
+      "后期农牧和机械工作所在地"
+    ],
+    "sourceTurns": [
+      "i-fancheng-5-t1"
+    ]
+  },
+  {
+    "id": "t-奶牛场设备",
+    "type": "thing",
+    "name": "奶牛场设备",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "midlife-craft"
+    ],
+    "firstSessionId": "i-fancheng-5",
+    "lastSessionId": "i-fancheng-5",
+    "notes": [
+      "本次回忆主题"
+    ],
+    "sourceTurns": [
+      "i-fancheng-5-t1"
+    ]
+  },
+  {
+    "id": "pl-红星公社",
+    "type": "place",
+    "name": "红星公社",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "midlife-craft"
+    ],
+    "firstSessionId": "i-fancheng-5",
+    "lastSessionId": "i-fancheng-5",
+    "notes": [
+      "1972年回到农业生产的地点"
+    ],
+    "sourceTurns": [
+      "i-fancheng-5-t2"
+    ]
+  },
+  {
+    "id": "pl-小王庄",
+    "type": "place",
+    "name": "小王庄",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "midlife-craft"
+    ],
+    "firstSessionId": "i-fancheng-5",
+    "lastSessionId": "i-fancheng-5",
+    "notes": [
+      "后期牛场设备工作的地点"
+    ],
+    "sourceTurns": [
+      "i-fancheng-5-t2"
+    ]
+  },
+  {
+    "id": "pl-西安",
+    "type": "place",
+    "name": "西安",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "midlife-craft"
+    ],
+    "firstSessionId": "i-fancheng-5",
+    "lastSessionId": "i-fancheng-5",
+    "notes": [
+      "更早的农机工作阶段"
+    ],
+    "sourceTurns": [
+      "i-fancheng-5-t2"
+    ]
+  },
+  {
+    "id": "t-设备图纸",
+    "type": "thing",
+    "name": "设备图纸",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "midlife-craft",
+      "elder-oldthing"
+    ],
+    "firstSessionId": "i-fancheng-5",
+    "lastSessionId": "i-fancheng-6",
+    "notes": [
+      "用于记录工作动线",
+      "上次访谈留下的线索"
+    ],
+    "sourceTurns": [
+      "i-fancheng-5-t3",
+      "i-fancheng-6-t1"
+    ]
+  },
+  {
+    "id": "t-挤奶设备",
+    "type": "thing",
+    "name": "挤奶设备",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "midlife-craft"
+    ],
+    "firstSessionId": "i-fancheng-5",
+    "lastSessionId": "i-fancheng-5",
+    "notes": [
+      "需要与输送、冷却和清洗配合"
+    ],
+    "sourceTurns": [
+      "i-fancheng-5-t5"
+    ]
+  },
+  {
+    "id": "t-改动记录",
+    "type": "thing",
+    "name": "改动记录",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "midlife-craft"
+    ],
+    "firstSessionId": "i-fancheng-5",
+    "lastSessionId": "i-fancheng-5",
+    "notes": [
+      "本场虚构的具体记录方式"
+    ],
+    "sourceTurns": [
+      "i-fancheng-5-t9"
+    ]
+  },
+  {
+    "id": "t-工作笔记",
+    "type": "thing",
+    "name": "工作笔记",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "midlife-craft",
+      "elder-oldthing"
+    ],
+    "firstSessionId": "i-fancheng-5",
+    "lastSessionId": "i-fancheng-6",
+    "notes": [
+      "连接下一次访谈的线索",
+      "本场回忆中心"
+    ],
+    "sourceTurns": [
+      "i-fancheng-5-t12",
+      "i-fancheng-6-t1"
+    ]
+  },
+  {
+    "id": "t-牛舍角落观察记录",
+    "type": "thing",
+    "name": "牛舍角落观察记录",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "elder-oldthing"
+    ],
+    "firstSessionId": "i-fancheng-6",
+    "lastSessionId": "i-fancheng-6",
+    "notes": [
+      "用于示范记录方法的虚构条目"
+    ],
+    "sourceTurns": [
+      "i-fancheng-6-t3"
+    ]
+  },
+  {
+    "id": "p-值班工人",
+    "type": "person",
+    "name": "值班工人",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "elder-oldthing"
+    ],
+    "firstSessionId": "i-fancheng-6",
+    "lastSessionId": "i-fancheng-6",
+    "notes": [
+      "未设姓名的虚构合成人物"
+    ],
+    "sourceTurns": [
+      "i-fancheng-6-t6"
+    ]
+  },
+  {
+    "id": "pl-三边牧场",
+    "type": "place",
+    "name": "三边牧场",
+    "aliases": [],
+    "relation": null,
+    "deceased": false,
+    "trigger": null,
+    "sourceNodes": [
+      "elder-oldthing"
+    ],
+    "firstSessionId": "i-fancheng-6",
+    "lastSessionId": "i-fancheng-6",
+    "notes": [
+      "1949年后工作与向牧民学习的阶段"
+    ],
+    "sourceTurns": [
+      "i-fancheng-6-t10"
+    ]
+  }
+]

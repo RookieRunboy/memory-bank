@@ -1,0 +1,11 @@
+{
+  "pass": true,
+  "testedAt": "2026-11-07T18:42:38.540Z",
+  "checks": {
+    "visibleMessageMetadata": true,
+    "exactHeardFallback": true,
+    "currentSnapshotFallback": true
+  },
+  "pageErrors": [],
+  "unexpectedNetwork": []
+}

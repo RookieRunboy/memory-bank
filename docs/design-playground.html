@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>记忆银行 · 视觉方向 Playground</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@400;600;700&display=swap">
+<style>
+:root{--serif:"Noto Serif SC","Songti SC","STSong",serif;--sans:"Noto Sans SC","PingFang SC",system-ui,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:#dedbd4;color:#222;font:15px/1.6 var(--sans)}
+.pg-head{max-width:1320px;margin:0 auto;padding:28px 24px 8px}
+.pg-head h1{font:700 1.4rem var(--sans);margin:0 0 4px}.pg-head p{margin:0;color:#555;max-width:64ch}
+.ctl{max-width:1320px;margin:0 auto;padding:12px 24px;display:flex;flex-wrap:wrap;gap:16px 20px;align-items:center;position:sticky;top:0;background:#dedbd4ee;backdrop-filter:blur(8px);z-index:5}
+.grp{display:flex;border:1px solid #9a968c;border-radius:8px;overflow:hidden}
+.grp b{font-weight:500;font-size:.8rem;color:#444;padding:8px 10px;background:#cfcbc2;display:flex;align-items:center}
+.grp button{font:inherit;padding:8px 14px;border:0;border-left:1px solid #9a968c;background:#f3f1ec;cursor:pointer;min-height:40px}
+.grp button[aria-pressed=true]{background:#222;color:#fff}
+.grp button:focus-visible{outline:3px solid #b23a2e;outline-offset:-3px}
+.stage{max-width:1320px;margin:0 auto;padding:12px 24px 40px;display:flex;flex-wrap:wrap;gap:32px;justify-content:center;align-items:flex-start}
+.col{width:390px}
+.col h2{font:700 1.05rem var(--sans);margin:0 0 2px}.col .tag{color:#444;font-size:.88rem;margin:0 0 10px}
+.col ul{margin:14px 0 0;padding-left:1.2em;color:#333;font-size:.88rem}.col li{margin-bottom:4px}
+.foot{max-width:1320px;margin:0 auto;padding:0 24px 40px;color:#444;font-size:.85rem}
+.hide{display:none!important}
+
+/* ===== 手机壳与公共结构 ===== */
+.phone{width:390px;height:780px;border-radius:34px;border:1px solid #0003;box-shadow:0 20px 50px -20px #0007;overflow:hidden;display:flex;flex-direction:column;background:var(--bg);color:var(--ink);font:400 calc(17px*var(--fs,1))/1.75 var(--sans)}
+.phone[data-size="1"]{--fs:1}.phone[data-size="2"]{--fs:1.2}.phone[data-size="3"]{--fs:1.4}
+.phone button,.phone a{font:inherit;color:inherit;cursor:pointer;border:0;background:none;text-decoration:none}
+.phone svg{width:1.3em;height:1.3em;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.phone svg.f{fill:currentColor;stroke:none}
+.phone :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.bar{flex:none;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 8px;border-bottom:1px solid var(--line)}
+.bar .ib{width:48px;height:48px;display:grid;place-items:center;border-radius:12px}
+.bar .nm{font:700 1.05rem var(--serif);letter-spacing:.08em}
+.scr{flex:1;overflow-y:auto;padding:22px 24px 36px;display:flex;flex-direction:column}
+.acts{display:flex;flex-direction:column}
+.pri,.sec,.talk{display:flex;align-items:center;justify-content:center;gap:10px;text-align:center}
+.count{margin-top:auto;padding-top:28px;color:var(--mute);font-size:.85em;text-align:center}
+.lab{font-size:.8em;color:var(--mute);letter-spacing:.08em;margin:0}
+.ys{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 4px;color:var(--accent);font-size:.85em;font-weight:500}
+.ys svg{width:1.05em;height:1.05em}
+.para{margin:0 0 4px}.para+.ys{margin-bottom:12px}
+
+/* ===== A · 家书：纸、墨、朱砂印 ===== */
+[data-dir=a]{--bg:#f6f0e2;--ink:#2b2118;--mute:#65584a;--line:#d6cab0;--accent:#a33a2a}
+[data-dir=a] .bar{background:var(--bg)}
+[data-dir=a] .seal{width:34px;height:34px;border:2px solid var(--accent);color:var(--accent);display:grid;place-items:center;font:700 1rem var(--serif);border-radius:4px;transform:rotate(-5deg)}
+[data-dir=a] .hello{font:700 2rem/1.4 var(--serif);margin:10px 0 6px}
+[data-dir=a] .sub{color:var(--mute);margin:0 0 24px}
+[data-dir=a] .pri{background:var(--accent);color:#fff;min-height:68px;border-radius:6px;font:700 1.35rem var(--serif);letter-spacing:.3em;text-indent:.3em}
+[data-dir=a] .sec{margin-top:12px;min-height:56px;border:1.5px solid var(--ink);border-radius:6px;font-weight:500}
+[data-dir=a] .blk{margin-top:28px;padding-top:16px;border-top:3px double var(--line)}
+[data-dir=a] .blk p.q{font:400 1.12rem/1.8 var(--serif);margin:6px 0 0}
+[data-dir=a] .blk h3{font:700 1.3rem/1.5 var(--serif);color:var(--accent);margin:4px 0 4px}
+[data-dir=a] .blk .ex{margin:0;color:var(--mute);font-family:var(--serif)}
+[data-dir=a] .more{display:inline-flex;align-items:center;min-height:44px;color:var(--accent);font-weight:500}
+[data-dir=a] h2.pt{font:700 1.9rem/1.3 var(--serif);margin:8px 0 2px}
+[data-dir=a] .item{display:block;padding:18px 0;border-bottom:1px solid var(--line)}
+[data-dir=a] .item h3{font:700 1.25rem/1.5 var(--serif);margin:2px 0}
+[data-dir=a] .item p{margin:0;color:var(--mute);font-size:.9em}
+[data-dir=a] .art h1{font:700 1.75rem/1.5 var(--serif);margin:6px 0 4px;text-align:center}
+[data-dir=a] .art .meta{text-align:center;color:var(--mute);font-size:.88em;padding-bottom:14px;border-bottom:3px double var(--line);margin-bottom:18px}
+[data-dir=a] .para{font:400 1.12rem/2 var(--serif);text-indent:2em}
+[data-dir=a] .share{margin-top:22px;min-height:56px;border:1.5px solid var(--accent);color:var(--accent);border-radius:6px;font-weight:700}
+
+/* ===== B · 老相册：相纸、绿布面、一张一张贴 ===== */
+[data-dir=b]{--bg:#e8e2d3;--ink:#23211c;--mute:#5d594d;--line:#cfc7b2;--accent:#2f5d50}
+[data-dir=b] .bar{background:#2f5d50;color:#f4efe2;border-color:#244a3f}
+[data-dir=b] .bar .nm{letter-spacing:.12em}
+[data-dir=b] .hello{font:700 1.85rem/1.4 var(--serif);margin:4px 0 18px}
+[data-dir=b] .print{background:#fffdf7;padding:12px 12px 18px;box-shadow:0 1px 2px #0003,0 10px 24px -14px #0006;transform:rotate(-1.2deg);margin-bottom:22px;position:relative}
+[data-dir=b] .print:nth-of-type(even){transform:rotate(.9deg)}
+[data-dir=b] .print .ph{aspect-ratio:4/3;background:repeating-linear-gradient(45deg,#d9d1bd 0 10px,#e2dbc8 10px 20px);display:grid;place-items:center;color:#6a6350;font-size:.82em;text-align:center;padding:0 16px}
+[data-dir=b] .print .cap{font:700 1.2rem/1.5 var(--serif);margin:12px 4px 0}
+[data-dir=b] .print .cap2{margin:2px 4px 0;color:var(--mute);font-size:.88em}
+[data-dir=b] .tape{position:absolute;top:-10px;left:50%;width:84px;height:24px;margin-left:-42px;background:#e9d9a6cc;transform:rotate(3deg)}
+[data-dir=b] .pri{background:#2f5d50;color:#fff;min-height:68px;border-radius:12px;font:700 1.3rem var(--serif);letter-spacing:.2em}
+[data-dir=b] .sec{margin-top:12px;min-height:56px;border:2px solid #2f5d50;color:#2f5d50;border-radius:12px;font-weight:700}
+[data-dir=b] .page-t{font:700 1.8rem/1.3 var(--serif);margin:6px 0 16px}
+[data-dir=b] .item{display:block;background:#fffdf7;padding:16px 18px;margin-bottom:14px;box-shadow:0 1px 2px #0003;border-left:8px solid #2f5d50}
+[data-dir=b] .item h3{font:700 1.2rem/1.5 var(--serif);margin:0 0 2px}
+[data-dir=b] .item p{margin:0;color:var(--mute);font-size:.88em}
+[data-dir=b] .art{background:#fffdf7;padding:22px 20px 26px;box-shadow:0 1px 2px #0003;margin:0 -6px}
+[data-dir=b] .art h1{font:700 1.65rem/1.5 var(--serif);margin:4px 0 4px}
+[data-dir=b] .art .meta{color:var(--mute);font-size:.88em;margin-bottom:18px}
+[data-dir=b] .para{font:400 1.1rem/2 var(--serif)}
+[data-dir=b] .share{margin-top:18px;min-height:56px;background:#2f5d50;color:#fff;border-radius:12px;font-weight:700}
+[data-dir=b] .count{color:var(--mute)}
+
+/* ===== C · 对讲：一个大按钮，按住就说 ===== */
+[data-dir=c]{--bg:#fbf8f2;--ink:#1d1b17;--mute:#625d52;--line:#e6dfd1;--accent:#b4531a}
+[data-dir=c] .bar{background:var(--bg);border:0}
+[data-dir=c] .bar .nm{font:700 1.05rem var(--sans);letter-spacing:.04em}
+[data-dir=c] .scr{align-items:stretch}
+[data-dir=c] .hello{font:700 2.1rem/1.35 var(--sans);margin:6px 0 4px}
+[data-dir=c] .sub{color:var(--mute);margin:0}
+[data-dir=c] .talk{margin:26px auto 10px;width:216px;height:216px;border-radius:50%;background:var(--accent);color:#fff;flex-direction:column;gap:6px;font:700 1.45rem var(--sans);box-shadow:0 0 0 14px #b4531a1f,0 0 0 30px #b4531a12}
+[data-dir=c] .talk svg{width:56px;height:56px}
+[data-dir=c] .hint{text-align:center;color:var(--mute);margin:20px 0 22px;font-size:.92em}
+[data-dir=c] .chip{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:64px;padding:12px 18px;border:1.5px solid var(--line);border-radius:16px;background:#fff;margin-bottom:10px;font-weight:500}
+[data-dir=c] .chip small{display:block;color:var(--mute);font-weight:400;font-size:.82em}
+[data-dir=c] .page-t{font:700 1.9rem/1.3 var(--sans);margin:6px 0 14px}
+[data-dir=c] .item{display:block;padding:16px 18px;border:1.5px solid var(--line);border-radius:16px;background:#fff;margin-bottom:12px}
+[data-dir=c] .item h3{font:700 1.15rem/1.5 var(--sans);margin:0 0 2px}
+[data-dir=c] .item p{margin:0;color:var(--mute);font-size:.88em}
+[data-dir=c] .art h1{font:700 1.6rem/1.5 var(--sans);margin:4px 0 4px}
+[data-dir=c] .art .meta{color:var(--mute);font-size:.88em;margin-bottom:16px}
+[data-dir=c] .para{font:400 1.1rem/2 var(--sans)}
+[data-dir=c] .share{margin-top:18px;min-height:56px;border:2px solid var(--accent);color:var(--accent);border-radius:999px;font-weight:700}
+[data-dir=c] .count{color:var(--mute)}
+</style>
+</head>
+<body>
+<header class="pg-head">
+  <h1>记忆银行 · 视觉方向 Playground</h1>
+  <p>三个方向都按老人本人使用来设计：正文 17px 起、可放大到 140%、按钮不低于 56px、没有聊天气泡、没有头像、没有 emoji。点上面的开关切换页面和字号，再看哪个对味。</p>
+</header>
+<div class="ctl" role="toolbar" aria-label="预览设置">
+  <div class="grp" role="group" aria-label="页面"><b>页面</b>
+    <button data-screen="home" aria-pressed="true">首页</button>
+    <button data-screen="list" aria-pressed="false">我的故事</button>
+    <button data-screen="story" aria-pressed="false">一篇故事</button>
+  </div>
+  <div class="grp" role="group" aria-label="字号"><b>字号</b>
+    <button data-size="1" aria-pressed="true">标准</button>
+    <button data-size="2" aria-pressed="false">大</button>
+    <button data-size="3" aria-pressed="false">特大</button>
+  </div>
+  <div class="grp" role="group" aria-label="显示方向"><b>显示</b>
+    <button data-show="all" aria-pressed="true">三个并排</button>
+    <button data-show="a" aria-pressed="false">A</button>
+    <button data-show="b" aria-pressed="false">B</button>
+    <button data-show="c" aria-pressed="false">C</button>
+  </div>
+</div>
+
+<main class="stage" id="stage"></main>
+<p class="foot">说明：示例文字取自项目里的演示数据（王女士、桂花糕那条线）。这里只是静态预览，不接后端。图片位用斜纹占位，真实版本放老人上传的老照片。</p>
+
+<script>
+const I={
+  menu:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
+  mic:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>',
+  book:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 19V5M9 7h6"/></svg>',
+  back:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>',
+  play:'<svg viewBox="0 0 24 24" aria-hidden="true" class="f"><path d="M7 4.5v15l12-7.5z"/></svg>',
+  next:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>',
+  home:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7v9H4z"/></svg>'
+};
+const S=[
+  {t:'她说，什么都不怕，就怕你不好',d:'2026年10月11日',k:'和家珍相识',n:13},
+  {t:'年三十晚上，人齐了才叫过年',d:'2026年10月5日',k:'小时候过年',n:11},
+  {t:'八月里，枕头上都是桂花香',d:'2026年9月30日',k:'老家的房子',n:12}
+];
+const P=['家珍是媒人说的亲。城里米铺老板的闺女，我爹托人去提的。那会儿都这样，没见过面，全靠媒人一张嘴。','提亲之前，媒人带她来过我家一回，说是来看看房子。我躲在堂屋后头偷看。她穿一件蓝布衫，头发梳得整整齐齐，站在天井里，仰着头看那棵桂花树，看了好一会儿。','家珍说话轻声细语，从来不跟人红脸。她识字，算盘打得好，我们家的账房先生都夸她。可她不爱显摆，有什么事，都是自己闷在心里想。'];
+const bar=(l,r,name)=>`<div class="bar"><span class="ib">${l}</span><span class="nm">${name||'记忆银行'}</span><span class="ib">${r||''}</span></div>`;
+const ys=`<button class="ys">${I.play}听原声</button>`;
+const R={
+ home(d){
+  const top=bar(I.menu,'');
+  if(d==='a')return top+`<div class="scr"><p class="lab">十一月八日 · 星期六</p><h1 class="hello">王女士，<br>今天想聊聊吗？</h1><p class="sub">您说，我听着。</p>
+   <div class="acts"><button class="pri">${I.mic}开始说</button><button class="sec">接着上次聊桂花糕</button></div>
+   <div class="blk"><p class="lab">上次聊到</p><p class="q">李先生骑自行车带您去瘦西湖，还给您买了一包桂花糕。</p></div>
+   <div class="blk"><p class="lab">最近的故事</p><h3>他说我跟桂花糕一样甜</h3><p class="ex">我是在纺织厂认识老李的。他是修机器的，一身机油味……</p><a class="more">读全文 ›</a></div>
+   <p class="count">已经聊过 1 次</p></div>`;
+  if(d==='b')return top+`<div class="scr"><h1 class="hello">王女士，<br>今天想聊聊吗？</h1>
+   <div class="print"><i class="tape"></i><div class="ph">这里放一张老照片<br>（比如纺织厂的合影）</div><p class="cap">接着聊：骑车去瘦西湖</p><p class="cap2">上次聊到李先生给您买了一包桂花糕</p></div>
+   <div class="acts"><button class="pri">${I.mic}开始说</button><button class="sec">${I.book}翻翻我的故事</button></div>
+   <p class="count">已经聊过 1 次，存了 1 个故事</p></div>`;
+  return top+`<div class="scr"><h1 class="hello">王女士，<br>您好。</h1><p class="sub">想说点什么，就按一下。</p>
+   <button class="talk">${I.mic}按一下说</button><p class="hint">小忆在听，您慢慢说。</p>
+   <a class="chip"><span>接着上次聊<small>骑车去瘦西湖，桂花糕</small></span>${I.next}</a>
+   <a class="chip"><span>我的故事<small>已经存了 1 个</small></span>${I.next}</a></div>`;
+ },
+ list(d){
+  const top=bar(I.back,'','我的故事');
+  const item=s=>`<a class="item"><h3>${s.t}</h3><p>${s.d} · ${s.k} · ${s.n}段原声</p></a>`;
+  const body=S.map(item).join('');
+  if(d==='a')return top+`<div class="scr"><h2 class="pt">我的故事</h2><p class="sub" style="color:var(--mute);margin:0 0 10px">一共 3 篇，都是您亲口讲的。</p>${body}<button class="pri" style="margin-top:24px;min-height:60px;background:var(--accent);color:#fff;border-radius:6px;font:700 1.2rem var(--serif);letter-spacing:.2em;display:flex;align-items:center;justify-content:center;gap:10px">${I.mic}再聊一次</button></div>`;
+  if(d==='b')return top+`<div class="scr"><h2 class="page-t">我的故事</h2>${body}<button class="pri" style="margin-top:10px">${I.mic}再聊一次</button></div>`;
+  return top+`<div class="scr"><h2 class="page-t">我的故事</h2>${body}<button class="talk" style="width:100%;height:68px;border-radius:999px;flex-direction:row;font-size:1.2rem;box-shadow:none;margin:14px 0 0">${I.mic}再聊一次</button></div>`;
+ },
+ story(d){
+  const top=bar(I.back,'','故事');
+  const paras=P.map(p=>`<p class="para">${p}</p>${ys}`).join('');
+  const meta=`徐福贵 讲述 · 2026年10月11日`;
+  const head=`<h1>${S[0].t}</h1><div class="meta">${meta}</div>`;
+  const foot=`<button class="share pri-like" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%">分享给家人</button>`;
+  return top+`<div class="scr"><article class="art">${head}${paras}</article>${foot}</div>`;
+ }
+};
+const DIRS=[
+ {k:'a',n:'A · 家书',tag:'像一封手写的信。纸色底、衬线字、朱砂红只用在“印章”和主按钮上。',pts:['整页只有一个红色动作：开始说','故事读起来像排好版的文章，段落首行缩进','没有卡片和圆角堆叠，用细线和双线分隔']},
+ {k:'b',n:'B · 老相册',tag:'像一本翻开的相册。绿布封面色顶栏，内容像一张张贴上去的相纸。',pts:['首页主角是一张“话头照片”，以后可以真放老照片','每篇故事是一条贴好的纸条，左边一道绿边','最接近 vision 里“记忆册”的说法，但更有物件感']},
+ {k:'c',n:'C · 对讲',tag:'只做一件事：按一下就说。大圆按钮，文字用无衬线，最直白。',pts:['首页只有一个大圆按钮，其余全部降级为两行入口','适合手抖、视力弱的老人，点击区域最大','最简单，但最“像个 App”，温度靠色和文案撑']}
+];
+const st={screen:'home',size:'1',show:'all'};
+function draw(){
+  const el=document.getElementById('stage');
+  el.innerHTML=DIRS.filter(x=>st.show==='all'||st.show===x.k).map(x=>`<section class="col" aria-label="${x.n}"><h2>${x.n}</h2><p class="tag">${x.tag}</p><div class="phone" data-dir="${x.k}" data-size="${st.size}">${R[st.screen](x.k)}</div><ul>${x.pts.map(p=>`<li>${p}</li>`).join('')}</ul></section>`).join('');
+}
+document.querySelectorAll('.grp').forEach(g=>g.addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;
+  g.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));
+  if(b.dataset.screen)st.screen=b.dataset.screen;
+  if(b.dataset.size)st.size=b.dataset.size;
+  if(b.dataset.show)st.show=b.dataset.show;
+  draw();
+}));
+draw();
+</script>
+</body>
+</html>

@@ -1,0 +1,669 @@
+{
+  "interviewId": "i-fancheng-3",
+  "interviewer": {
+    "id": "demo-fancheng",
+    "name": "范成",
+    "role": "采访者"
+  },
+  "narrator": {
+    "id": "demo-hanchun",
+    "name": "寒春",
+    "role": "受访者"
+  },
+  "fictional": true,
+  "disclosure": "范成采访寒春的虚构演示；依公开生平创作，不是真实访谈或本人原话。",
+  "audio": null,
+  "timingSource": "estimated-script-timing",
+  "turns": [
+    {
+      "id": "i-fancheng-3-t1",
+      "q": "寒女士，今天想先聊哪段经历？",
+      "qid": "youth-meet:1",
+      "ask": {
+        "nodeId": "youth-meet",
+        "depth": 1
+      },
+      "raw": "今天想说说阳早，就是后来跟我过日子的那个人。我哥哥韩丁先认识他，才把我们介绍到一块儿。说成家，好像只是一九四九年那一件事，其实前面还有好长一段。我先听哥哥提他，后来自己才一点一点知道，他做起事情来是什么样子。",
+      "clean": "今天想说说阳早，就是后来跟我过日子的那个人。我哥哥韩丁先认识他，才把我们介绍到一块儿。说成家，好像只是一九四九年那一件事，其实前面还有好长一段。我先听哥哥提他，后来自己才一点一点知道，他做起事情来是什么样子。",
+      "audio": null,
+      "at": 1793669400000,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "听哥哥介绍后逐渐了解阳早的叙述方式为创作"
+      ],
+      "analysis": {
+        "nodeId": "youth-meet",
+        "depth": 1,
+        "note": "想聊与阳早相识和成家，哥哥韩丁是介绍人",
+        "entities": [
+          {
+            "type": "person",
+            "name": "阳早",
+            "relation": "spouse",
+            "note": "经哥哥韩丁介绍认识，后来成为丈夫"
+          },
+          {
+            "type": "person",
+            "name": "韩丁",
+            "relation": "siblings",
+            "note": "哥哥，介绍我认识阳早"
+          }
+        ]
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "寒女士，今天想先聊哪段经历？",
+      "idx": 1,
+      "nodeId": "youth-meet",
+      "depth": 1,
+      "emotion": "平静",
+      "note": "想聊与阳早相识和成家，哥哥韩丁是介绍人",
+      "askedNode": "youth-meet",
+      "askedDepth": 1
+    },
+    {
+      "id": "i-fancheng-3-t2",
+      "q": "哥哥是怎么提到他的？",
+      "qid": "youth-meet:2",
+      "ask": {
+        "nodeId": "youth-meet",
+        "depth": 2
+      },
+      "raw": "怎么开头的，我记不牢了。哥哥和他在康奈尔就是同学，住过一间屋子，对他熟悉。讲到他，会讲到牲口、农场那些事情。我那时还不懂怎么养牛，听着觉得离自己的书本挺远。后来有机会同阳早聊天，我就问他，为什么愿意天天跟这些事情打交道。",
+      "clean": "怎么开头的，我记不牢了。哥哥和他在康奈尔就是同学，住过一间屋子，对他熟悉。讲到他，会讲到牲口、农场那些事情。我那时还不懂怎么养牛，听着觉得离自己的书本挺远。后来有机会同阳早聊天，我就问他，为什么愿意天天跟这些事情打交道。",
+      "audio": null,
+      "at": 1793669437040,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "哥哥介绍的具体内容与我向阳早提出的问题为创作；未设定初识年月地点"
+      ],
+      "analysis": {
+        "nodeId": "youth-meet",
+        "depth": 2,
+        "note": "韩丁与阳早在康奈尔相识，介绍他懂畜牧",
+        "entities": [
+          {
+            "type": "place",
+            "name": "康奈尔大学",
+            "note": "韩丁与阳早做同学和室友的地方"
+          },
+          {
+            "type": "person",
+            "name": "阳早",
+            "relation": "spouse",
+            "note": "学畜牧，能谈许多农场里的事情"
+          }
+        ]
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "哥哥是怎么提到他的？",
+      "idx": 2,
+      "nodeId": "youth-meet",
+      "depth": 2,
+      "emotion": "平静",
+      "note": "韩丁与阳早在康奈尔相识，介绍他懂畜牧",
+      "askedNode": "youth-meet",
+      "askedDepth": 2
+    },
+    {
+      "id": "i-fancheng-3-t3",
+      "q": "他怎么给您讲那些事？",
+      "qid": "youth-meet:2",
+      "ask": {
+        "nodeId": "youth-meet",
+        "depth": 2
+      },
+      "raw": "他不先讲很大的道理，讲一头牛今天吃得好不好，为什么有时站在那里不肯吃。我听到不明白的，就打断他。他也不嫌我问得零碎，有时候用手比一下那个食槽的位置。我原来只看见一群牛，经他那么讲，才晓得里头每一头都得仔细看。",
+      "clean": "他不先讲很大的道理，讲一头牛今天吃得好不好，为什么有时站在那里不肯吃。我听到不明白的，就打断他。他也不嫌我问得零碎，有时候用手比一下那个食槽的位置。我原来只看见一群牛，经他那么讲，才晓得里头每一头都得仔细看。",
+      "audio": null,
+      "at": 1793669474640,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "关于牛吃食的谈话和比画食槽的动作均为创作"
+      ],
+      "analysis": {
+        "nodeId": "youth-meet",
+        "depth": 2,
+        "note": "阳早用观察牛吃食举例，自己也逐渐问起细节",
+        "entities": [
+          {
+            "type": "person",
+            "name": "阳早",
+            "relation": "spouse",
+            "note": "谈养牛时愿意耐心解释具体观察"
+          },
+          {
+            "type": "thing",
+            "name": "食槽",
+            "note": "谈论牛吃食时用来解释的物件"
+          }
+        ]
+      },
+      "agent": {
+        "emotion": "开心",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "他怎么给您讲那些事？",
+      "idx": 3,
+      "nodeId": "youth-meet",
+      "depth": 2,
+      "emotion": "开心",
+      "note": "阳早用观察牛吃食举例，自己也逐渐问起细节",
+      "askedNode": "youth-meet",
+      "askedDepth": 2
+    },
+    {
+      "id": "i-fancheng-3-t4",
+      "q": "您接着问了什么？",
+      "qid": "youth-meet:2",
+      "ask": {
+        "nodeId": "youth-meet",
+        "depth": 2
+      },
+      "raw": "我问，那么多牛，你怎么分得出来？他就讲脸上的花纹、走路的样子。我没马上记住，过一会儿又问了差不多的问题，他还得再讲一遍。那时我们也不是天天见面，各有各的事情。后来，他先到中国去了，是一九四六年。我自己到中国，还要晚两年。",
+      "clean": "我问，那么多牛，你怎么分得出来？他就讲脸上的花纹、走路的样子。我没马上记住，过一会儿又问了差不多的问题，他还得再讲一遍。那时我们也不是天天见面，各有各的事情。后来，他先到中国去了，是一九四六年。我自己到中国，还要晚两年。",
+      "audio": null,
+      "at": 1793669510560,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "根据花纹和步态辨牛的交谈、重复问答与相见频率为创作"
+      ],
+      "analysis": {
+        "nodeId": "youth-meet",
+        "depth": 2,
+        "note": "追问如何分辨牛，后来阳早先赴中国",
+        "entities": [
+          {
+            "type": "person",
+            "name": "阳早",
+            "relation": "spouse",
+            "note": "1946年先到中国"
+          },
+          {
+            "type": "place",
+            "name": "中国",
+            "note": "阳早1946年赴华，我1948年赴华"
+          }
+        ]
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "您接着问了什么？",
+      "idx": 4,
+      "nodeId": "youth-meet",
+      "depth": 2,
+      "emotion": "平静",
+      "note": "追问如何分辨牛，后来阳早先赴中国",
+      "askedNode": "youth-meet",
+      "askedDepth": 2
+    },
+    {
+      "id": "i-fancheng-3-t5",
+      "q": "你们后来怎么再见面的？",
+      "qid": "youth-meet:1",
+      "ask": {
+        "nodeId": "youth-meet",
+        "depth": 1
+      },
+      "raw": "我是一九四八年来的中国，到了第二年，到了第二年才去陕北，在延安那边和他聚到一起。路上的事可以另外慢慢讲。见着以后，倒没有一直讲分别这些年如何如何。他身边还是那些具体事情，我就让他接着讲养牛，看看自己这次能听懂多少。",
+      "clean": "我是一九四八年来的中国，到了第二年才去陕北，在延安那边和他聚到一起。路上的事可以另外慢慢讲。见着以后，倒没有一直讲分别这些年如何如何。他身边还是那些具体事情，我就让他接着讲养牛，看看自己这次能听懂多少。",
+      "audio": null,
+      "at": 1793669547600,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "相聚后谈养牛的场景为创作；不指定会面日及具体场所"
+      ],
+      "analysis": {
+        "nodeId": "youth-meet",
+        "depth": 1,
+        "note": "1948年赴华，1949年到陕北后相聚",
+        "entities": [
+          {
+            "type": "place",
+            "name": "陕北",
+            "note": "1949年到这里，与阳早相聚"
+          },
+          {
+            "type": "place",
+            "name": "延安",
+            "note": "1949年相聚的地域背景"
+          }
+        ]
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "你们后来怎么再见面的？",
+      "idx": 5,
+      "nodeId": "youth-meet",
+      "depth": 1,
+      "emotion": "平静",
+      "note": "1948年赴华，1949年到陕北后相聚",
+      "askedNode": "youth-meet",
+      "askedDepth": 1
+    },
+    {
+      "id": "i-fancheng-3-t6",
+      "q": "这回讲到了什么？",
+      "qid": "youth-meet:2",
+      "ask": {
+        "nodeId": "youth-meet",
+        "depth": 2
+      },
+      "raw": "讲草料，讲同样一把草，里头还分什么能吃、什么得挑出去。我发现他不是只凭脑子记，口袋里有一本小册子，掏出来的时候，边角都卷了。他一面翻，我一面凑过去看。有的字写得很急，我认不出来，就拿指头按住那一行，不让他翻过去。",
+      "clean": "讲草料，讲同样一把草，里头还分什么能吃、什么得挑出去。我发现他不是只凭脑子记，口袋里有一本小册子，掏出来的时候，边角都卷了。他一面翻，我一面凑过去看。有的字写得很急，我认不出来，就拿指头按住那一行，不让他翻过去。",
+      "audio": null,
+      "at": 1793669584640,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "小册子及翻看、辨字的场景为创作"
+      ],
+      "analysis": {
+        "nodeId": "youth-meet",
+        "depth": 2,
+        "note": "讲草料和记录，自己留意阳早的小册子",
+        "entities": [
+          {
+            "type": "thing",
+            "name": "阳早的小册子",
+            "note": "边角卷起，记着草料等事情"
+          }
+        ]
+      },
+      "agent": {
+        "emotion": "开心",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "这回讲到了什么？",
+      "idx": 6,
+      "nodeId": "youth-meet",
+      "depth": 2,
+      "emotion": "开心",
+      "note": "讲草料和记录，自己留意阳早的小册子",
+      "askedNode": "youth-meet",
+      "askedDepth": 2
+    },
+    {
+      "id": "i-fancheng-3-t7",
+      "q": "您按住的那行写了什么？",
+      "qid": "youth-meet:2",
+      "ask": {
+        "nodeId": "youth-meet",
+        "depth": 2
+      },
+      "raw": "那一行到底写什么，真想不起来了，只记得有个地方划掉，又在旁边补上。嗯，我记得的是两个人挤着看那个小本子，不是里面的数字。那时候我们也说起往后的安排，在哪里做事，怎么过日子。说着说着，成家的事就不再是离得很远的一件事了。",
+      "clean": "那一行到底写什么，真想不起来了，只记得有个地方划掉，又在旁边补上。我记得的是两个人挤着看那个小本子，不是里面的数字。那时候我们也说起往后的安排，在哪里做事，怎么过日子。说着说着，成家的事就不再是离得很远的一件事了。",
+      "audio": null,
+      "at": 1793669620560,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "小册子涂改和商量共同生活的过程为创作"
+      ],
+      "analysis": {
+        "nodeId": "youth-meet",
+        "depth": 2,
+        "note": "记不清小册子具体内容，谈到将来一起过日子",
+        "entities": [
+          {
+            "type": "thing",
+            "name": "阳早的小册子",
+            "note": "记不清具体内容，记得两人一起翻看"
+          },
+          {
+            "type": "person",
+            "name": "阳早",
+            "relation": "spouse",
+            "note": "相聚后商量共同生活"
+          }
+        ]
+      },
+      "agent": {
+        "emotion": "卡壳",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "您按住的那行写了什么？",
+      "idx": 7,
+      "nodeId": "youth-meet",
+      "depth": 2,
+      "emotion": "卡壳",
+      "note": "记不清小册子具体内容，谈到将来一起过日子",
+      "askedNode": "youth-meet",
+      "askedDepth": 2
+    },
+    {
+      "id": "i-fancheng-3-t8",
+      "q": "后来怎么定下来的？",
+      "qid": "youth-meet:1",
+      "ask": {
+        "nodeId": "youth-meet",
+        "depth": 1
+      },
+      "raw": "一九四九年春天，我们就在陕北成了家。你要问我哪一句话算定下来的，我还真找不出那么一句。我们愿意在一起，也愿意做这里的事情。决定了以后，眼前要收拾的东西一下子变得很多，衣服、纸张，放哪儿都得挪一挪。我就先去整理自己的那只旧箱子。",
+      "clean": "一九四九年春天，我们就在陕北成了家。你要问我哪一句话算定下来的，我还真找不出那么一句。我们愿意在一起，也愿意做这里的事情。决定了以后，眼前要收拾的东西一下子变得很多，衣服、纸张，放哪儿都得挪一挪。我就先去整理自己的那只旧箱子。",
+      "audio": null,
+      "at": 1793669658160,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "定下共同生活的过程及整理旧箱子的情节为创作；不设定婚礼场地和具体日期"
+      ],
+      "analysis": {
+        "nodeId": "youth-meet",
+        "depth": 1,
+        "note": "1949年春在陕北成家，谈到整理生活物件",
+        "entities": [
+          {
+            "type": "person",
+            "name": "阳早",
+            "relation": "spouse",
+            "note": "1949年春与我在陕北结婚"
+          },
+          {
+            "type": "thing",
+            "name": "旧箱子",
+            "note": "成家时整理衣物纸张使用"
+          }
+        ]
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "后来怎么定下来的？",
+      "idx": 8,
+      "nodeId": "youth-meet",
+      "depth": 1,
+      "emotion": "平静",
+      "note": "1949年春在陕北成家，谈到整理生活物件",
+      "askedNode": "youth-meet",
+      "askedDepth": 1
+    },
+    {
+      "id": "i-fancheng-3-t9",
+      "q": "那只箱子是什么样的？",
+      "qid": "youth-meet:2",
+      "ask": {
+        "nodeId": "youth-meet",
+        "depth": 2
+      },
+      "raw": "不大，塞得很满，提手有一边已经松了。我搬的时候得从底下托住，不敢只拎那个把儿。阳早看到了，就把里面的东西请出来，翻过去看。他手边没有样样齐全的工具，还要找一根合适的绳子。我在旁边守着那摊衣服，免得落到地上去。",
+      "clean": "不大，塞得很满，提手有一边已经松了。我搬的时候得从底下托住，不敢只拎那个把儿。阳早看到了，就把里面的东西请出来，翻过去看。他手边没有样样齐全的工具，还要找一根合适的绳子。我在旁边守着那摊衣服，免得落到地上去。",
+      "audio": null,
+      "at": 1793669696320,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "箱子外观、损坏和修补过程均为创作"
+      ],
+      "analysis": {
+        "nodeId": "youth-meet",
+        "depth": 2,
+        "note": "旧箱子提手松动，阳早动手修补",
+        "entities": [
+          {
+            "type": "thing",
+            "name": "旧箱子",
+            "note": "提手一边松动，阳早找绳修补"
+          }
+        ]
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "那只箱子是什么样的？",
+      "idx": 9,
+      "nodeId": "youth-meet",
+      "depth": 2,
+      "emotion": "平静",
+      "note": "旧箱子提手松动，阳早动手修补",
+      "askedNode": "youth-meet",
+      "askedDepth": 2
+    },
+    {
+      "id": "i-fancheng-3-t10",
+      "q": "提手后来修好了吗？",
+      "qid": "youth-meet:2",
+      "ask": {
+        "nodeId": "youth-meet",
+        "depth": 2
+      },
+      "raw": "修好了，就是看着不大漂亮，旁边多了个绳结。我先空着提了两下，再放一点东西进去，提起来试试。他还伸手在底下接着，怕我一高兴装太多又断了。后来我把衣服放回去，把纸张往边上挪，竟然比原来好盖了。箱子底下还压着一块包衣服的布。",
+      "clean": "修好了，就是看着不大漂亮，旁边多了个绳结。我先空着提了两下，再放一点东西进去，提起来试试。他还伸手在底下接着，怕我一高兴装太多又断了。后来我把衣服放回去，把纸张往边上挪，竟然比原来好盖了。箱子底下还压着一块包衣服的布。",
+      "audio": null,
+      "at": 1793669732240,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "试提箱子、重新装箱和布料细节均为创作"
+      ],
+      "analysis": {
+        "nodeId": "youth-meet",
+        "depth": 2,
+        "note": "用绳补好提手后试提，箱子重新装好",
+        "entities": [
+          {
+            "type": "thing",
+            "name": "旧箱子",
+            "note": "提手多了绳结，整理后能重新提起和盖好"
+          },
+          {
+            "type": "thing",
+            "name": "包衣服的布",
+            "note": "压在旧箱子底下"
+          }
+        ]
+      },
+      "agent": {
+        "emotion": "开心",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "提手后来修好了吗？",
+      "idx": 10,
+      "nodeId": "youth-meet",
+      "depth": 2,
+      "emotion": "开心",
+      "note": "用绳补好提手后试提，箱子重新装好",
+      "askedNode": "youth-meet",
+      "askedDepth": 2
+    },
+    {
+      "id": "i-fancheng-3-t11",
+      "q": "那块布后来还用着吗？",
+      "qid": "youth-meet:2",
+      "ask": {
+        "nodeId": "youth-meet",
+        "depth": 2
+      },
+      "raw": "用着，用着。衣服另包好了，它就拿来垫放东西的那块板面。我把布铺平，才发现一角开了线，就坐在那里缝几针。针从布底下钻出来，有时候没对上地方，得拆了重新来。他本来在收拾别的，看见我找剪线头的东西，也过来帮着找。",
+      "clean": "用着。衣服另包好了，它就拿来垫放东西的那块板面。我把布铺平，才发现一角开了线，就坐在那里缝几针。针从布底下钻出来，有时候没对上地方，得拆了重新来。他本来在收拾别的，看见我找剪线头的东西，也过来帮着找。",
+      "audio": null,
+      "at": 1793669769280,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "布的用途、缝补和一起找工具的场景为创作"
+      ],
+      "analysis": {
+        "nodeId": "youth-meet",
+        "depth": 2,
+        "note": "包衣服的布改为垫桌面，边角缝了几针",
+        "entities": [
+          {
+            "type": "thing",
+            "name": "包衣服的布",
+            "note": "后来用来垫板面，边角开线后自己缝补"
+          }
+        ]
+      },
+      "agent": {
+        "emotion": "平静",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "那块布后来还用着吗？",
+      "idx": 11,
+      "nodeId": "youth-meet",
+      "depth": 2,
+      "emotion": "平静",
+      "note": "包衣服的布改为垫桌面，边角缝了几针",
+      "askedNode": "youth-meet",
+      "askedDepth": 2
+    },
+    {
+      "id": "i-fancheng-3-t12",
+      "q": "东西找着了吗？",
+      "qid": "youth-meet:2",
+      "ask": {
+        "nodeId": "youth-meet",
+        "depth": 2
+      },
+      "raw": "找着了，原来刚才装箱时压住了。忙了半天，布铺好，两个人的杯子就摆在上面。我以前自己的东西，放哪儿自己知道就行，现在还得记着旁边另有一个人。头几天拿杯子，手会伸错方向，我自己都觉得好笑。再往下一看，他的一双鞋还横在脚边。",
+      "clean": "找着了，原来刚才装箱时压住了。忙了半天，布铺好，两个人的杯子就摆在上面。我以前自己的东西，放哪儿自己知道就行，现在还得记着旁边另有一个人。头几天拿杯子，手会伸错方向，我自己都觉得好笑。再往下一看，他的一双鞋还横在脚边。",
+      "audio": null,
+      "at": 1793669804920,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "找工具、摆杯子、拿错方向与鞋的场景均为创作"
+      ],
+      "analysis": {
+        "nodeId": "youth-meet",
+        "depth": 2,
+        "note": "找到工具后摆放两人的杯子，开始适应共同生活",
+        "entities": [
+          {
+            "type": "thing",
+            "name": "两个人的杯子",
+            "note": "成家收拾屋子时摆在垫布上"
+          },
+          {
+            "type": "thing",
+            "name": "阳早的鞋",
+            "note": "收拾东西时横在脚边"
+          }
+        ]
+      },
+      "agent": {
+        "emotion": "开心",
+        "action": "追问细节",
+        "source": "demo-scripted"
+      },
+      "question": "东西找着了吗？",
+      "idx": 12,
+      "nodeId": "youth-meet",
+      "depth": 2,
+      "emotion": "开心",
+      "note": "找到工具后摆放两人的杯子，开始适应共同生活",
+      "askedNode": "youth-meet",
+      "askedDepth": 2
+    },
+    {
+      "id": "i-fancheng-3-t13",
+      "q": "那双鞋后来放在哪儿？",
+      "qid": "youth-meet:2",
+      "ask": {
+        "nodeId": "youth-meet",
+        "depth": 2
+      },
+      "raw": "我把它们拨到边上，鞋尖朝外，省得来回走碰着。嗯，说到这里我倒记起那个动作了，比哪一天更清楚。箱子盖上，杯子摆好，脚底下也腾出一点地方，才坐下来喘口气。今天先存这些吧，说得有点口干了，我想喝口水，歇一会儿。",
+      "clean": "我把它们拨到边上，鞋尖朝外，省得来回走碰着。说到这里我倒记起那个动作了，比哪一天更清楚。箱子盖上，杯子摆好，脚底下也腾出一点地方，才坐下来喘口气。今天先存这些吧，说得有点口干了，我想喝口水，歇一会儿。",
+      "audio": null,
+      "at": 1793669841400,
+      "interviewer": "范成",
+      "speaker": "寒春",
+      "asrSource": "demo-scripted",
+      "fictional": true,
+      "timingSource": "estimated-script-timing",
+      "fictionalDetails": [
+        "收鞋及收拾完成后的生活场景为创作"
+      ],
+      "analysis": {
+        "nodeId": "youth-meet",
+        "depth": 2,
+        "note": "收好阳早的鞋，主动结束本次访谈",
+        "entities": [
+          {
+            "type": "thing",
+            "name": "阳早的鞋",
+            "note": "挪到边上，鞋尖朝外，给走动腾地方"
+          }
+        ]
+      },
+      "agent": {
+        "emotion": "累了",
+        "action": "收尾",
+        "source": "demo-scripted"
+      },
+      "question": "那双鞋后来放在哪儿？",
+      "idx": 13,
+      "nodeId": "youth-meet",
+      "depth": 2,
+      "emotion": "累了",
+      "note": "收好阳早的鞋，主动结束本次访谈",
+      "askedNode": "youth-meet",
+      "askedDepth": 2
+    }
+  ]
+}

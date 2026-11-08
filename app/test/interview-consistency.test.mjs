@@ -1,0 +1,31 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { InterviewQueue, audioExtension, joinWav, readWav, normalizeWav } from '../server/interview-session.mjs';
+const wav = (pcm, rate) => { const b = Buffer.alloc(44 + pcm.length); b.write('RIFF'); b.writeUInt32LE(b.length - 8, 4); b.write('WAVEfmt ', 8); b.writeUInt32LE(16, 16); b.writeUInt16LE(1, 20); b.writeUInt16LE(1, 22); b.writeUInt32LE(rate, 24); b.writeUInt32LE(rate * 2, 28); b.writeUInt16LE(2, 32); b.writeUInt16LE(16, 34); b.write('data', 36); b.writeUInt32LE(pcm.length, 40); pcm.copy(b, 44); return b; };
+test('per-interview queue keeps accepted turns before finish and releases after errors', async () => {
+  const queue = new InterviewQueue(), events = [];
+  let resolve; const barrier = new Promise(r => resolve = r);
+  const first = queue.run('a', async () => { events.push('turn-start'); await barrier; events.push('turn-saved'); });
+  const finish = queue.run('a', async () => events.push('finish'));
+  await queue.run('b', async () => events.push('other'));
+  assert.deepEqual(events, ['turn-start', 'other']);
+  resolve(); await Promise.all([first, finish]);
+  assert.deepEqual(events, ['turn-start', 'other', 'turn-saved', 'finish']);
+  await assert.rejects(queue.run('a', async () => { throw Error('network'); }));
+  await queue.run('a', async () => events.push('retry'));
+  assert.equal(events.at(-1), 'retry');
+});
+test('archive extension follows actual MIME and independently decodable WAV segments combine', () => {
+  assert.equal(audioExtension('audio/wav'), 'wav');
+  assert.equal(audioExtension('audio/mp4;codecs=mp4a'), 'm4a');
+  assert.equal(audioExtension('audio/ogg'), 'ogg');
+  const a = wav(Buffer.from([1, 0, 2, 0]), 16000), b = wav(Buffer.from([3, 0]), 16000);
+  const joined = joinWav([a, b]);
+  assert.equal(readWav(joined).sampleRate, 16000);
+  assert.deepEqual([...readWav(joined).pcm], [1, 0, 2, 0, 3, 0]);
+  assert.throws(() => readWav(Buffer.alloc(44)), /WAV/);
+  assert.throws(() => joinWav([a, wav(Buffer.alloc(2), 24000)]), /format/);
+  const normalized = normalizeWav(wav(Buffer.alloc(48000), 24000), readWav(a).format);
+  assert.equal(readWav(normalized).sampleRate, 16000);
+  assert.equal(readWav(normalized).durationMs, 1000);
+});

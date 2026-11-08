@@ -132,11 +132,12 @@ export function openingText(FW, plan, ctx, isReturn) {
   const v = planVars(FW, plan, ctx);
   return assertNoVars(greetText(FW, plan, ctx, isReturn) + v.当前话题入场问题, '开场');
 }
-// 一句问候，接着由 choiceText 念候选
+// 约定的固定开场：称呼可变，不自动朗读候选菜单。
 export function greetText(FW, plan, ctx, isReturn) {
-  const head = isReturn ? '{称呼}，您好，咱们接着聊。' : '{称呼}，您好，我是小忆。';
+  const head = '{称呼}，这次打算往记忆银行里边存点什么？';
   return assertNoVars(fillAll(head, ctx.profile), '问候');
 }
+export const OPENING_NUDGE = '一件小事，或一个刚想起的人，都行。';
 export function closingText(FW, plan, ctx) {
   return '好，今天先聊到这儿，您歇一歇。';
 }
@@ -209,7 +210,7 @@ export function offlineQuestions(FW, p, request) {
   const a = plan.nodes[0], b = plan.nodes[1];
   const qs = [1, 2, 3, 4].map(d => ({ nodeId: a.nodeId, depth: d, text: questionFor(FW, a.nodeId, d, p, d === 1 ? a.trigger : null) }));
   qs.push({ nodeId: b.nodeId, depth: 1, text: questionFor(FW, b.nodeId, 1, p) });
-  qs[0].text = openingText(FW, plan, { profile: p }, false);
+  // 选好话题后直接问这个话题，不再重复初始开场。
   return { plan, qs };
 }
 
@@ -253,25 +254,32 @@ export function choiceText(cards, { after = false } = {}) {
   const list = cards.map((c, i) => `第${NUM[i]}个，${c.text}`).join('；');
   return after ? `接下来想聊哪个？${list}。也可以接着聊这个，或者今天先到这。` : `今天想聊哪个？${list}。您点一下，或者直接跟我说。`;
 }
-// 语音/文字选择解析（本地规则）：返回 { action: pick|more|free|stay|end, index, sure }；含糊默认第一个
+// 只把明确的整句操作当成选题。其余原话交给主持人讨论，不从叙述里截词或默认第一张。
+// discuss 不附带 nodeId/index；调用方必须把完整原话送入聊天上下文。
 export function parseChoice(FW, text = '', cards = [], p = {}, { after = false } = {}) {
   const t = String(text).replace(/\s/g, '');
-  if (!t) return { action: 'pick', index: 0, sure: false };
-  if (/换(几个|一批|一组|别的|个别的|一下)|再换|都不想|别的(话题)?吧|有没有别的/.test(t)) return { action: 'more', sure: true };
-  if (after && /(今天)?(先)?(到这|聊到这|不聊了|歇|累了|下次再)/.test(t)) return { action: 'end', sure: true };
-  if (after && /(继续|接着|还)(聊|说)?(这个|刚才)|没说完/.test(t)) return { action: 'stay', sure: true };
-  const ord = t.match(/第([一二三123])个?|([一二三123])号|头一个|最后一个|中间那个/);
+  if (!t) return { action: 'help', sure: true };
+  if (!after && /^(我)?(现在|一时|暂时|还)?(不知道|想不到|想不起来?|没想好)(要|该|能|先)?(存|说|讲|聊)?(点|些)?(什么|啥)?(事|故事|内容)?(好)?[了呢呀啊吧。？！?！…]*$/.test(t)) return { action: 'help', sure: true };
+  const command = t.replace(/[。！？?!，,、；;…]+$/g, '').replace(/^(?:好[，,]?|那[，,]?)/, '').replace(/[吧呀啊呢啦嘛]+$/, '');
+  if (/^(?:(?:再)?换(?:(?:几个|一批|一组)(?:话题)?|别的|个别的|一下|个话题|一个话题)?|都不想(?:聊)?|别的(?:话题)?|有没有别的(?:话题)?)$/.test(command)) return { action: 'more', sure: true };
+  if (after && /^(?:(?:今天)?(?:就|先)?(?:到这|聊到这)(?:儿)?|不聊了|歇(?:一会儿?)?|累了|下次再(?:聊|说)?|(?:我)?(?:想|要)休息(?:了)?)$/.test(command)) return { action: 'end', sure: true };
+  if (after && /^(?:(?:继续|接着|还)(?:聊|说)?(?:这个|刚才(?:的)?)|(?:我)?(?:还)?没说完)$/.test(command)) return { action: 'stay', sure: true };
+  if (/^(?:想聊什么都行|(?:我)?自己(?:说|讲|聊)|(?:我)?想自己(?:说|讲|聊)|随便(?:聊聊|聊|说说)|自由(?:聊|聊聊))$/.test(command)) return { action: 'free', sure: true };
+  if (/^(?:随便|都行|都可以|你定|您定|都好|听你的|无所谓)$/.test(command) && cards.length) return { action: 'pick', index: 0, sure: true };
+  const topic = command.replace(/^(?:我)?(?:想|要)?(?:就)?(?:选择|选|聊聊|说说|讲讲|聊|说|讲)/, '');
+  const ord = topic.match(/^(?:第([一二三123])个|([一二三123])号|头一个|最后一个|中间那个)$/);
   if (ord) { const m = ord[0]; const i = /头一个/.test(m) ? 0 : /最后/.test(m) ? cards.length - 1 : /中间/.test(m) ? 1 : '一二三'.indexOf(ord[1] || ord[2]) >= 0 ? '一二三'.indexOf(ord[1] || ord[2]) : (+(ord[1] || ord[2]) - 1);
     if (cards[i]) return { action: 'pick', index: i, sure: true }; }
-  // 关键词：卡片短句/标题/实体线索里的词（两字以上片段命中）
-  const score = c => { const n = nodeById(FW, c.nodeId), words = [c.text, nodeTitle(FW, c.nodeId, p), ...(n?.entity_hints || [])].join('|');
-    let s = 0; for (let k = 0; k < t.length - 1; k++) { const g = t.slice(k, k + 2); if (!/^(聊聊|就聊|聊吧|想聊|那个|这个|一个|小时|时候|的事|我们|我想|讲讲|说说|里的|的那|那时|咱们|您的|我的)$/.test(g) && words.includes(g)) s++; } return s; };
-  const sc = cards.map(score), best = Math.max(0, ...sc);
-  if (best > 0) return { action: 'pick', index: sc.indexOf(best), sure: true };
-  // 说的是卡片外的话题（如“聊过年吧”）：直接按那个节点聊（敏感/需平静的也允许，因为是老人主动要聊）
-  const other = FW.nodes.filter(n => !cards.some(c => c.nodeId === n.id)).map(n => ({ nodeId: n.id, text: n.card || n.title })), so = other.map(score), bo = Math.max(0, ...so);
-  if (bo >= 1 && !/随便|都行|都可以/.test(t)) return { action: 'pick', nodeId: other[so.indexOf(bo)].nodeId, sure: bo >= 2 }; // 只沾一个词：拿不准，交给 Gemini 再判
-  if (/随便|都行|都可以|你定|您定|都好|听你的|无所谓/.test(t)) return { action: 'pick', index: 0, sure: true };
-  if (/想聊什么都行|我自己(说|讲)|我想(说|讲|聊)|聊聊我/.test(t) && t.length > 4) return { action: 'free', sure: false };
-  return { action: 'pick', index: 0, sure: false };
+  // 全名匹配允许直接选已知话题；实体提示词必须完整且只属于一个节点。
+  // “东西”等泛词、故事中的“过年/结婚”等子串不能决定话题。
+  const exact = (words) => words.filter(Boolean).some(word => word.length >= 2 && topic === word);
+  const index = cards.findIndex(c => exact([c.text, nodeTitle(FW, c.nodeId, p)]));
+  if (index >= 0) return { action: 'pick', index, sure: true };
+  const named = FW.nodes.filter(n => exact([fill(n.card || '', p), nodeTitle(FW, n.id, p)]));
+  const hinted = named.length ? named : FW.nodes.filter(n => exact(n.entity_hints || []));
+  if (hinted.length === 1) {
+    const nodeId = hinted[0].id, i = cards.findIndex(c => c.nodeId === nodeId);
+    return i >= 0 ? { action: 'pick', index: i, sure: true } : { action: 'pick', nodeId, sure: true };
+  }
+  return { action: 'discuss', sure: true };
 }

@@ -21,3 +21,24 @@ test('超时回退：单句超时 reject（前端退回浏览器朗读），后�
   let used = []; const fb = makeTTS(dir, { ...TTS, model: 'a', fallback: 'b' }, m => { used.push(m); return m === 'a' ? Promise.reject(new Error('x')) : Promise.resolve({ pcm: Buffer.alloc(2), mime: '' }); });
   await fb.get('回退句'); assert.deepEqual(used, ['a', 'b']);
   assert.equal(await withTimeout(Promise.resolve(1), 10), 1); });
+
+// 阿里 DashScope 子进程客户端：用假脚本代替真实 Python，不联网
+import { dsStream, dsCall } from '../server/dashscope.mjs';
+const fakePy = (dir, body) => { const f = path.join(dir, 'fake.py'); fs.writeFileSync(f, body); return f; };
+test('dashscope：子进程 PCM 流式透传，奇数字节对齐成 2 字节整数倍', async () => {
+  process.env.DASHSCOPE_API_KEY = 'sk-ws-test-secret'; process.env.DASHSCOPE_WS_URL = 'wss://x.example/api-ws/v1/inference';
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ds-'));
+  const ok = fakePy(dir, "import sys,json,time\nreq=json.load(sys.stdin)\nsys.stdout.buffer.write(b'\\x01\\x02\\x03'); sys.stdout.flush(); time.sleep(0.05); sys.stdout.buffer.write(b'\\x04\\x05\\x06'); sys.stdout.flush()\n");
+  const chunks = []; for await (const c of dsStream('m', '你好', 'v', { script: ok })) chunks.push(c);
+  assert.ok(chunks.every(c => c.length % 2 === 0)); assert.deepEqual([...Buffer.concat(chunks)], [1, 2, 3, 4, 5, 6]);
+  const r = await dsCall('m', '你好', 'v', 5000, { script: ok }); assert.equal(r.pcm.length, 6); assert.equal(r.mime, 'audio/L16;rate=24000');
+});
+test('dashscope：子进程失败 → 抛错且不泄露 key；无音频 → 抛错', async () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ds-'));
+  const bad = fakePy(dir, "import sys\nsys.stderr.write('TaskFailed sk-ws-test-secret boom'); sys.exit(2)\n");
+  await assert.rejects(dsCall('m', 'x', 'v', 5000, { script: bad }), e => /TaskFailed/.test(e.message) && !e.message.includes('sk-ws-test-secret'));
+  const empty = fakePy(dir, "import sys\nsys.stdin.read()\n");
+  await assert.rejects(dsCall('m', 'x', 'v', 5000, { script: empty }), /无音频/);
+  const slow = fakePy(dir, "import time\ntime.sleep(5)\n");
+  await assert.rejects(dsCall('m', 'x', 'v', 300, { script: slow }), /超时/);
+});

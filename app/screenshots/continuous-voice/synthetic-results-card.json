@@ -1,0 +1,13 @@
+{
+  "environment": "macOS Chromium headless, AudioWorklet 48 kHz, synthesized harmonic microphone and PCM TTS, mocked Chinese API transcript fixtures; no acoustic echo/human speech validation",
+  "testedAt": "2026-11-07T17:26:31.564Z",
+  "errors": [],
+  "results": [
+    {
+      "scenario": "card-and-leave",
+      "choose": 1,
+      "savedTailTurns": 1,
+      "fullSegments": 1
+    }
+  ]
+}
