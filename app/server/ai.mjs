@@ -243,9 +243,9 @@ export async function updateArchive(p, a, turns, stage, { offline = false } = {}
   const asked = [...(a.asked || []), ...turns.map(t => t.qid).filter(Boolean)];
   if (!offline) try {
     const r = await gemini([{ text: `你在维护老人${p.name}的「记忆档案」。现有档案：${JSON.stringify(a)}\n本次访谈（阶段：${stage}）：\n${histText(turns)}\n\n把本次老人说的新信息合并进档案，只记老人说过的，不编造；前后矛盾并列保留不纠正。输出 JSON：{"people":[{"name":"","relation":"","note":""}],"places":[{"name":"","note":""}],"events":[{"title":"","when":"","detail":""}],"timeline":[{"when":"","what":""}],"lastTopic":"下次开场可提起的上次话题，一句口语，如：您和老伴李先生骑自行车去瘦西湖、他给您买桂花糕","conflicts":[""]}` }], { json: true, tier: 'pro' }) // pro 30 s 超时后回退 flash;
-    if (r.people) return { ...r, asked, updatedAt: Date.now(), source: 'gemini' };
+    if (r.people) return { ...r, seedVersion: a.seedVersion, asked, updatedAt: Date.now(), source: 'gemini' }; // 种子版本由服务端保留，不由模型改写。
   } catch {}
-  const m = { people: a.people || [], places: a.places || [], events: a.events || [], timeline: a.timeline || [], conflicts: a.conflicts || [] };
+  const m = { seedVersion: a.seedVersion, people: a.people || [], places: a.places || [], events: a.events || [], timeline: a.timeline || [], conflicts: a.conflicts || [] };
   const add = (arr, o, k) => { if (!arr.some(x => x[k] === o[k])) arr.push(o); };
   if (isDemo(turns)) {
     add(m.people, { name: '李建国', relation: '老伴（已故）', note: '纺织厂修机器的，一身机油味；见面脸一红就不会说话' }, 'name');

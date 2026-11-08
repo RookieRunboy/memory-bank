@@ -30,10 +30,8 @@ const iv = id => { const r = one('select * from interviews where id=?', [id]); r
 
 // 空库自动灌入王女士演示数据（档案 + 一次访谈 + 故事 + 记忆档案/实体/话题状态），第二次访谈可直接接续开场
 if (!one('select count(*) n from elders').n) { const { seedDemo } = await import('./seed.mjs'); await seedDemo({ db, ai, P }); save(); console.log('[seed] 已灌入王女士演示数据（elder id: demo-wang）'); }
-{ const { seedFugui, SEED_VERSION } = await import('./seed-fugui.mjs'), old = one('select archive from elders where id=?', ['demo-fugui']);
-  if (!old || J(old.archive)?.seedVersion !== SEED_VERSION) { // 缺失或内容版本过旧：只清掉并重灌 demo-fugui，其他老人不动
-    for (const t of ['interviews', 'stories', 'transcript_turns', 'edits', 'elder_state']) db.run(`delete from ${t} where elder_id=?`, ['demo-fugui']);
-    db.run('delete from elders where id=?', ['demo-fugui']);
+{ const { seedFugui } = await import('./seed-fugui.mjs');
+  if (!one('select 1 from elders where id=?', ['demo-fugui'])) { // 仅初始化缺失的演示资料；旧版本也可能含用户新增访谈与修改，不自动重灌。
     await seedFugui({ db, ai, P }); save(); console.log('[seed] 已灌入徐先生演示数据（elder id: demo-fugui，人物原型取自《活着》，内容为自编）'); } }
 { const { seedFancheng } = await import('./seed-fancheng.mjs');
   if (seedFancheng({ db })) { save(); console.log('[seed] 已加入范成采访寒春的虚构演示（讲述者 demo-hanchun）'); } }

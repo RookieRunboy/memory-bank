@@ -4,7 +4,7 @@
 import { PROFILE, SESSIONS } from './seed-fugui-data.mjs';
 export const FUGUI_ID = 'demo-fugui';
 export const FUGUI_PROFILE = PROFILE;
-export const SEED_VERSION = 3; // 内容升级时加一，启动时会重灌徐先生（只动 demo-fugui）
+export const SEED_VERSION = 3; // 标记新建演示资料的内容版本；启动时保留已有资料，不自动重灌。
 
 const mergeBy = (arr, add, key) => { for (const x of add || []) { const i = arr.findIndex(y => key(y) === key(x)); if (i < 0) arr.push({ ...x }); else arr[i] = { ...arr[i], ...x }; } };
 
